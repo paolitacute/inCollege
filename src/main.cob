@@ -29,3 +29,8 @@ DATA DIVISION.
        01  WS-PASSWORD            PIC X(20).
        01  WS-END-OF-FILE         PIC X       VALUE 'N'.
 
+PROCEDURE DIVISION.
+       MAIN-PROGRAM SECTION.
+           OPEN INPUT INPUT-FILE
+                OUTPUT OUTPUT-FILE.
+
