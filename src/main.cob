@@ -1,103 +1,126 @@
-IDENTIFICATION DIVISION.
-       PROGRAM-ID. inCollege.
-       AUTHOR. Paola.
-       DATE-WRITTEN. 9/7/2025.
-ENVIRONMENT DIVISION.
+       >>SOURCE FREE
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. InCollege.
+       AUTHOR. Kaden
+       DATE-WRITTEN. 09/08/2025
+
+       ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
        FILE-CONTROL.
+
+      *> Select INPUT-FILE tells COBOL what the input file is
            SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
+      *> LINE SEQUENTIAL means each line in text is a record
                ORGANIZATION IS LINE SEQUENTIAL.
+      *> OUTPUT-FILE defines what file will have the output stored
            SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-DATA DIVISION.
+
+       DATA DIVISION.
        FILE SECTION.
+      *> FD describes the structure of the INPUT-FILE
        FD  INPUT-FILE.
-       01  INPUT-RECORD-DATA.
-           05  IN-USER-CHOICE       PIC X.
-           05  IN-USERNAME          PIC X(20).
-           05  IN-PASSWORD          PIC X(20).
-           05  FILLER               PIC X(9).
+      *> Defines each record as a 80 charecter line of text
+       01  INPUT-RECORD      PIC X(80).
 
+      *> FD describes the structure of the OUTPUT-FILE
        FD  OUTPUT-FILE.
-       01  OUTPUT-RECORD-DATA       PIC X(80).
 
+      *> Defines each record as a 80 charecter line of text
+       01  OUTPUT-RECORD     PIC X(80).
+
+      *> Working storeage section is where the variables of the program are stored
        WORKING-STORAGE SECTION.
-       01  WS-USER-CHOICE         PIC X.
-       01  WS-USERNAME            PIC X(20).
-       01  WS-PASSWORD            PIC X(20).
 
+      *> Used to hold a line of text before displaying it
+       01  WS-MESSAGE        PIC X(80).
+
+      *> Space for input line
+       01  WS-INPUT          PIC X(80).
+
+      *> Stores the entered username
+       01  WS-USERNAME       PIC X(20).
+
+      *> Stores the entered password
+       01  WS-PASSWORD       PIC X(20).
+
+      *> Single charecter
+       01  WS-CHOICE         PIC 9(1).
+
+      *> Bounds of the choices options
        01  MIN-VALUE-CHOICE       PIC 9(1).
        01  MAX-VALUE-CHOICE       PIC 9(1).
-       01  WS-END-OF-FILE         PIC X         VALUE 'N'.
 
-PROCEDURE DIVISION.
-       OPEN INPUT INPUT-FILE
-           OUTPUT OUTPUT-FILE.
+      *> Flag for end of file to then exit program
+       01  WS-END-FILE       PIC X VALUE "N".
 
-       PERFORM DISPLAY-MAIN-MENU.
+       PROCEDURE DIVISION.
+           OPEN INPUT INPUT-FILE
+                OUTPUT OUTPUT-FILE
+
+           PERFORM WELCOME-SCREEN
+
+           CLOSE INPUT-FILE OUTPUT-FILE
+           STOP RUN.
+
+       WELCOME-SCREEN SECTION.
+      *> Storing welcome messages into variables
+           MOVE "Welcome to InCollege!" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "Log In" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "Create New Account" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+
+           MOVE 1 TO MIN-VALUE-CHOICE.
+           MOVE 2 TO MAX-VALUE-CHOICE.
+
+           PERFORM CHOICE.
+
+           *> Read the first input before calling the subprogram.
 
 
-       CLOSE INPUT-FILE, OUTPUT-FILE.
-       STOP RUN.
-
-DISPLAY-MAIN-MENU SECTION.
-       DISPLAY "Welcome to InCollege!".
-       MOVE "Welcome to InCollege!" TO OUTPUT-RECORD-DATA.
-       WRITE OUTPUT-RECORD-DATA.
-
-       DISPLAY "Log In".
-       MOVE "Log In" TO OUTPUT-RECORD-DATA.
-       WRITE OUTPUT-RECORD-DATA.
-
-       DISPLAY "Create New Account".
-       MOVE "Create New Account" TO OUTPUT-RECORD-DATA.
-       WRITE OUTPUT-RECORD-DATA.
-
-       MOVE 1 TO MIN-VALUE-CHOICE.
-       MOVE 2 TO MAX-VALUE-CHOICE.
-
-       PERFORM CHOICE.
-
-       *>EVALUATE WS-USER-CHOICE
+           *>EVALUATE WS-USER-CHOICE
          *>  WHEN 1
-           *>    CALL "LOGIN"
+           *>    CALL "LOGIN" USING
            *>WHEN 2
-           *>    CALL "CREATE-ACCOUNT"
+           *>    CALL "CREATE-ACCOUNT" USING
 
 
-CHOICE SECTION.
-       DISPLAY "Enter your choice as a number:".
-       MOVE "Enter your choice as a number:" TO OUTPUT-RECORD-DATA.
-       WRITE OUTPUT-RECORD-DATA.
 
-       PERFORM UNTIL WS-END-OF-FILE = 'Y'
+       DISPLAY-AND-LOG SECTION.
+           DISPLAY WS-MESSAGE
+           MOVE WS-MESSAGE TO OUTPUT-RECORD
+           WRITE OUTPUT-RECORD.
+
+
+
+       CHOICE SECTION.
+           MOVE "Enter your choice as a number:" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+
+
            READ INPUT-FILE
                AT END
-                   MOVE 'Y' TO WS-END-OF-FILE
+                   MOVE 'Y' TO WS-END-FILE
                NOT AT END
-                   MOVE IN-USER-CHOICE TO WS-USER-CHOICE
+                   MOVE INPUT-RECORD TO WS-CHOICE
            END-READ
 
-           PERFORM UNTIL WS-END-OF-FILE = 'Y'
-               READ INPUT-FILE
-                   AT END
-                       MOVE 'Y' TO WS-END-OF-FILE
-                   NOT AT END
-                       MOVE IN-USER-CHOICE TO WS-USER-CHOICE
-               END-READ
-           END-PERFORM
 
-           PERFORM UNTIL (WS-USER-CHOICE >= MIN-VALUE-CHOICE)
-                          AND (WS-USER-CHOICE <= MAX-VALUE-CHOICE)
+           PERFORM UNTIL (WS-CHOICE >= MIN-VALUE-CHOICE)
+                          AND (WS-CHOICE <= MAX-VALUE-CHOICE)
                DISPLAY "Not a valid choice. Try again."
 
                READ INPUT-FILE
                    AT END
-                       MOVE 'Y' TO WS-END-OF-FILE
+                       MOVE 'Y' TO WS-END-FILE
                    NOT AT END
-                       MOVE IN-USER-CHOICE TO WS-USER-CHOICE
+                       MOVE INPUT-RECORD TO WS-CHOICE
                END-READ
-           END-PERFORM
+           END-PERFORM.
 
-       END-PERFORM.
+
+
+
 
