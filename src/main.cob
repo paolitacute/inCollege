@@ -1,16 +1,14 @@
-*> This is free-form
 IDENTIFICATION DIVISION.
-      PROGRAM-ID. inCollege.
-      AUTHOR. Paola
-      DATE-WRITTEN. 9/7/2025
+       PROGRAM-ID. inCollege.
+       AUTHOR. Paola.
+       DATE-WRITTEN. 9/7/2025.
 ENVIRONMENT DIVISION.
-DATA DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-CONTROL.
-       SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
-           ORGANIZATION IS LINE SEQUENTIAL. *> what does organization is line sequential mean?
-       SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
-           ORGANIZATION IS LINE SEQUENTIAL.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
+           SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
+               ORGANIZATION IS LINE SEQUENTIAL.
 DATA DIVISION.
        FILE SECTION.
        FD  INPUT-FILE.
@@ -23,14 +21,75 @@ DATA DIVISION.
        FD  OUTPUT-FILE.
        01  OUTPUT-RECORD-DATA       PIC X(80).
 
-       WORKING-STORAGE SECTION. *> what does the working section even do??? why do we need it?
+       WORKING-STORAGE SECTION.
        01  WS-USER-CHOICE         PIC X.
        01  WS-USERNAME            PIC X(20).
        01  WS-PASSWORD            PIC X(20).
-       01  WS-END-OF-FILE         PIC X       VALUE 'N'.
+
+       01  MIN-VALUE-CHOICE       PIC 9(1).
+       01  MAX-VALUE-CHOICE       PIC 9(1).
+       01  WS-END-OF-FILE         PIC X         VALUE 'N'.
 
 PROCEDURE DIVISION.
-       MAIN-PROGRAM SECTION.
-           OPEN INPUT INPUT-FILE
-                OUTPUT OUTPUT-FILE.
+       OPEN INPUT INPUT-FILE
+           OUTPUT OUTPUT-FILE.
+
+       PERFORM DISPLAY-MAIN-MENU.
+       PERFORM CHOICE.
+
+       CLOSE INPUT-FILE, OUTPUT-FILE.
+       STOP RUN.
+
+DISPLAY-MAIN-MENU SECTION.
+       DISPLAY "Welcome to InCollege!".
+       MOVE "Welcome to InCollege!" TO OUTPUT-RECORD-DATA.
+       WRITE OUTPUT-RECORD-DATA.
+
+       DISPLAY "Log In".
+       MOVE "Log In" TO OUTPUT-RECORD-DATA.
+       WRITE OUTPUT-RECORD-DATA.
+
+       DISPLAY "Create New Account".
+       MOVE "Create New Account" TO OUTPUT-RECORD-DATA.
+       WRITE OUTPUT-RECORD-DATA.
+
+       MOVE 1 TO MIN-VALUE-CHOICE.
+       MOVE 2 TO MAX-VALUE-CHOICE.
+
+
+CHOICE SECTION.
+       DISPLAY "Enter your choice as a number:".
+       MOVE "Enter your choice as a number:" TO OUTPUT-RECORD-DATA.
+       WRITE OUTPUT-RECORD-DATA.
+
+       PERFORM UNTIL WS-END-OF-FILE = 'Y'
+           READ INPUT-FILE
+               AT END
+                   MOVE 'Y' TO WS-END-OF-FILE
+               NOT AT END
+                   MOVE IN-USER-CHOICE TO WS-USER-CHOICE
+           END-READ
+
+           PERFORM UNTIL WS-END-OF-FILE = 'Y'
+               READ INPUT-FILE
+                   AT END
+                       MOVE 'Y' TO WS-END-OF-FILE
+                   NOT AT END
+                       MOVE IN-USER-CHOICE TO WS-USER-CHOICE
+               END-READ
+           END-PERFORM
+
+           PERFORM UNTIL (WS-USER-CHOICE >= MIN-VALUE-CHOICE)
+                          AND (WS-USER-CHOICE <= MAX-VALUE-CHOICE)
+               DISPLAY "Not a valid choice. Try again."
+
+               READ INPUT-FILE
+                   AT END
+                       MOVE 'Y' TO WS-END-OF-FILE
+                   NOT AT END
+                       MOVE IN-USER-CHOICE TO WS-USER-CHOICE
+               END-READ
+           END-PERFORM
+
+       END-PERFORM.
 
