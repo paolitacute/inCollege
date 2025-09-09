@@ -1,30 +1,78 @@
+>>SOURCE FREE
 IDENTIFICATION DIVISION.
-       PROGRAM-ID. CHOICE.
+       PROGRAM-ID. CREATE-ACCOUNT.
 DATA DIVISION.
        LINKAGE SECTION.
-           01  LS-USERNAME        PIC X(20).
-           01  LS-PASSWORD        PIC X(20).
-           01  LS-RETURN-CODE     PIC X.
+           01  LS-USERNAME     PIC X(20).
+           01  LS-PASSWORD     PIC X(20).
+           01  LS-RETURN-CODE  PIC X.
 
-PROCEDURE DIVISION USING WS-MESSAGE, OUTPUT-RECORD, INPUT-FILE, WS-END-FILE, INPUT-RECORD, WS-CHOICE, MIN-VALUE-CHOICE, MAX-VALUE-CHOICE.
-       MOVE "Enter your choice as a number:" TO WS-MESSAGE
-       DISPLAY WS-MESSAGE
-       MOVE WS-MESSAGE TO OUTPUT-RECORD
-       WRITE OUTPUT-RECORD.
+WORKING-STORAGE SECTION.
+       01  WS-ACCOUNT-COUNT    PIC 9(1) VALUE 0.
+       01  WS-ACCOUNT-LIMIT    PIC 9(1) VALUE 5.
+       01  WS-EOF-FLAG         PIC X(1) VALUE 'N'.
+       01  WS-USERNAME-EXISTS  PIC X(1) VALUE 'N'.
 
-       READ INPUT-FILE
-           AT END MOVE "Y" TO WS-END-FILE
-           NOT AT END MOVE INPUT-RECORD TO WS-CHOICE
-       END-READ
+       01  WS-PASSWORD-FLAGS.
+           05  WS-HAS-CAPITAL      PIC X VALUE 'N'.
+           05  WS-HAS-DIGIT        PIC X VALUE 'N'.
+           05  WS-HAS-SPECIAL      PIC X VALUE 'N'.
 
-       PERFORM UNTIL (WS-CHOICE >= MIN-VALUE-CHOICE)
-                      AND (WS-CHOICE <= MAX-VALUE-CHOICE)
-           DISPLAY "Not a valid choice. Try again."
+       01  WS-PASSWORD-INDEX   PIC 9.
 
-           READ INPUT-FILE
-               AT END MOVE "Y" TO WS-END-FILE
-               NOT AT END MOVE INPUT-RECORD TO WS-CHOICE
-           END-READ
-       END-PERFORM.
+PROCEDURE DIVISION USING LS-USERNAME, LS-PASSWORD, LS-RETURN-CODE.
+    MOVE 'S' TO LS-RETURN-CODE.  *> Assume success by default
 
-       GOBACK.
+*> Check account limit
+    OPEN INPUT ACCOUNTS-FILE.
+    READ ACCOUNTS-FILE AT END MOVE 'Y' TO WS-EOF-FLAG.
+    PERFORM UNTIL WS-EOF-FLAG = 'Y'
+        ADD 1 TO WS-ACCOUNT-COUNT
+        READ ACCOUNTS-FILE AT END MOVE 'Y' TO WS-EOF-FLAG
+    END-PERFORM.
+    CLOSE ACCOUNTS-FILE.
+    MOVE 'N' TO WS-EOF-FLAG.
+
+    IF WS-ACCOUNT-COUNT >= WS-ACCOUNT-LIMIT
+        MOVE 'L' TO LS-RETURN-CODE  *> L for Limit reached
+        GOBACK
+    END-IF.
+
+*> Check if username exists
+    OPEN INPUT ACCOUNTS-FILE.
+    READ ACCOUNTS-FILE AT END MOVE 'Y' TO WS-EOF-FLAG.
+    PERFORM UNTIL WS-EOF-FLAG = 'Y'
+        IF ACCOUNTS-USERNAME = LS-USERNAME
+            MOVE 'Y' TO WS-USERNAME-EXISTS
+        END-IF
+        READ ACCOUNTS-FILE AT END MOVE 'Y' TO WS-EOF-FLAG
+    END-PERFORM.
+    CLOSE ACCOUNTS-FILE.
+
+    IF WS-USERNAME-EXISTS = 'Y'
+        MOVE 'E' TO LS-RETURN-CODE *> E for Exists
+        GOBACK
+    END-IF.
+
+*> Password validation
+    PERFORM PASSWORD-VALIDATION.
+
+    IF LS-RETURN-CODE = 'F'  *> F for Failure
+        GOBACK
+    END-IF.
+
+*> Write new account
+    OPEN EXTEND ACCOUNTS-FILE.
+    MOVE LS-USERNAME TO ACCOUNTS-USERNAME.
+    MOVE LS-PASSWORD TO ACCOUNTS-PASSWORD.
+    WRITE ACCOUNTS-RECORD-DATA.
+    CLOSE ACCOUNTS-FILE.
+
+    DISPLAY "Account created successfully.".
+    GOBACK.
+
+PASSWORD-VALIDATION SECTION.
+    *> Add your password validation logic here.
+    *> Check for length, capital, digit, and special character.
+    *> If a check fails, set LS-RETURN-CODE to 'F'.
+    .

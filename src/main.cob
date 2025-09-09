@@ -1,6 +1,6 @@
        >>SOURCE FREE
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. InCollege.
+       PROGRAM-ID. MAIN.
        AUTHOR. Kaden
        DATE-WRITTEN. 09/08/2025
 
@@ -16,47 +16,58 @@
            SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
 
+           SELECT ACCOUNTS-FILE ASSIGN TO "accounts.dat"
+           ORGANIZATION IS LINE SEQUENTIAL.
+
        DATA DIVISION.
        FILE SECTION.
-      *> FD describes the structure of the INPUT-FILE
-       FD  INPUT-FILE.
-      *> Defines each record as a 80 charecter line of text
-       01  INPUT-RECORD      PIC X(80).
+           *> FD describes the structure of the INPUT-FILE
+           FD  INPUT-FILE.
+           *> Defines each record as a 80 charecter line of text
+           01  INPUT-RECORD      PIC X(80).
 
-      *> FD describes the structure of the OUTPUT-FILE
-       FD  OUTPUT-FILE.
+           *> FD describes the structure of the OUTPUT-FILE
+           FD  OUTPUT-FILE.
 
-      *> Defines each record as a 80 charecter line of text
-       01  OUTPUT-RECORD     PIC X(80).
+           *> Defines each record as a 80 charecter line of text
+           01  OUTPUT-RECORD     PIC X(80).
+
+
+           FD  ACCOUNTS-FILE.
+           01  ACCOUNTS-RECORD-DATA.
+               05  ACCOUNTS-USERNAME    PIC X(20).
+               05  ACCOUNTS-PASSWORD    PIC X(20).
+               05  FILLER               PIC X(10).
 
       *> Working storeage section is where the variables of the program are stored
        WORKING-STORAGE SECTION.
 
-      *> Used to hold a line of text before displaying it
-       01  WS-MESSAGE        PIC X(80).
+           *> Used to hold a line of text before displaying it
+           01  WS-MESSAGE        PIC X(80).
 
-      *> Space for input line
-       01  WS-INPUT          PIC X(80).
+           *> Space for input line
+           01  WS-INPUT          PIC X(80).
 
-      *> Stores the entered username
-       01  WS-USERNAME       PIC X(20).
+           *> Stores the entered username
+           01  WS-USERNAME       PIC X(20).
 
-      *> Stores the entered password
-       01  WS-PASSWORD       PIC X(20).
+           *> Stores the entered password
+           01  WS-PASSWORD       PIC X(20).
 
-      *> Single charecter
-       01  WS-CHOICE         PIC 9(1).
+           *> Single charecter
+           01  WS-CHOICE         PIC 9(1).
 
-      *> Bounds of the choices options
-       01  MIN-VALUE-CHOICE       PIC 9(1).
-       01  MAX-VALUE-CHOICE       PIC 9(1).
+           *> Bounds of the choices options
+           01  MIN-VALUE-CHOICE       PIC 9(1).
+           01  MAX-VALUE-CHOICE       PIC 9(1).
 
-      *> Flag for end of file to then exit program
-       01  WS-END-FILE       PIC X VALUE "N".
+           *> Flag for end of file to then exit program
+           01  WS-END-FILE       PIC X VALUE "N".
 
        PROCEDURE DIVISION.
            OPEN INPUT INPUT-FILE
                 OUTPUT OUTPUT-FILE
+                I-O ACCOUNTS-FILE
 
            PERFORM WELCOME-SCREEN
 
@@ -77,14 +88,11 @@
 
            PERFORM CHOICE.
 
-           *> Read the first input before calling the subprogram.
-
-
-           *>EVALUATE WS-USER-CHOICE
+           EVALUATE WS-CHOICE
          *>  WHEN 1
            *>    CALL "LOGIN" USING
-           *>WHEN 2
-           *>    CALL "CREATE-ACCOUNT" USING
+               WHEN 2
+                   CALL "CREATE-ACCOUNT" USING WS-USERNAME, WS-PASSWORD, WS-RETURN-CODE
 
 
 
