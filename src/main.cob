@@ -207,9 +207,11 @@ PROCEDURE DIVISION.
            EVALUATE WS-RETURN-CODE
                WHEN 'S'
                    MOVE "Login successful" TO WS-MESSAGE
+                   PERFORM LOGIN-FLOW
                WHEN 'L'
                    MOVE "Login Failed" TO WS-MESSAGE
-
+                   PERFORM LOGIN-FLOW
+      
                WHEN OTHER
                    MOVE "An unknown error occurred." TO WS-MESSAGE
            END-EVALUATE.
