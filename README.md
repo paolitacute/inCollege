@@ -1,6 +1,6 @@
 # GNU COBOL + Docker + VS Code (Dev Containers)
 
-A cross-platform template for teaching **GNU COBOL** using **Docker** and **VS Code Dev Containers**. 
+A cross-platform template for teaching **GNU COBOL** using **Docker** and **VS Code Dev Containers**.
 Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
 
 ## Quick Start (Students)
@@ -14,22 +14,14 @@ Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
 **Run the template**
 1. Clone this repo and open it in VS Code.
 2. When prompted, click **“Reopen in Container”**. (Or run *Dev Containers: Reopen in Container* from the Command Palette.)
-3. Open `src/hello.cob`.
-4. Press **Ctrl+Shift+B** (or **⇧⌘B** on Mac) to **Build**, or run the task **COBOL: Run active file (after build)** from the command palette.
-5. The compiled program will be placed in `bin/` and run in the VS Code terminal.
+3. Build the files using the command ```cobc -x src/incollege.cob src/login.cob src/create-account.cob -o bin/inCollege```
+4. The compiled program will be placed in `bin/` and run in the VS Code terminal.
 
 ## Features
 - Docker image with **Ubuntu 22.04 + GNU COBOL (gnucobol)**.
 - VS Code tasks to **build and run the active COBOL file**.
 - Default UTF-8 locale configured.
 - No extra installs on host OS beyond Docker + VS Code.
-
-## Common Commands (inside the container)
-```bash
-# Compile and run a COBOL program manually
-cobc -x -o bin/hello src/hello.cob
-./bin/hello
-```
 
 ## Troubleshooting
 - If VS Code doesn’t prompt to reopen in a container, run **Dev Containers: Reopen in Container** manually.
