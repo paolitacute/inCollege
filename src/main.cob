@@ -1,25 +1,27 @@
-       >>SOURCE FREE
-       IDENTIFICATION DIVISION.
-       PROGRAM-ID. MAIN.
-       AUTHOR. Kaden
-       DATE-WRITTEN. 09/08/2025
+>>SOURCE FREE
+IDENTIFICATION DIVISION.
+PROGRAM-ID. MAIN.
+AUTHOR. Kaden and Paola
+DATE-WRITTEN. 09/07/2025
 
-       ENVIRONMENT DIVISION.
+ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
-       FILE-CONTROL.
+           FILE-CONTROL.
 
-      *> Select INPUT-FILE tells COBOL what the input file is
-           SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
-      *> LINE SEQUENTIAL means each line in text is a record
-               ORGANIZATION IS LINE SEQUENTIAL.
-      *> OUTPUT-FILE defines what file will have the output stored
-           SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
-               ORGANIZATION IS LINE SEQUENTIAL.
+                 *> Select INPUT-FILE tells COBOL what the input file is
+               SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
+                 *> LINE SEQUENTIAL means each line in text is a record
+                   ORGANIZATION IS LINE SEQUENTIAL.
+                 *> OUTPUT-FILE defines what file will have the output stored
+               SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
+                   ORGANIZATION IS LINE SEQUENTIAL.
 
-           SELECT ACCOUNTS-FILE ASSIGN TO "accounts.dat"
-           ORGANIZATION IS LINE SEQUENTIAL.
+               SELECT ACCOUNTS-FILE ASSIGN TO "accounts.dat"
+                   ORGANIZATION IS INDEXED
+                   ACCESS MODE IS SEQUENTIAL
+                   RECORD KEY IS ACCOUNTS-USERNAME.
 
-       DATA DIVISION.
+DATA DIVISION.
        FILE SECTION.
            *> FD describes the structure of the INPUT-FILE
            FD  INPUT-FILE.
@@ -39,7 +41,7 @@
                05  ACCOUNTS-PASSWORD    PIC X(20).
                05  FILLER               PIC X(10).
 
-      *> Working storeage section is where the variables of the program are stored
+             *> Working storeage section is where the variables of the program are stored
        WORKING-STORAGE SECTION.
 
            *> Used to hold a line of text before displaying it
@@ -64,18 +66,20 @@
            *> Flag for end of file to then exit program
            01  WS-END-FILE       PIC X VALUE "N".
 
-       PROCEDURE DIVISION.
-           OPEN INPUT INPUT-FILE
-                OUTPUT OUTPUT-FILE
-                I-O ACCOUNTS-FILE
+           01  WS-RETURN-CODE     PIC X.
 
-           PERFORM WELCOME-SCREEN
+PROCEDURE DIVISION.
+       OPEN INPUT INPUT-FILE.
+       OPEN OUTPUT OUTPUT-FILE.
+       OPEN I-O ACCOUNTS-FILE.
 
-           CLOSE INPUT-FILE OUTPUT-FILE
-           STOP RUN.
+       PERFORM WELCOME-SCREEN
+
+       CLOSE INPUT-FILE, OUTPUT-FILE, ACCOUNTS-FILE.
+       STOP RUN.
 
        WELCOME-SCREEN SECTION.
-      *> Storing welcome messages into variables
+       *> Storing welcome messages into variables
            MOVE "Welcome to InCollege!" TO WS-MESSAGE
            PERFORM DISPLAY-AND-LOG
            MOVE "Log In" TO WS-MESSAGE
@@ -92,7 +96,7 @@
          *>  WHEN 1
            *>    CALL "LOGIN" USING
                WHEN 2
-                   CALL "CREATE-ACCOUNT" USING WS-USERNAME, WS-PASSWORD, WS-RETURN-CODE
+                   CALL "CREATE-ACCOUNT" USING WS-USERNAME, WS-PASSWORD, WS-RETURN-CODE.
 
 
 
