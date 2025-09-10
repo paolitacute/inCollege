@@ -93,10 +93,11 @@ PROCEDURE DIVISION.
            PERFORM CHOICE.
 
            EVALUATE WS-CHOICE
-               *> WHEN 1
-                *> PERFORM LOGIN
+               WHEN 1
+                   PERFORM LOGIN-FLOW
                WHEN 2
-                   PERFORM CREATE-ACCOUNT-FLOW.
+                   PERFORM CREATE-ACCOUNT-FLOW
+           END-EVALUATE.
 
            INITIALIZE WS-MESSAGE
            STRING 'Welcome, ' DELIMITED BY SIZE
@@ -179,6 +180,41 @@ PROCEDURE DIVISION.
            END-EVALUATE.
 
 
+
+           EXIT.
+      
+      LOGIN-FLOW SECTION.
+           MOVE "Enter username:" TO WS-MESSAGE.
+
+           PERFORM DISPLAY-AND-LOG.
+           PERFORM READ-FROM-INPUT-FILE.
+
+           IF WS-END-FILE = 'N'
+               MOVE INPUT-RECORD TO WS-USERNAME
+           END-IF.
+
+           MOVE "Enter password:" TO WS-MESSAGE.
+
+           PERFORM DISPLAY-AND-LOG.
+           PERFORM READ-FROM-INPUT-FILE.
+
+           IF WS-END-FILE = 'N'
+               MOVE INPUT-RECORD TO WS-PASSWORD
+           END-IF.
+
+           CALL "LOGIN" USING WS-USERNAME, WS-PASSWORD, WS-RETURN-CODE.
+
+           EVALUATE WS-RETURN-CODE
+               WHEN 'S'
+                   MOVE "Login successful" TO WS-MESSAGE
+               WHEN 'L'
+                   MOVE "Login Failed" TO WS-MESSAGE
+
+               WHEN OTHER
+                   MOVE "An unknown error occurred." TO WS-MESSAGE
+           END-EVALUATE.
+
+           PERFORM DISPLAY-AND-LOG.
 
            EXIT.
 
