@@ -9,7 +9,7 @@ ENVIRONMENT DIVISION.
            FILE-CONTROL.
 
                  *> Select INPUT-FILE tells COBOL what the input file is
-               SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
+               SELECT INPUT-FILE ASSIGN TO "InCollege-Test.txt"
                  *> LINE SEQUENTIAL means each line in text is a record
                    ORGANIZATION IS LINE SEQUENTIAL.
                  *> OUTPUT-FILE defines what file will have the output stored
