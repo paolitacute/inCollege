@@ -73,6 +73,7 @@ PROCEDURE DIVISION.
        OPEN OUTPUT OUTPUT-FILE.
 
        PERFORM WELCOME-SCREEN
+       PERFORM MAIN-MENU
 
        CLOSE INPUT-FILE, OUTPUT-FILE.
        STOP RUN.
@@ -81,9 +82,9 @@ PROCEDURE DIVISION.
        *> Storing welcome messages into variables
            MOVE "Welcome to InCollege!" TO WS-MESSAGE
            PERFORM DISPLAY-AND-LOG.
-           MOVE "Log In" TO WS-MESSAGE
+           MOVE "1. Log In" TO WS-MESSAGE
            PERFORM DISPLAY-AND-LOG.
-           MOVE "Create New Account" TO WS-MESSAGE
+           MOVE "2. Create New Account" TO WS-MESSAGE
            PERFORM DISPLAY-AND-LOG.
 
            MOVE 1 TO MIN-VALUE-CHOICE.
@@ -92,17 +93,48 @@ PROCEDURE DIVISION.
            PERFORM CHOICE.
 
            EVALUATE WS-CHOICE
-         *>  WHEN 1
-           *>    CALL "LOGIN" USING
+               *> WHEN 1
+                *> PERFORM LOGIN
                WHEN 2
                    PERFORM CREATE-ACCOUNT-FLOW.
+
+           INITIALIZE WS-MESSAGE
+           STRING 'Welcome, ' DELIMITED BY SIZE
+                   WS-USERNAME DELIMITED BY SPACE
+                   '!' DELIMITED BY SIZE
+                   INTO WS-MESSAGE
+
+           PERFORM DISPLAY-AND-LOG.
+
+
+       MAIN-MENU SECTION.
+
+           MOVE "1. Search for a job" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "2. Find someone you know" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "3. Learn a new skill" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+
+           MOVE 1 TO MIN-VALUE-CHOICE
+           MOVE 3 TO MAX-VALUE-CHOICE
+
+           PERFORM CHOICE
+
+           EVALUATE WS-CHOICE
+               WHEN 1
+                   PERFORM SEARCH-JOB
+               WHEN 2
+                   PERFORM FIND-SOMEONE
+               WHEN 3
+                   PERFORM LEARN-SKILL.
 
 
        CREATE-ACCOUNT-FLOW SECTION.
 
            MOVE "Enter username:" TO WS-MESSAGE.
-
            PERFORM DISPLAY-AND-LOG.
+
            PERFORM READ-FROM-INPUT-FILE.
 
            IF WS-END-FILE = 'N'
@@ -110,8 +142,8 @@ PROCEDURE DIVISION.
            END-IF.
 
            MOVE "Enter password:" TO WS-MESSAGE.
-
            PERFORM DISPLAY-AND-LOG.
+
            PERFORM READ-FROM-INPUT-FILE.
 
            IF WS-END-FILE = 'N'
@@ -123,22 +155,96 @@ PROCEDURE DIVISION.
            EVALUATE WS-RETURN-CODE
                WHEN 'S'
                    MOVE "Account created successfully." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
                WHEN 'L'
                    MOVE "All permitted accounts have been created." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   CLOSE INPUT-FILE, OUTPUT-FILE
+                   STOP RUN
                WHEN 'E'
                    MOVE "Username already exists." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   CLOSE INPUT-FILE, OUTPUT-FILE
+                   STOP RUN
                WHEN 'F'
                    MOVE "Invalid password format." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   CLOSE INPUT-FILE, OUTPUT-FILE
+                   STOP RUN
                WHEN OTHER
                    MOVE "An unknown error occurred." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   CLOSE INPUT-FILE, OUTPUT-FILE
+                   STOP RUN
            END-EVALUATE.
 
-           PERFORM DISPLAY-AND-LOG.
+
 
            EXIT.
 
+       SEARCH-JOB SECTION.
+           MOVE "Job search/internship is under construction." TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG.
+
+           PERFORM MAIN-MENU.
+
+
+       FIND-SOMEONE SECTION.
+           MOVE "Find someone you know is under construction." TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG.
+
+           PERFORM MAIN-MENU.
+
+       LEARN-SKILL SECTION.
+           MOVE "Learn a New Skill:" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG.
+
+           MOVE "1. Skill 1" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "2. Skill 2" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "3. Skill 3" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "4. Skill 4" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "5. Skill 5" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "6. Go Back" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+
+           MOVE 1 TO MIN-VALUE-CHOICE.
+           MOVE 6 TO MAX-VALUE-CHOICE.
+
+           PERFORM CHOICE.
+
+           EVALUATE WS-CHOICE
+               WHEN 1
+                   MOVE "This skill is under construction." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   PERFORM LEARN-SKILL
+               WHEN 2
+                   MOVE "This skill is under construction." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   PERFORM LEARN-SKILL
+               WHEN 3
+                   MOVE "This skill is under construction." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   PERFORM LEARN-SKILL
+               WHEN 4
+                   MOVE "This skill is under construction." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   PERFORM LEARN-SKILL
+               WHEN 5
+                   MOVE "This skill is under construction." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   PERFORM LEARN-SKILL
+               WHEN 6
+                   PERFORM MAIN-MENU.
+
 
        CHOICE SECTION.
+
+           INITIALIZE WS-CHOICE
 
            MOVE "Enter your choice as a number:" TO WS-MESSAGE.
 
@@ -146,18 +252,32 @@ PROCEDURE DIVISION.
 
            PERFORM READ-FROM-INPUT-FILE
 
-           MOVE INPUT-RECORD TO WS-CHOICE
-
-           PERFORM UNTIL (WS-CHOICE >= MIN-VALUE-CHOICE)
-                          AND (WS-CHOICE <= MAX-VALUE-CHOICE)
-
-               DISPLAY "Not a valid choice. Try again."
-
-               PERFORM READ-FROM-INPUT-FILE
-
+           IF WS-END-FILE = 'N'
                MOVE INPUT-RECORD TO WS-CHOICE
+           END-IF
 
-           END-PERFORM.
+           IF WS-END-FILE = 'N'
+               PERFORM UNTIL (WS-CHOICE >= MIN-VALUE-CHOICE)
+                              AND (WS-CHOICE <= MAX-VALUE-CHOICE)
+
+                   DISPLAY "Not a valid choice. Try again."
+
+                   PERFORM READ-FROM-INPUT-FILE
+
+                   IF WS-END-FILE = 'N'
+                       MOVE INPUT-RECORD TO WS-CHOICE
+                   END-IF
+
+               END-PERFORM
+           END-IF
+
+           IF WS-END-FILE = 'Y'
+               MOVE "You quit successfully." TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+
+               CLOSE INPUT-FILE, OUTPUT-FILE
+               STOP RUN
+           END-IF.
 
        DISPLAY-AND-LOG SECTION.
            DISPLAY WS-MESSAGE
@@ -165,12 +285,18 @@ PROCEDURE DIVISION.
            WRITE OUTPUT-RECORD.
 
        READ-FROM-INPUT-FILE SECTION.
+           IF WS-END-FILE = 'Y'
+               CLOSE INPUT-FILE, OUTPUT-FILE
+               STOP RUN
+           END-IF
+
            READ INPUT-FILE
                AT END
                    MOVE 'Y' TO WS-END-FILE
                NOT AT END
                    MOVE 'N' TO WS-END-FILE
-           END-READ.
+           END-READ
+
            EXIT.
 
 
