@@ -21,7 +21,6 @@ WORKING-STORAGE SECTION.
     01  WS-ACCOUNTS-STATUS PIC X(2).
     01  WS-USER-FROM-FILE  PIC X(20).
     01  WS-PASS-FROM-FILE  PIC X(20).
-    01  WS-FIRST-SPACE-POS PIC 99.
 
 LINKAGE SECTION.
     01  LS-USERNAME     PIC X(20).
@@ -61,22 +60,25 @@ PROCEDURE DIVISION USING LS-USERNAME, LS-PASSWORD, LS-RETURN-CODE.
             AT END
                 MOVE 'Y' TO WS-EOF-FLAG
             NOT AT END
-                *> Find first space to split username and password
-                INSPECT ACCOUNTS-RECORD-DATA TALLYING WS-FIRST-SPACE-POS FOR CHARACTERS BEFORE INITIAL ' '
-                IF WS-FIRST-SPACE-POS > 0
-                    MOVE FUNCTION TRIM(ACCOUNTS-RECORD-DATA(1:WS-FIRST-SPACE-POS - 1)) TO WS-USER-FROM-FILE
-                    MOVE FUNCTION TRIM(ACCOUNTS-RECORD-DATA(WS-FIRST-SPACE-POS + 1:50)) TO WS-PASS-FROM-FILE
-                ELSE
-                    *> No space found, skip invalid line
-                    CONTINUE
-                END-IF
+                *> Split line into username and password
+                UNSTRING ACCOUNTS-RECORD-DATA
+                    DELIMITED BY SPACE
+                    INTO WS-USER-FROM-FILE
+                         WS-PASS-FROM-FILE
 
-                *> Trim both from file just in case extra spaces
+                *> Trim both values
                 MOVE FUNCTION TRIM(WS-USER-FROM-FILE) TO WS-USER-FROM-FILE
                 MOVE FUNCTION TRIM(WS-PASS-FROM-FILE) TO WS-PASS-FROM-FILE
 
+                *> Debug output
+                *>DISPLAY "USERNAME ENTERED=[" LS-USERNAME "]"
+                *>DISPLAY "USERNAME FILE   =[" WS-USER-FROM-FILE "]"
+                *>DISPLAY "PASSWORD ENTERED=[" LS-PASSWORD "]"
+                *>DISPLAY "PASSWORD FILE   =[" WS-PASS-FROM-FILE "]"
+
                 *> Compare with input
-                IF WS-USER-FROM-FILE = LS-USERNAME AND WS-PASS-FROM-FILE = LS-PASSWORD
+                IF WS-USER-FROM-FILE = LS-USERNAME
+                   AND WS-PASS-FROM-FILE = LS-PASSWORD
                     MOVE 'S' TO LS-RETURN-CODE
                     MOVE 'Y' TO WS-EOF-FLAG
                 END-IF
