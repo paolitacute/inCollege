@@ -144,13 +144,16 @@ PROCEDURE DIVISION.
 
            PERFORM DISPLAY-AND-LOG.
 
+           PERFORM READ-FROM-INPUT-FILE
+
+           MOVE INPUT-RECORD TO WS-CHOICE
+
            PERFORM UNTIL (WS-CHOICE >= MIN-VALUE-CHOICE)
                           AND (WS-CHOICE <= MAX-VALUE-CHOICE)
-               PERFORM READ-FROM-INPUT-FILE
-
-               MOVE INPUT-RECORD TO WS-CHOICE
 
                DISPLAY "Not a valid choice. Try again."
+
+               PERFORM READ-FROM-INPUT-FILE
 
                MOVE INPUT-RECORD TO WS-CHOICE
 

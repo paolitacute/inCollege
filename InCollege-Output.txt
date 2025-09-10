@@ -4,4 +4,4 @@ Create New Account
 Enter your choice as a number:
 Enter username:
 Enter password:
-Account created successfully.
+Invalid password format.
