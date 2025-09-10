@@ -16,10 +16,9 @@ ENVIRONMENT DIVISION.
                SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
                    ORGANIZATION IS LINE SEQUENTIAL.
 
-               SELECT ACCOUNTS-FILE ASSIGN TO "accounts.dat"
-                   ORGANIZATION IS INDEXED
-                   ACCESS MODE IS SEQUENTIAL
-                   RECORD KEY IS ACCOUNTS-USERNAME.
+               SELECT ACCOUNTS-FILE ASSIGN TO "accounts.txt"
+                   ORGANIZATION IS LINE SEQUENTIAL
+                   FILE STATUS IS WS-ACCOUNTS-STATUS.
 
 DATA DIVISION.
        FILE SECTION.
@@ -39,7 +38,6 @@ DATA DIVISION.
            01  ACCOUNTS-RECORD-DATA.
                05  ACCOUNTS-USERNAME    PIC X(20).
                05  ACCOUNTS-PASSWORD    PIC X(20).
-               05  FILLER               PIC X(10).
 
              *> Working storeage section is where the variables of the program are stored
        WORKING-STORAGE SECTION.
@@ -68,14 +66,15 @@ DATA DIVISION.
 
            01  WS-RETURN-CODE     PIC X.
 
+           01  WS-ACCOUNTS-STATUS     PIC X(2).
+
 PROCEDURE DIVISION.
        OPEN INPUT INPUT-FILE.
        OPEN OUTPUT OUTPUT-FILE.
-       OPEN I-O ACCOUNTS-FILE.
 
        PERFORM WELCOME-SCREEN
 
-       CLOSE INPUT-FILE, OUTPUT-FILE, ACCOUNTS-FILE.
+       CLOSE INPUT-FILE, OUTPUT-FILE.
        STOP RUN.
 
        WELCOME-SCREEN SECTION.

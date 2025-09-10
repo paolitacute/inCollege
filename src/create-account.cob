@@ -7,10 +7,8 @@ IDENTIFICATION DIVISION.
 ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
            FILE-CONTROL.
-               SELECT ACCOUNTS-FILE ASSIGN TO "accounts.dat"
-                   ORGANIZATION IS INDEXED
-                   ACCESS MODE IS DYNAMIC
-                   RECORD KEY IS ACCOUNTS-USERNAME
+               SELECT ACCOUNTS-FILE ASSIGN TO "accounts.txt"
+                   ORGANIZATION IS LINE SEQUENTIAL
                    FILE STATUS IS WS-ACCOUNTS-STATUS.
 
 DATA DIVISION.
@@ -19,7 +17,6 @@ DATA DIVISION.
            01  ACCOUNTS-RECORD-DATA.
                05  ACCOUNTS-USERNAME PIC X(20).
                05  ACCOUNTS-PASSWORD PIC X(20).
-               05  FILLER            PIC X(10).
 
        WORKING-STORAGE SECTION.
            01  WS-ACCOUNT-COUNT    PIC 9(1) VALUE 0.
@@ -45,102 +42,126 @@ DATA DIVISION.
 PROCEDURE DIVISION USING LS-USERNAME, LS-PASSWORD, LS-RETURN-CODE.
        MOVE 'S' TO LS-RETURN-CODE.
 
-       OPEN I-O ACCOUNTS-FILE.
+           *> First, read the file to check limits and if user exists.
+           PERFORM VALIDATE-ACCOUNT-DATA.
 
-       *> Check account limit
+           IF LS-RETURN-CODE NOT = 'S'
+               GOBACK
+           END-IF.
+
+           *> Second, validate the password format.
+           PERFORM PASSWORD-VALIDATION.
+
+           IF LS-RETURN-CODE = 'F'
+               GOBACK
+           END-IF.
+
+           *> If all checks pass, open the file again to add the record.
+           PERFORM WRITE-NEW-ACCOUNT.
+
+           GOBACK.
+
+
+VALIDATE-ACCOUNT-DATA SECTION.
        MOVE 0 TO WS-ACCOUNT-COUNT.
+       MOVE 'N' TO WS-USERNAME-EXISTS.
        MOVE 'N' TO WS-EOF-FLAG.
 
-       *> ADDED: Initialize key to start reading from the beginning of the file.
-       MOVE LOW-VALUES TO ACCOUNTS-USERNAME.
+       OPEN INPUT ACCOUNTS-FILE.
 
-       START ACCOUNTS-FILE KEY IS NOT LESS THAN ACCOUNTS-USERNAME
-           INVALID KEY MOVE 'Y' TO WS-EOF-FLAG
-       END-START.
-
-       IF WS-EOF-FLAG = 'N'
-           PERFORM UNTIL WS-EOF-FLAG = 'Y'
-               READ ACCOUNTS-FILE NEXT RECORD
-                   AT END MOVE 'Y' TO WS-EOF-FLAG
-                   NOT AT END ADD 1 TO WS-ACCOUNT-COUNT
-               END-READ
-           END-PERFORM
+       *> A status of "35" means the file doesn't exist, which is okay.
+       *> We will create it in the WRITE-NEW-ACCOUNT paragraph.
+       IF WS-ACCOUNTS-STATUS = "35"
+           CLOSE ACCOUNTS-FILE
+           EXIT PARAGRAPH
        END-IF.
 
+       *> Handle other potential open errors.
+       IF WS-ACCOUNTS-STATUS NOT = "00"
+           DISPLAY "Error opening accounts file for validation."
+           DISPLAY "File Status: " WS-ACCOUNTS-STATUS
+           MOVE 'X' TO LS-RETURN-CODE
+           CLOSE ACCOUNTS-FILE
+           EXIT PARAGRAPH
+       END-IF.
+
+       *> Read the entire file to count records and check for the username.
+       PERFORM UNTIL WS-EOF-FLAG = 'Y'
+           READ ACCOUNTS-FILE
+            AT END
+                MOVE 'Y' TO WS-EOF-FLAG
+            NOT AT END
+                ADD 1 TO WS-ACCOUNT-COUNT
+                IF ACCOUNTS-USERNAME = LS-USERNAME
+                    MOVE 'Y' TO WS-USERNAME-EXISTS
+                END-IF
+           END-READ
+       END-PERFORM.
+
+       CLOSE ACCOUNTS-FILE.
+
+       *> Set return codes based on what was found.
        IF WS-ACCOUNT-COUNT >= WS-ACCOUNT-LIMIT
            MOVE 'L' TO LS-RETURN-CODE
-           PERFORM CLOSE-PROGRAM
        END-IF.
-
-       *> Check if username exists (This is a random read)
-       MOVE LS-USERNAME TO ACCOUNTS-USERNAME.
-       MOVE 'N' TO WS-USERNAME-EXISTS.
-
-       READ ACCOUNTS-FILE KEY IS ACCOUNTS-USERNAME
-           INVALID KEY
-               MOVE 'N' TO WS-USERNAME-EXISTS
-           NOT INVALID KEY
-               MOVE 'Y' TO WS-USERNAME-EXISTS
-       END-READ.
 
        IF WS-USERNAME-EXISTS = 'Y'
            MOVE 'E' TO LS-RETURN-CODE
-           PERFORM CLOSE-PROGRAM
+       END-IF.
+       EXIT.
+
+
+WRITE-NEW-ACCOUNT SECTION.
+    *> Open in EXTEND mode to append to the end of the file.
+       OPEN EXTEND ACCOUNTS-FILE.
+
+       IF WS-ACCOUNTS-STATUS NOT = "00"
+           DISPLAY "Error opening accounts file for writing."
+           DISPLAY "File Status: " WS-ACCOUNTS-STATUS
+           MOVE 'X' TO LS-RETURN-CODE
+           GOBACK
        END-IF.
 
-       *> Password validation
-       PERFORM PASSWORD-VALIDATION.
-
-       IF LS-RETURN-CODE = 'F'
-           PERFORM CLOSE-PROGRAM
-       END-IF.
-
-       *> Write new account
        MOVE LS-USERNAME TO ACCOUNTS-USERNAME.
        MOVE LS-PASSWORD TO ACCOUNTS-PASSWORD.
-       WRITE ACCOUNTS-RECORD-DATA
-           INVALID KEY
-               DISPLAY "Error writing new account record."
-               MOVE 'X' TO LS-RETURN-CODE
-       END-WRITE.
+       WRITE ACCOUNTS-RECORD-DATA.
 
-       PERFORM CLOSE-PROGRAM.
+       CLOSE ACCOUNTS-FILE.
+       EXIT.
 
-       PASSWORD-VALIDATION SECTION.
-           *> Check for password length
-           IF FUNCTION LENGTH(FUNCTION TRIM(LS-PASSWORD)) < 8 OR
-              FUNCTION LENGTH(FUNCTION TRIM(LS-PASSWORD)) > 12
-               MOVE 'F' TO LS-RETURN-CODE
-               EXIT PARAGRAPH
-           END-IF.
 
-           *> Reset flags before checking a new password
-           MOVE 'N' TO WS-HAS-CAPITAL.
-           MOVE 'N' TO WS-HAS-DIGIT.
-           MOVE 'N' TO WS-HAS-SPECIAL.
+PASSWORD-VALIDATION SECTION.
+    *> Check for password length
+       IF FUNCTION LENGTH(FUNCTION TRIM(LS-PASSWORD)) < 8 OR
+       FUNCTION LENGTH(FUNCTION TRIM(LS-PASSWORD)) > 12
+           MOVE 'F' TO LS-RETURN-CODE
+           EXIT PARAGRAPH
+       END-IF.
 
-           *> Check for character types
-           PERFORM VARYING WS-PASSWORD-INDEX FROM 1 BY 1
-               UNTIL WS-PASSWORD-INDEX > FUNCTION LENGTH(FUNCTION TRIM(LS-PASSWORD))
+       *> Reset flags before checking a new password
+       MOVE 'N' TO WS-HAS-CAPITAL.
+       MOVE 'N' TO WS-HAS-DIGIT.
+       MOVE 'N' TO WS-HAS-SPECIAL.
 
-               EVALUATE TRUE
-                   WHEN LS-PASSWORD(WS-PASSWORD-INDEX:1) IS ALPHABETIC-UPPER
-                       MOVE 'Y' TO WS-HAS-CAPITAL
-                   WHEN LS-PASSWORD(WS-PASSWORD-INDEX:1) IS NUMERIC
-                       MOVE 'Y' TO WS-HAS-DIGIT
-                   WHEN LS-PASSWORD(WS-PASSWORD-INDEX:1) IS NOT ALPHABETIC
-                    AND LS-PASSWORD(WS-PASSWORD-INDEX:1) IS NOT NUMERIC
-                       MOVE 'Y' TO WS-HAS-SPECIAL
-               END-EVALUATE
-           END-PERFORM.
+       *> Check for character types
+       PERFORM VARYING WS-PASSWORD-INDEX FROM 1 BY 1
+           UNTIL WS-PASSWORD-INDEX > FUNCTION LENGTH(FUNCTION TRIM(LS-PASSWORD))
 
-           IF WS-HAS-CAPITAL = 'N' OR WS-HAS-DIGIT = 'N' OR WS-HAS-SPECIAL = 'N'
-               MOVE 'F' TO LS-RETURN-CODE
-           END-IF.
-           EXIT.
+           EVALUATE TRUE
+           WHEN LS-PASSWORD(WS-PASSWORD-INDEX:1) IS ALPHABETIC-UPPER
+               MOVE 'Y' TO WS-HAS-CAPITAL
+           WHEN LS-PASSWORD(WS-PASSWORD-INDEX:1) IS NUMERIC
+               MOVE 'Y' TO WS-HAS-DIGIT
+           WHEN LS-PASSWORD(WS-PASSWORD-INDEX:1) IS NOT ALPHABETIC
+            AND LS-PASSWORD(WS-PASSWORD-INDEX:1) IS NOT NUMERIC
+               MOVE 'Y' TO WS-HAS-SPECIAL
+           END-EVALUATE
+       END-PERFORM.
 
-       CLOsE-PROGRAM SECTION.
-           CLOSE ACCOUNTS-FILE.
-           GOBACK.
+       IF WS-HAS-CAPITAL = 'N' OR WS-HAS-DIGIT = 'N' OR WS-HAS-SPECIAL = 'N'
+           MOVE 'F' TO LS-RETURN-CODE
+       END-IF.
+
+       EXIT.
 
 
