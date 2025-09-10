@@ -182,44 +182,50 @@ PROCEDURE DIVISION.
 
 
            EXIT.
-      
-      LOGIN-FLOW SECTION.
-           MOVE "Enter username:" TO WS-MESSAGE.
 
-           PERFORM DISPLAY-AND-LOG.
-           PERFORM READ-FROM-INPUT-FILE.
+       LOGIN-FLOW SECTION.
 
-           IF WS-END-FILE = 'N'
-               MOVE INPUT-RECORD TO WS-USERNAME
-           END-IF.
+           PERFORM UNTIL WS-RETURN-CODE = 'S'
+               MOVE "Enter username:" TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               PERFORM READ-FROM-INPUT-FILE
 
-           MOVE "Enter password:" TO WS-MESSAGE.
+               IF WS-END-FILE = 'N'
+                   MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-USERNAME
+               END-IF
 
-           PERFORM DISPLAY-AND-LOG.
-           PERFORM READ-FROM-INPUT-FILE.
+               MOVE "Enter password:" TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               PERFORM READ-FROM-INPUT-FILE
 
-           IF WS-END-FILE = 'N'
-               MOVE INPUT-RECORD TO WS-PASSWORD
-           END-IF.
+               IF WS-END-FILE = 'N'
+                   MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-PASSWORD
+               END-IF
 
-           CALL "LOGIN" USING WS-USERNAME, WS-PASSWORD, WS-RETURN-CODE.
+               CALL "LOGIN" USING WS-USERNAME, WS-PASSWORD, WS-RETURN-CODE
 
-           EVALUATE WS-RETURN-CODE
-               WHEN 'S'
-                   MOVE "Login successful" TO WS-MESSAGE
-                   
-               WHEN 'L'
-                   MOVE "Login Failed" TO WS-MESSAGE
-                   PERFORM LOGIN-FLOW
-      
-               WHEN OTHER
-                   MOVE "An unknown error occurred." TO WS-MESSAGE
-                   PERFORM LOGIN-FLOW
-           END-EVALUATE.
+               EVALUATE WS-RETURN-CODE
+                   WHEN 'S'
+                       MOVE "Login successful" TO WS-MESSAGE
+                   WHEN 'F'
+                       MOVE "Login failed. Please try again." TO WS-MESSAGE
+                   WHEN 'X'
+                       MOVE "Error accessing accounts file." TO WS-MESSAGE
+                       PERFORM DISPLAY-AND-LOG
+                       CLOSE INPUT-FILE, OUTPUT-FILE
+                       STOP RUN
+                   WHEN OTHER
+                       MOVE "An unknown error occurred." TO WS-MESSAGE
+                       PERFORM DISPLAY-AND-LOG
+                       CLOSE INPUT-FILE, OUTPUT-FILE
+                       STOP RUN
+               END-EVALUATE
 
-           PERFORM DISPLAY-AND-LOG.
+               PERFORM DISPLAY-AND-LOG
+           END-PERFORM
 
            EXIT.
+
 
        SEARCH-JOB SECTION.
            MOVE "Job search/internship is under construction." TO WS-MESSAGE
