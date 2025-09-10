@@ -62,7 +62,7 @@ PROCEDURE DIVISION USING LS-USERNAME, LS-PASSWORD, LS-RETURN-CODE.
             NOT AT END
                 *> Split line into username and password
                 UNSTRING ACCOUNTS-RECORD-DATA
-                    DELIMITED BY SPACE
+                    DELIMITED BY ALL SPACE
                     INTO WS-USER-FROM-FILE
                          WS-PASS-FROM-FILE
 
@@ -71,10 +71,10 @@ PROCEDURE DIVISION USING LS-USERNAME, LS-PASSWORD, LS-RETURN-CODE.
                 MOVE FUNCTION TRIM(WS-PASS-FROM-FILE) TO WS-PASS-FROM-FILE
 
                 *> Debug output
-                *>DISPLAY "USERNAME ENTERED=[" LS-USERNAME "]"
-                *>DISPLAY "USERNAME FILE   =[" WS-USER-FROM-FILE "]"
-                *>DISPLAY "PASSWORD ENTERED=[" LS-PASSWORD "]"
-                *>DISPLAY "PASSWORD FILE   =[" WS-PASS-FROM-FILE "]"
+                *> DISPLAY "USERNAME ENTERED=[" LS-USERNAME "]"
+                *> DISPLAY "USERNAME FILE   =[" WS-USER-FROM-FILE "]"
+                *> DISPLAY "PASSWORD ENTERED=[" LS-PASSWORD "]"
+                *> DISPLAY "PASSWORD FILE   =[" WS-PASS-FROM-FILE "]"
 
                 *> Compare with input
                 IF WS-USER-FROM-FILE = LS-USERNAME
