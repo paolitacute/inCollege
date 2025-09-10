@@ -80,11 +80,11 @@ PROCEDURE DIVISION.
        WELCOME-SCREEN SECTION.
        *> Storing welcome messages into variables
            MOVE "Welcome to InCollege!" TO WS-MESSAGE
-           PERFORM DISPLAY-AND-LOG
+           PERFORM DISPLAY-AND-LOG.
            MOVE "Log In" TO WS-MESSAGE
-           PERFORM DISPLAY-AND-LOG
+           PERFORM DISPLAY-AND-LOG.
            MOVE "Create New Account" TO WS-MESSAGE
-           PERFORM DISPLAY-AND-LOG
+           PERFORM DISPLAY-AND-LOG.
 
            MOVE 1 TO MIN-VALUE-CHOICE.
            MOVE 2 TO MAX-VALUE-CHOICE.
@@ -95,43 +95,79 @@ PROCEDURE DIVISION.
          *>  WHEN 1
            *>    CALL "LOGIN" USING
                WHEN 2
-                   CALL "CREATE-ACCOUNT" USING WS-USERNAME, WS-PASSWORD, WS-RETURN-CODE.
+                   PERFORM CREATE-ACCOUNT-FLOW.
 
 
+       CREATE-ACCOUNT-FLOW SECTION.
+
+           MOVE "Enter username:" TO WS-MESSAGE.
+
+           PERFORM DISPLAY-AND-LOG.
+           PERFORM READ-FROM-INPUT-FILE.
+
+           IF WS-END-FILE = 'N'
+               MOVE INPUT-RECORD TO WS-USERNAME
+           END-IF.
+
+           MOVE "Enter password:" TO WS-MESSAGE.
+
+           PERFORM DISPLAY-AND-LOG.
+           PERFORM READ-FROM-INPUT-FILE.
+
+           IF WS-END-FILE = 'N'
+               MOVE INPUT-RECORD TO WS-PASSWORD
+           END-IF.
+
+           CALL "CREATE-ACCOUNT" USING WS-USERNAME, WS-PASSWORD, WS-RETURN-CODE.
+
+           EVALUATE WS-RETURN-CODE
+               WHEN 'S'
+                   MOVE "Account created successfully." TO WS-MESSAGE
+               WHEN 'L'
+                   MOVE "All permitted accounts have been created." TO WS-MESSAGE
+               WHEN 'E'
+                   MOVE "Username already exists." TO WS-MESSAGE
+               WHEN 'F'
+                   MOVE "Invalid password format." TO WS-MESSAGE
+               WHEN OTHER
+                   MOVE "An unknown error occurred." TO WS-MESSAGE
+           END-EVALUATE.
+
+           PERFORM DISPLAY-AND-LOG.
+
+           EXIT.
+
+
+       CHOICE SECTION.
+
+           MOVE "Enter your choice as a number:" TO WS-MESSAGE.
+
+           PERFORM DISPLAY-AND-LOG.
+
+           PERFORM UNTIL (WS-CHOICE >= MIN-VALUE-CHOICE)
+                          AND (WS-CHOICE <= MAX-VALUE-CHOICE)
+               PERFORM READ-FROM-INPUT-FILE
+
+               MOVE INPUT-RECORD TO WS-CHOICE
+
+               DISPLAY "Not a valid choice. Try again."
+
+               MOVE INPUT-RECORD TO WS-CHOICE
+
+           END-PERFORM.
 
        DISPLAY-AND-LOG SECTION.
            DISPLAY WS-MESSAGE
            MOVE WS-MESSAGE TO OUTPUT-RECORD
            WRITE OUTPUT-RECORD.
 
-
-
-       CHOICE SECTION.
-           MOVE "Enter your choice as a number:" TO WS-MESSAGE
-           PERFORM DISPLAY-AND-LOG
-
-
+       READ-FROM-INPUT-FILE SECTION.
            READ INPUT-FILE
                AT END
                    MOVE 'Y' TO WS-END-FILE
                NOT AT END
-                   MOVE INPUT-RECORD TO WS-CHOICE
-           END-READ
-
-
-           PERFORM UNTIL (WS-CHOICE >= MIN-VALUE-CHOICE)
-                          AND (WS-CHOICE <= MAX-VALUE-CHOICE)
-               DISPLAY "Not a valid choice. Try again."
-
-               READ INPUT-FILE
-                   AT END
-                       MOVE 'Y' TO WS-END-FILE
-                   NOT AT END
-                       MOVE INPUT-RECORD TO WS-CHOICE
-               END-READ
-           END-PERFORM.
-
-
-
+                   MOVE 'N' TO WS-END-FILE
+           END-READ.
+           EXIT.
 
 

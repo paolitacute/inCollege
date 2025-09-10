@@ -13,12 +13,14 @@ ENVIRONMENT DIVISION.
 
 DATA DIVISION.
        FILE SECTION.
+
            FD  ACCOUNTS-FILE.
            01  ACCOUNTS-RECORD-DATA.
                05  ACCOUNTS-USERNAME PIC X(20).
                05  ACCOUNTS-PASSWORD PIC X(20).
 
        WORKING-STORAGE SECTION.
+
            01  WS-ACCOUNT-COUNT    PIC 9(1) VALUE 0.
            01  WS-ACCOUNT-LIMIT    PIC 9(1) VALUE 5.
            01  WS-EOF-FLAG         PIC X(1) VALUE 'N'.
@@ -40,26 +42,30 @@ DATA DIVISION.
 
 
 PROCEDURE DIVISION USING LS-USERNAME, LS-PASSWORD, LS-RETURN-CODE.
+
        MOVE 'S' TO LS-RETURN-CODE.
 
-           *> First, read the file to check limits and if user exists.
-           PERFORM VALIDATE-ACCOUNT-DATA.
+       *> First, read the file to check limits and if user exists.
+       PERFORM VALIDATE-ACCOUNT-DATA.
 
-           IF LS-RETURN-CODE NOT = 'S'
-               GOBACK
-           END-IF.
+       IF LS-RETURN-CODE NOT = 'S'
+           GOBACK
+       END-IF.
 
-           *> Second, validate the password format.
-           PERFORM PASSWORD-VALIDATION.
 
-           IF LS-RETURN-CODE = 'F'
-               GOBACK
-           END-IF.
 
-           *> If all checks pass, open the file again to add the record.
-           PERFORM WRITE-NEW-ACCOUNT.
+       *> Second, validate the password format.
+       PERFORM PASSWORD-VALIDATION.
 
-           GOBACK.
+       IF LS-RETURN-CODE = 'F'
+           GOBACK
+       END-IF.
+
+
+       *> If all checks pass, open the file again to add the record.
+       PERFORM WRITE-NEW-ACCOUNT.
+
+       GOBACK.
 
 
 VALIDATE-ACCOUNT-DATA SECTION.
@@ -132,6 +138,8 @@ WRITE-NEW-ACCOUNT SECTION.
 
 PASSWORD-VALIDATION SECTION.
     *> Check for password length
+
+
        IF FUNCTION LENGTH(FUNCTION TRIM(LS-PASSWORD)) < 8 OR
        FUNCTION LENGTH(FUNCTION TRIM(LS-PASSWORD)) > 12
            MOVE 'F' TO LS-RETURN-CODE

@@ -2,3 +2,6 @@ Welcome to InCollege!
 Log In
 Create New Account
 Enter your choice as a number:
+Enter username:
+Enter password:
+Username already exists.
