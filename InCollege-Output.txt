@@ -5,30 +5,40 @@ Enter your choice as a number:
 Enter username:
 Enter password:
 Account created successfully.
-Welcome, user123!
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
+Welcome, Paola!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+6. Exit
 Enter your choice as a number:
-Job search/internship is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
+--- Create/Edit Profile ---
+Enter First Name:
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Experience - Company/Organization:
+Experience - Dates (e.g., Summer 2024):
+Experience - Description (optional, blank to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Experience - Company/Organization:
+Experience - Dates (e.g., Summer 2024):
+Experience - Description (optional, blank to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Education - University/College:
+Education - Years Attended (e.g., 2023-2025):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+6. Exit
 Enter your choice as a number:
-Learn a New Skill:
-1. Skill 1
-2. Skill 2
-3. Skill 3
-4. Skill 4
-5. Skill 5
-6. Go Back
-Enter your choice as a number:
-This skill is under construction.
-Learn a New Skill:
-1. Skill 1
-2. Skill 2
-3. Skill 3
-4. Skill 4
-5. Skill 5
-6. Go Back
-Enter your choice as a number:
+You quit successfully.
