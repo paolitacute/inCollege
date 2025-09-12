@@ -5,7 +5,7 @@ Enter your choice as a number:
 Enter username:
 Enter password:
 Account created successfully.
-Welcome, testuser1!
+Welcome, user123!
 1. Search for a job
 2. Find someone you know
 3. Learn a new skill
@@ -23,67 +23,12 @@ Learn a New Skill:
 5. Skill 5
 6. Go Back
 Enter your choice as a number:
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Job search/internship is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
-Enter your choice as a number:
-Find someone you know is under construction.
-1. Search for a job
-2. Find someone you know
-3. Learn a new skill
+This skill is under construction.
+Learn a New Skill:
+1. Skill 1
+2. Skill 2
+3. Skill 3
+4. Skill 4
+5. Skill 5
+6. Go Back
 Enter your choice as a number:

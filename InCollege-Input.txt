@@ -1,7 +1,23 @@
-1
+2
 user123
 p@ssworD!1
 1
-2
-3
-4
+John
+Doe
+University of South Florida
+Computer Science
+2025
+A passionate COBOL developer.
+Software Engineer Intern
+Major League Baseball
+May 2024 - Aug 2024
+Worked on stadium systems.
+Data Analyst
+Google
+Jan 2023 - May 2023
+
+DONE
+Bachelor of Science
+University of South Florida
+2021-2025
+DONE
