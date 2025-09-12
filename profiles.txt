@@ -1,12 +1,23 @@
+
 USER:user123
 FNAM:John
 LNAM:Doe
 UNIV:University of South Florida
 MAJR:Computer Science
 GRAD:2025
-ABOU:A passionate COBOL developer.
+ABOU:Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula
 EXP01:Software Engineer Intern~Major League Baseball~May 2024 - Aug 2024~Worked on stadium systems.
 EXP02:Data Analyst~Google~Jan 2023 - May 2023~
 EDU01:Bachelor of Science~University of South Florida~2021-2025
 ENDPROFILE
-
+USER:user123
+FNAM:John
+LNAM:Doe
+UNIV:University of South Florida
+MAJR:Computer Science
+GRAD:2025
+ABOU:Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula
+EXP01:Software Engineer Intern~Major League Baseball~May 2024 - Aug 2024~Worked on stadium systems.
+EXP02:Data Analyst~Google~Jan 2023 - May 2023~
+EDU01:Bachelor of Science~University of South Florida~2021-2025
+ENDPROFILE

@@ -24,14 +24,14 @@ DATA DIVISION.
 FILE SECTION.
     *> FD describes the structure of the INPUT-FILE
     FD  INPUT-FILE.
-    *> Defines each record as a 80 charecter line of text
-    01  INPUT-RECORD      PIC X(80).
+    *> Defines each record as a 200 charecter line of text
+    01  INPUT-RECORD      PIC X(201).
 
     *> FD describes the structure of the OUTPUT-FILE
     FD  OUTPUT-FILE.
 
-    *> Defines each record as a 80 charecter line of text
-    01  OUTPUT-RECORD     PIC X(80).
+    *> Defines each record as a 200 charecter line of text
+    01  OUTPUT-RECORD     PIC X(201).
 
 
     FD  ACCOUNTS-FILE.
@@ -213,7 +213,7 @@ PROFILE-CREATION-FLOW SECTION.
     PERFORM DISPLAY-AND-LOG.
     PERFORM READ-FROM-INPUT-FILE.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-ABOUT-ME.
-
+    DISPLAY WS-ABOUT-ME.
     *> Get Experience
     MOVE 'N' TO WS-LOOP-FLAG.
     SET I TO 1.
