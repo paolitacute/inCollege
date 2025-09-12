@@ -24,14 +24,14 @@ DATA DIVISION.
 FILE SECTION.
     *> FD describes the structure of the INPUT-FILE
     FD  INPUT-FILE.
-    *> Defines each record as a 200 charecter line of text
-    01  INPUT-RECORD      PIC X(201).
+    *> Defines each record as a 80 charecter line of text
+    01  INPUT-RECORD      PIC X(350).
 
     *> FD describes the structure of the OUTPUT-FILE
     FD  OUTPUT-FILE.
 
-    *> Defines each record as a 200 charecter line of text
-    01  OUTPUT-RECORD     PIC X(201).
+    *> Defines each record as a 80 charecter line of text
+    01  OUTPUT-RECORD     PIC X(350).
 
 
     FD  ACCOUNTS-FILE.
@@ -88,7 +88,18 @@ WORKING-STORAGE SECTION.
               15 WS-EDU-YEARS    PIC X(50).
         05 WS-EDU-COUNT      PIC 9.
 
+    01  WS-VALIDATION-VARS.
+        05 WS-CURRENT-YEAR      PIC 9(4) VALUE 2025.
+        05 WS-MIN-GRAD-YEAR     PIC 9(4).
+        05 WS-MAX-GRAD-YEAR     PIC 9(4).
+        05 WS-GRAD-YEAR-NUM     PIC 9(4).
+        05 WS-EXP-DISPLAY-NUM   PIC 9.
+        05 WS-EDU-DISPLAY-NUM   PIC 9.
+
 PROCEDURE DIVISION.
+    COMPUTE WS-MIN-GRAD-YEAR = WS-CURRENT-YEAR - 2.
+    COMPUTE WS-MAX-GRAD-YEAR = WS-CURRENT-YEAR + 10.
+
     OPEN INPUT INPUT-FILE.
     OPEN OUTPUT OUTPUT-FILE.
 
@@ -181,31 +192,100 @@ PROFILE-CREATION-FLOW SECTION.
     MOVE "--- Create/Edit Profile ---" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
 
-    *> Get Required Data
+    *> Get Required Data: First Name
     MOVE "Enter First Name:" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
     PERFORM READ-FROM-INPUT-FILE.
+    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
+        MOVE "First Name cannot be blank. Please enter it again."
+            TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        MOVE "Enter First Name:" TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        PERFORM READ-FROM-INPUT-FILE
+    END-PERFORM.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-FIRST-NAME.
 
+    *> Get Required Data: Last Name
     MOVE "Enter Last Name:" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
     PERFORM READ-FROM-INPUT-FILE.
+    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
+        MOVE "Last Name cannot be blank. Please enter it again."
+            TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        MOVE "Enter Last Name:" TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        PERFORM READ-FROM-INPUT-FILE
+    END-PERFORM.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-LAST-NAME.
 
+    *> Get Required Data: University
     MOVE "Enter University/College Attended:" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
     PERFORM READ-FROM-INPUT-FILE.
+    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
+        MOVE "University cannot be blank. Please enter it again."
+            TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        MOVE "Enter University/College Attended:" TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        PERFORM READ-FROM-INPUT-FILE
+    END-PERFORM.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-UNIVERSITY.
 
+    *> Get Required Data: Major
     MOVE "Enter Major:" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
     PERFORM READ-FROM-INPUT-FILE.
+    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
+        MOVE "Major cannot be blank. Please enter it again."
+            TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        MOVE "Enter Major:" TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        PERFORM READ-FROM-INPUT-FILE
+    END-PERFORM.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-MAJOR.
 
+    *> Get Required Data: Graduation Year
     MOVE "Enter Graduation Year (YYYY):" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
     PERFORM READ-FROM-INPUT-FILE.
+
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-GRAD-YEAR.
+    IF WS-GRAD-YEAR IS NUMERIC
+        MOVE WS-GRAD-YEAR TO WS-GRAD-YEAR-NUM
+    ELSE
+        MOVE 0 TO WS-GRAD-YEAR-NUM
+    END-IF.
+
+    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
+              AND WS-GRAD-YEAR IS NUMERIC
+              AND FUNCTION LENGTH(WS-GRAD-YEAR) = 4
+              AND WS-GRAD-YEAR-NUM >= WS-MIN-GRAD-YEAR
+              AND WS-GRAD-YEAR-NUM <= WS-MAX-GRAD-YEAR
+
+        INITIALIZE WS-MESSAGE
+        STRING "Invalid year. Enter a year between "
+               WS-MIN-GRAD-YEAR DELIMITED BY SIZE
+               " and " DELIMITED BY SIZE
+               WS-MAX-GRAD-YEAR DELIMITED BY SIZE
+               "." DELIMITED BY SIZE
+               INTO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+
+        MOVE "Enter Graduation Year (YYYY):" TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        PERFORM READ-FROM-INPUT-FILE
+
+        MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-GRAD-YEAR
+        IF WS-GRAD-YEAR IS NUMERIC
+            MOVE WS-GRAD-YEAR TO WS-GRAD-YEAR-NUM
+        ELSE
+            MOVE 0 TO WS-GRAD-YEAR-NUM
+        END-IF
+    END-PERFORM.
 
     *> Get Optional About Me
     MOVE "Enter About Me (optional, max 200 chars, enter blank line to skip):"
@@ -213,36 +293,53 @@ PROFILE-CREATION-FLOW SECTION.
     PERFORM DISPLAY-AND-LOG.
     PERFORM READ-FROM-INPUT-FILE.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-ABOUT-ME.
-    DISPLAY WS-ABOUT-ME.
+
     *> Get Experience
     MOVE 'N' TO WS-LOOP-FLAG.
     SET I TO 1.
     MOVE 0 TO WS-EXP-COUNT.
     PERFORM 3 TIMES
         IF WS-LOOP-FLAG = 'N'
-            MOVE "Add Experience (optional, max 3 entries. Enter 'DONE' to finish):"
-                TO WS-MESSAGE
+            ADD 1 TO WS-EXP-COUNT
+            MOVE WS-EXP-COUNT TO WS-EXP-DISPLAY-NUM
+
+            INITIALIZE WS-MESSAGE
+            MOVE "Add Experience (optional, max 3 entries. Enter 'DONE' to finish):" TO WS-MESSAGE
             PERFORM DISPLAY-AND-LOG
             PERFORM READ-FROM-INPUT-FILE
             MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-INPUT-BUFFER
+
             IF WS-INPUT-BUFFER = "DONE" OR WS-INPUT-BUFFER = " "
                 MOVE 'Y' TO WS-LOOP-FLAG
+                SUBTRACT 1 FROM WS-EXP-COUNT
             ELSE
-                ADD 1 TO WS-EXP-COUNT
-                MOVE WS-INPUT-BUFFER TO WS-EXP-TITLE(I)
+                INITIALIZE WS-MESSAGE
+                STRING "Experience #" WS-EXP-DISPLAY-NUM
+                       " - Title:"
+                       DELIMITED BY SIZE INTO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                MOVE FUNCTION TRIM(WS-INPUT-BUFFER) TO WS-EXP-TITLE(I)
 
-                MOVE "Experience - Company/Organization:" TO WS-MESSAGE
+                INITIALIZE WS-MESSAGE
+                STRING "Experience #" WS-EXP-DISPLAY-NUM
+                       " - Company/Organization:"
+                       DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
                 PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EXP-COMPANY(I)
 
-                MOVE "Experience - Dates (e.g., Summer 2024):" TO WS-MESSAGE
+                INITIALIZE WS-MESSAGE
+                STRING "Experience #" WS-EXP-DISPLAY-NUM
+                       " - Dates (e.g., Summer 2024):"
+                       DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
                 PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EXP-DATES(I)
 
-                MOVE "Experience - Description (optional, blank to skip):"
-                     TO WS-MESSAGE
+                INITIALIZE WS-MESSAGE
+                STRING "Experience #" WS-EXP-DISPLAY-NUM
+                     " - Description (optional, blank to skip):"
+                     DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
                 PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EXP-DESC(I)
@@ -257,24 +354,40 @@ PROFILE-CREATION-FLOW SECTION.
     MOVE 0 TO WS-EDU-COUNT.
     PERFORM 3 TIMES
         IF WS-LOOP-FLAG = 'N'
-            MOVE "Add Education (optional, max 3 entries. Enter 'DONE' to finish):"
-                TO WS-MESSAGE
+            ADD 1 TO WS-EDU-COUNT
+            MOVE WS-EDU-COUNT TO WS-EDU-DISPLAY-NUM
+
+            INITIALIZE WS-MESSAGE
+            MOVE "Add Education (optional, max 3 entries. Enter 'DONE' to finish):" TO WS-MESSAGE
             PERFORM DISPLAY-AND-LOG
             PERFORM READ-FROM-INPUT-FILE
             MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-INPUT-BUFFER
+
             IF WS-INPUT-BUFFER = "DONE" OR WS-INPUT-BUFFER = " "
                 MOVE 'Y' TO WS-LOOP-FLAG
+                SUBTRACT 1 FROM WS-EDU-COUNT
             ELSE
-                ADD 1 TO WS-EDU-COUNT
-                MOVE WS-INPUT-BUFFER TO WS-EDU-DEGREE(J)
 
-                MOVE "Education - University/College:" TO WS-MESSAGE
+                INITIALIZE WS-MESSAGE
+                STRING "Education #" WS-EDU-DISPLAY-NUM
+                       " - Degree:"
+                       DELIMITED BY SIZE INTO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                MOVE FUNCTION TRIM(WS-INPUT-BUFFER) TO WS-EDU-DEGREE(J)
+
+
+                INITIALIZE WS-MESSAGE
+                STRING "Education #" WS-EDU-DISPLAY-NUM
+                       " - University/College:"
+                       DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
                 PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EDU-UNIV(J)
 
-                MOVE "Education - Years Attended (e.g., 2023-2025):"
-                       TO WS-MESSAGE
+                INITIALIZE WS-MESSAGE
+                STRING "Education #" WS-EDU-DISPLAY-NUM
+                       " - Years Attended (e.g., 2023-2025):"
+                       DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
                 PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EDU-YEARS(J)
@@ -372,7 +485,7 @@ LOGIN-FLOW SECTION.
 
         EVALUATE WS-RETURN-CODE
             WHEN 'S'
-                MOVE "Login successful!" TO WS-MESSAGE
+                MOVE "Login successful" TO WS-MESSAGE
             WHEN 'F'
                 MOVE "Incorrect username/password. Please try again." TO WS-MESSAGE
             WHEN 'X'

@@ -1,23 +1,14 @@
-
 USER:user123
-FNAM:John
-LNAM:Doe
+FNAM:Paola
+LNAM:Reyes
 UNIV:University of South Florida
-MAJR:Computer Science
+MAJR:Industrial Engineering
 GRAD:2025
-ABOU:Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula
-EXP01:Software Engineer Intern~Major League Baseball~May 2024 - Aug 2024~Worked on stadium systems.
-EXP02:Data Analyst~Google~Jan 2023 - May 2023~
-EDU01:Bachelor of Science~University of South Florida~2021-2025
-ENDPROFILE
-USER:user123
-FNAM:John
-LNAM:Doe
-UNIV:University of South Florida
-MAJR:Computer Science
-GRAD:2025
-ABOU:Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula
-EXP01:Software Engineer Intern~Major League Baseball~May 2024 - Aug 2024~Worked on stadium systems.
-EXP02:Data Analyst~Google~Jan 2023 - May 2023~
-EDU01:Bachelor of Science~University of South Florida~2021-2025
+ABOU:A COBOL enthusiast.
+EXP01:Software Intern 1~Company A~Summer 2022~Desc 1
+EXP02:Software Intern 2~Company B~Summer 2023~Desc 2
+EXP03:Software Intern 3~Company C~Summer 2024~Desc 3
+EDU01:Software Intern 4~Company D~Summer 2025
+EDU02:Desc 4~Degree 1~University A
+EDU03:2021-2022~Degree 2~University B
 ENDPROFILE
