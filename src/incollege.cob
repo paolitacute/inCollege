@@ -183,6 +183,11 @@ PROCESS-MAIN-MENU-CHOICE SECTION.
             PERFORM LEARN-SKILL
         WHEN 6
             MOVE 'Y' TO WS-EXIT-FLAG
+            MOVE "You quit successfully." TO WS-MESSAGE
+            PERFORM DISPLAY-AND-LOG
+
+            CLOSE INPUT-FILE, OUTPUT-FILE
+            STOP RUN
     END-EVALUATE.
     EXIT.
 VIEW-PROFILE SECTION.
@@ -593,19 +598,30 @@ CHOICE SECTION.
     PERFORM READ-FROM-INPUT-FILE.
 
     IF WS-END-FILE = 'N'
-        MOVE INPUT-RECORD TO WS-CHOICE
+        IF FUNCTION LENGTH(FUNCTION TRIM(INPUT-RECORD)) = 1 AND
+                       FUNCTION TRIM(INPUT-RECORD) IS NUMERIC
+            MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-CHOICE
+        ELSE
+            MOVE 0 TO WS-CHOICE *> Force invalid choice
+        END-IF
     END-IF.
 
     IF WS-END-FILE = 'N'
         PERFORM UNTIL (WS-CHOICE >= MIN-VALUE-CHOICE)
                        AND (WS-CHOICE <= MAX-VALUE-CHOICE)
 
-            DISPLAY "Not a valid choice. Try again."
+            MOVE "Not a valid choice. Try again." TO WS-MESSAGE
+            PERFORM DISPLAY-AND-LOG
 
             PERFORM READ-FROM-INPUT-FILE
 
             IF WS-END-FILE = 'N'
-                MOVE INPUT-RECORD TO WS-CHOICE
+                IF FUNCTION LENGTH(FUNCTION TRIM(INPUT-RECORD)) = 1 AND
+                       FUNCTION TRIM(INPUT-RECORD) IS NUMERIC
+                    MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-CHOICE
+                ELSE
+                    MOVE 0 TO WS-CHOICE *> Force invalid choice
+                END-IF
             END-IF
 
         END-PERFORM
