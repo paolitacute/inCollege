@@ -174,8 +174,7 @@ PROCESS-MAIN-MENU-CHOICE SECTION.
         WHEN 1
             PERFORM PROFILE-CREATION-FLOW
         WHEN 2
-            MOVE "View profile is under construction." TO WS-MESSAGE
-            PERFORM DISPLAY-AND-LOG
+            PERFORM VIEW-PROFILE
         WHEN 3
             PERFORM SEARCH-JOB
         WHEN 4
@@ -186,7 +185,24 @@ PROCESS-MAIN-MENU-CHOICE SECTION.
             MOVE 'Y' TO WS-EXIT-FLAG
     END-EVALUATE.
     EXIT.
+VIEW-PROFILE SECTION.
+    CALL "View-Profile" USING WS-USERNAME, WS-PROFILE-DATA, WS-RETURN-CODE.
 
+    EVALUATE WS-RETURN-CODE
+        WHEN 'S'
+            *> Profile displayed successfully - no additional message needed
+            CONTINUE
+        WHEN 'F'
+            MOVE "No profile found for this user." TO WS-MESSAGE
+            PERFORM DISPLAY-AND-LOG
+        WHEN 'X'
+            MOVE "Error accessing profile file." TO WS-MESSAGE
+            PERFORM DISPLAY-AND-LOG
+        WHEN OTHER
+            MOVE "Unknown error occurred while viewing profile." TO WS-MESSAGE
+            PERFORM DISPLAY-AND-LOG
+    END-EVALUATE.
+    EXIT.
 PROFILE-CREATION-FLOW SECTION.
     INITIALIZE WS-PROFILE-DATA.
     MOVE "--- Create/Edit Profile ---" TO WS-MESSAGE.

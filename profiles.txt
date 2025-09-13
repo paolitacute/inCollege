@@ -8,7 +8,7 @@ ABOU:A COBOL enthusiast.
 EXP01:Software Intern 1~Company A~Summer 2022~Desc 1
 EXP02:Software Intern 2~Company B~Summer 2023~Desc 2
 EXP03:Software Intern 3~Company C~Summer 2024~Desc 3
-EDU01:Software Intern 4~Company D~Summer 2025
-EDU02:Desc 4~Degree 1~University A
-EDU03:2021-2022~Degree 2~University B
+EDU01:Degree 1~University A~2021-2022
+EDU02:Degree 2~University B~2022-2023
+EDU03:Degree 3~University C~2023-2024
 ENDPROFILE

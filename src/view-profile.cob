@@ -1,162 +1,170 @@
 >>SOURCE FREE
 IDENTIFICATION DIVISION.
 PROGRAM-ID. View-Profile.
-AUTHOR. Jacob
-DATE-WRITTEN. 09/12/2025
+AUTHOR. Jacob.
+DATE-WRITTEN. 09/12/2025.
 
 ENVIRONMENT DIVISION.
 INPUT-OUTPUT SECTION.
-       FILE-CONTROL.
-           SELECT PROFILE-FILE ASSIGN TO 'profiles.txt'
-               ORGANIZATION IS LINE SEQUENTIAL.
+FILE-CONTROL.
+    SELECT PROFILE-FILE ASSIGN TO 'profiles.txt'
+        ORGANIZATION IS LINE SEQUENTIAL
+        FILE STATUS IS WS-FILE-STATUS.
 
 DATA DIVISION.
-       FILE SECTION.
-       FD PROFILE-FILE
-           RECORD CONTAINS 250 characters
-           DATA RECORD IS PROFILE-RECORD
-           FILE STATUS IS WS-FILE-STATUS.
-       01 PROFILE-RECORD       PIC X(250).
-           05 PR-FULL-RECORD   PIC X(250).
 
-       WORKING-STORAGE SECTION.
+FILE SECTION.
+FD PROFILE-FILE.
+01 PROFILE-RECORD       PIC X(250).
 
-       01 WS-FILE-STATUS       PIC XX.
-       01 WS-EOF-FLAG          PIC X VALUE 'N'.
+WORKING-STORAGE SECTION.
+01 WS-FILE-STATUS       PIC XX.
+01 WS-EOF-FLAG          PIC X VALUE 'N'.
+01 I                    PIC 9.
+01 J                    PIC 9.
 
-       *> Parsed profile fields
-       01 WS-PROFILE-DATA.
-          05 WS-FIRST-NAME     PIC X(50).
-          05 WS-LAST-NAME      PIC X(50).
-          05 WS-UNIVERSITY     PIC X(100).
-          05 WS-MAJOR          PIC X(50).
-          05 WS-GRAD-YEAR      PIC X(4).
-          05 WS-ABOUT-ME       PIC X(200).
+LINKAGE SECTION.
+01 LS-USERNAME          PIC X(20).
 
-       *> Experience (up to 3)
-       01 WS-EXPERIENCE-TABLE.
-          05 WS-EXPERIENCE OCCURS 3 TIMES.
-             10 WS-EXP-TITLE    PIC X(50).
-             10 WS-EXP-COMPANY  PIC X(50).
-             10 WS-EXP-DATES    PIC X(50).
-             10 WS-EXP-DESC     PIC X(100).
-       01 WS-EXP-COUNT          PIC 9.
+01 LS-PROFILE-DATA.
+   05 LS-FIRST-NAME     PIC X(50).
+   05 LS-LAST-NAME      PIC X(50).
+   05 LS-UNIVERSITY     PIC X(100).
+   05 LS-MAJOR          PIC X(50).
+   05 LS-GRAD-YEAR      PIC X(4).
+   05 LS-ABOUT-ME       PIC X(200).
+   05 LS-EXPERIENCE-TABLE.
+      10 LS-EXPERIENCE OCCURS 3 TIMES INDEXED BY EXP-IDX.
+         15 LS-EXP-TITLE    PIC X(50).
+         15 LS-EXP-COMPANY  PIC X(50).
+         15 LS-EXP-DATES    PIC X(50).
+         15 LS-EXP-DESC     PIC X(100).
+   05 LS-EXP-COUNT      PIC 9.
+   05 LS-EDUCATION-TABLE.
+      10 LS-EDUCATION OCCURS 3 TIMES INDEXED BY EDU-IDX.
+         15 LS-EDU-DEGREE   PIC X(50).
+         15 LS-EDU-UNIV     PIC X(50).
+         15 LS-EDU-YEARS    PIC X(50).
+   05 LS-EDU-COUNT      PIC 9.
 
-       *> Education (up to 3)
-       01 WS-EDUCATION-TABLE.
-          05 WS-EDUCATION OCCURS 3 TIMES.
-             10 WS-EDU-DEGREE   PIC X(50).
-             10 WS-EDU-UNIV     PIC X(50).
-             10 WS-EDU-YEARS    PIC X(50).
-       01 WS-EDU-COUNT          PIC 9.
+01 LS-RETURN-CODE       PIC X.
 
-       LINKAGE SECTION.
-       01 LS-USERNAME       PIC X(20).
-       01 LS-PROFILE-DATA.
-          05 LS-FIRST-NAME     PIC X(50).
-          05 LS-LAST-NAME      PIC X(50).
-          05 LS-UNIVERSITY     PIC X(100).
-          05 LS-MAJOR          PIC X(50).
-          05 LS-GRAD-YEAR      PIC X(4).
-          05 LS-ABOUT-ME       PIC X(200).
+PROCEDURE DIVISION USING LS-USERNAME LS-PROFILE-DATA LS-RETURN-CODE.
 
-       01 LS-EXPERIENCE-TABLE.
-          05 LS-EXPERIENCE OCCURS 3 TIMES.
-             10 LS-EXP-TITLE    PIC X(50).
-             10 LS-EXP-COMPANY  PIC X(50).
-             10 LS-EXP-DATES    PIC X(50).
-             10 LS-EXP-DESC     PIC X(100).
-       01 LS-EXP-COUNT      PIC 9.
+    MOVE 'F' TO LS-RETURN-CODE
+    MOVE 'N' TO WS-EOF-FLAG
 
-       01 LS-EDUCATION-TABLE.
-          05 LS-EDUCATION OCCURS 3 TIMES.
-             10 LS-EDU-DEGREE   PIC X(50).
-             10 LS-EDU-UNIV     PIC X(50).
-             10 LS-EDU-YEARS    PIC X(50).
-       01 LS-EDU-COUNT      PIC 9.
+    *> Trim input username to remove extra spaces or newlines
+    MOVE FUNCTION TRIM(LS-USERNAME) TO LS-USERNAME
 
-       01 LS-RETURN-CODE      PIC X.
+    OPEN INPUT PROFILE-FILE
 
-PROCEDURE DIVISION USING LS-USERNAME, LS-PROFILE-DATA, LS-RETURN-CODE
-       MOVE 'F' TO LS-RETURN-CODE
-       MOVE 'N' TO WS-EOF-FLAG
+    IF WS-FILE-STATUS NOT = "00"
+        DISPLAY "Error opening profiles file."
+        DISPLAY "File Status: " WS-FILE-STATUS
+        MOVE 'X' TO LS-RETURN-CODE
+        CLOSE PROFILE-FILE
+        GOBACK
+    END-IF
 
-       *> Trim input username and password to remove extra spaces or newlines
-       MOVE FUNCTION TRIM(LS-USERNAME) TO LS-USERNAME
-       MOVE FUNCTION TRIM(LS-PASSWORD) TO LS-PASSWORD
+    PERFORM UNTIL WS-EOF-FLAG = 'Y'
+        READ PROFILE-FILE
+            AT END
+                MOVE 'Y' TO WS-EOF-FLAG
+            NOT AT END
+                MOVE 'N' TO WS-EOF-FLAG
+        END-READ
 
-       OPEN INPUT PROFILE-FILE
-
-       IF WS-FILE-STATUS = "35"
-           *> File does not exist, cannot login
-           MOVE 'F' TO LS-RETURN-CODE
-           CLOSE PROFILE-FILE
-           GOBACK
+        IF WS-EOF-FLAG = 'N'
+            IF PROFILE-RECORD(1:5) = "USER:"
+                IF PROFILE-RECORD(6:) = LS-USERNAME
+                    PERFORM PARSE-PROFILE
+                    MOVE 'S' TO LS-RETURN-CODE
+                    MOVE 'Y' TO WS-EOF-FLAG
+                END-IF
+            END-IF
         END-IF
-       IF WS-FILE-STATUS = "00"
-           DISPLAY "Error opening profiles file."
-           DISPLAY "File Status: " WS-FILE-STATUS
-           MOVE 'X' TO LS-RETURN-CODE
-           CLOSE PROFILE-FILE
-           GOBACK
-       END-IF.
+    END-PERFORM
 
-       PERFORM UNTIL WS-EOF-FLAG = 'Y'
-           READ PROFILE-FILE
-               AT END
-                   MOVE 'Y' TO WS-EOF-FLAG
-               NOT AT END
-                   MOVE 'N' TO WS-EOF-FLAG
-           END READ
+    IF LS-RETURN-CODE = 'S'
+        PERFORM PROFILE-DISPLAY
+    END-IF
 
-           IF WS-EOF-FLAG = 'N'
-               IF PROFILE-RECORD(1:5) = "USER:"
-                   IF PROFILE-RECORD(6:) = LS-USERNAME
-                       PERFORM PARSE-PROFILE
-                       EXIT PERFORM
-                   END-IF
-               END-IF
-           END-IF
-       END-PERFORM
+    CLOSE PROFILE-FILE
+    GOBACK.
 
+PROFILE-DISPLAY.
+    DISPLAY "---Your Profile---"
+    DISPLAY "Name: " LS-FIRST-NAME " " LS-LAST-NAME
+    DISPLAY "University: " LS-UNIVERSITY
+    DISPLAY "Major: " LS-MAJOR
+    DISPLAY "Graduation Year: " LS-GRAD-YEAR
+    DISPLAY "About Me: " LS-ABOUT-ME
+    DISPLAY "Experience: "
+    PERFORM VARYING I FROM 1 BY 1 UNTIL I > LS-EXP-COUNT
+        DISPLAY " Title: "          LS-EXP-TITLE(I)
+        DISPLAY " Company: "        LS-EXP-COMPANY(I)
+        DISPLAY " Dates: "          LS-EXP-DATES(I)
+        DISPLAY " Description: "    LS-EXP-DESC(I)
+        DISPLAY " "
+    END-PERFORM
 
-       PARSE-PROFILE.
-       PERFORM UNTIL PROFILE-RECORD = "ENDPROFILE"
-           READ PROFILE-FILE INTO PROFILE-RECORD
-               AT END
-                   MOVE 'Y' TO WS-EOF-FLAG
-           END-READ
+    DISPLAY "Education: "
+    PERFORM VARYING J FROM 1 BY 1 UNTIL J > LS-EDU-COUNT
+        DISPLAY " Degree: "         LS-EDU-DEGREE(J)
+        DISPLAY " University: "     LS-EDU-UNIV(J)
+        DISPLAY " Years: "          LS-EDU-YEARS(J)
+        DISPLAY " "
+    END-PERFORM.
 
-           IF PROFILE-RECORD(1:5) = "FNAM:"
-               MOVE PROFILE-RECORD(6:) TO LS-FIRST-NAME
-           ELSE IF PROFILE-RECORD(1:5) = "LNAM:"
-               MOVE PROFILE-RECORD(6:) TO LS-LAST-NAME
-           ELSE IF PROFILE-RECORD(1:5) = "UNIV:"
-               MOVE PROFILE-RECORD(6:) TO LS-UNIVERSITY
-           ELSE IF PROFILE-RECORD(1:5) = "MAJR:"
-               MOVE PROFILE-RECORD(6:) TO LS-MAJOR
-           ELSE IF PROFILE-RECORD(1:5) = "GRAD:"
-               MOVE PROFILE-RECORD(6:) TO LS-GRAD-YEAR
-           ELSE IF PROFILE-RECORD(1:5) = "ABOU:"
-               MOVE PROFILE-RECORD(6:) TO LS-ABOUT-ME
-           ELSE IF PROFILE-RECORD(1:5) = "EXP01:" OR
-                   PROFILE-RECORD(1:5) = "EXP02:" OR
-                   PROFILE-RECORD(1:5) = "EXP03:"
-               *> Split by '~' into LS-EXPERIENCE
-               PERFORM PARSE-EXPERIENCE-LINE
-           ELSE IF PROFILE-RECORD(1:5) = "EDU01:" OR
-                   PROFILE-RECORD(1:5) = "EDU02:" OR
-                   PROFILE-RECORD(1:5) = "EDU03:"
-               *> Split by '~' into LS-EDUCATION
-               PERFORM PARSE-EDUCATION-LINE
-           END-IF
-       END-PERFORM
+PARSE-PROFILE.
+    MOVE 0 TO LS-EXP-COUNT
+    MOVE 0 TO LS-EDU-COUNT
 
-       PARSE-EXPERIENCE-LINE.
-           UNSTRING PROFILE-RECORD DELIMITED BY "~"
-               INTO LS-EXPERIENCE(WS-EXP-COUNT + 1)-LS-EXP-TITLE
-                    LS-EXPERIENCE(WS-EXP-COUNT + 1)-LS-EXP-COMPANY
-                    LS-EXPERIENCE(WS-EXP-COUNT + 1)-LS-EXP-DATES
-                    LS-EXPERIENCE(WS-EXP-COUNT + 1)-LS-EXP-DESC
-           END-UNSTRING
-           ADD 1 TO WS-EXP-COUNT
+    PERFORM UNTIL PROFILE-RECORD(1:10) = "ENDPROFILE"
+        READ PROFILE-FILE INTO PROFILE-RECORD
+            AT END
+                MOVE 'Y' TO WS-EOF-FLAG
+                EXIT PERFORM
+        END-READ
+
+        EVALUATE TRUE
+            WHEN PROFILE-RECORD(1:5) = "FNAM:"
+                MOVE PROFILE-RECORD(6:) TO LS-FIRST-NAME
+            WHEN PROFILE-RECORD(1:5) = "LNAM:"
+                MOVE PROFILE-RECORD(6:) TO LS-LAST-NAME
+            WHEN PROFILE-RECORD(1:5) = "UNIV:"
+                MOVE PROFILE-RECORD(6:) TO LS-UNIVERSITY
+            WHEN PROFILE-RECORD(1:5) = "MAJR:"
+                MOVE PROFILE-RECORD(6:) TO LS-MAJOR
+            WHEN PROFILE-RECORD(1:5) = "GRAD:"
+                MOVE PROFILE-RECORD(6:) TO LS-GRAD-YEAR
+            WHEN PROFILE-RECORD(1:5) = "ABOU:"
+                MOVE PROFILE-RECORD(6:) TO LS-ABOUT-ME
+            WHEN PROFILE-RECORD(1:6) = "EXP01:" OR
+                 PROFILE-RECORD(1:6) = "EXP02:" OR
+                 PROFILE-RECORD(1:6) = "EXP03:"
+                PERFORM PARSE-EXPERIENCE-LINE
+            WHEN PROFILE-RECORD(1:6) = "EDU01:" OR
+                 PROFILE-RECORD(1:6) = "EDU02:" OR
+                 PROFILE-RECORD(1:6) = "EDU03:"
+                PERFORM PARSE-EDUCATION-LINE
+        END-EVALUATE
+    END-PERFORM.
+
+PARSE-EXPERIENCE-LINE.
+    ADD 1 TO LS-EXP-COUNT
+    UNSTRING PROFILE-RECORD DELIMITED BY "~"
+        INTO LS-EXP-TITLE(LS-EXP-COUNT)
+             LS-EXP-COMPANY(LS-EXP-COUNT)
+             LS-EXP-DATES(LS-EXP-COUNT)
+             LS-EXP-DESC(LS-EXP-COUNT)
+    END-UNSTRING.
+
+PARSE-EDUCATION-LINE.
+    ADD 1 TO LS-EDU-COUNT
+    UNSTRING PROFILE-RECORD DELIMITED BY "~"
+        INTO LS-EDU-DEGREE(LS-EDU-COUNT)
+             LS-EDU-UNIV(LS-EDU-COUNT)
+             LS-EDU-YEARS(LS-EDU-COUNT)
+    END-UNSTRING.
