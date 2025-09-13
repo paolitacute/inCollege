@@ -1,5 +1,0 @@
-Epic #1:	Scrum Master:	Jacob Cooksey
-			Coder #1:	Paola Cuevas
-			Coder #2:	Kaden Czarnecki
-			Tester #1:	Adyatan Dagar
-			Tester #2:	Vamsi Dandu
