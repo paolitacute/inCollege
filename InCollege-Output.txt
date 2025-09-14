@@ -13,6 +13,41 @@ Welcome, user123!
 5. Learn a new skill
 6. Exit
 Enter your choice as a number:
+---Your Profile---
+Name: Paola Reyes
+University: University of South Florida
+Major: Industrial Engineering
+Graduation Year: 2025
+About Me: A COBOL enthusiast.
+Experience:
+ Title: Software Intern 1
+ Company: Company A
+ Dates: Summer 2022
+ Description: Desc 1
+
+ Title: Software Intern 2
+ Company: Company B
+ Dates: Summer 2023
+ Description: Desc 2
+
+ Title: Software Intern 3
+ Company: Company C
+ Dates: Summer 2024
+ Description: Desc 3
+
+Education:
+ Degree: Degree 1
+ University: University A
+ Years: 2021-2022
+
+ Degree: Degree 2
+ University: University B
+ Years: 2022-2023
+
+ Degree: Degree 3
+ University: University C
+ Years: 2023-2024
+
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job

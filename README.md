@@ -29,6 +29,13 @@ Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
 - On Apple Silicon (M1/M2/M3), Docker will pull the correct multi-arch Ubuntu image automatically.
 - If you see permission issues on `bin/` after pulling from a different OS, run: `sudo chmod -R a+rw bin` (inside the container).
 
+## Compilation
+Compile using
+
+mkdir -p bin && cobc -x -free -o bin/incollege /workspace/src/incollege.cob /workspace/src/create-account.cob /workspace/src/create-profile.cob /workspace/src/login.cob /workspace/src/view-profile.cob
+
+once more files are added just add the /workspace/src/name_of_module.cob to the end
+
 ## Folder Structure
 ```
 .devcontainer/         # Dev container config (Dockerfile, devcontainer.json)
@@ -39,3 +46,4 @@ bin/                   # Build outputs (gitignored)
 
 ## License
 MIT
+
