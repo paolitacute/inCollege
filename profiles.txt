@@ -1,7 +1,10 @@
 USER:user123
-FNAM:userfn2
-LNAM:userln2
-UNIV:University2
-MAJR:Major2
+FNAM:John
+LNAM:Doe
+UNIV:USF
+MAJR:Computer Science
 GRAD:2026
+ABOU:Updated about me after internship.
+EXP01:Software Engineer Intern~FutureTech~Summer 2026~Built CI tests.
+EDU01:B.S. Computer Science~USF~2022-2026
 ENDPROFILE
