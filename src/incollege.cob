@@ -190,6 +190,8 @@ PROCESS-MAIN-MENU-CHOICE SECTION.
             STOP RUN
     END-EVALUATE.
     EXIT.
+
+
 VIEW-PROFILE SECTION.
     CLOSE OUTPUT-FILE
     CALL "View-Profile" USING WS-USERNAME, WS-PROFILE-DATA, WS-RETURN-CODE.
@@ -210,7 +212,10 @@ VIEW-PROFILE SECTION.
     END-EVALUATE.
     OPEN EXTEND OUTPUT-FILE
     EXIT.
+
+
 PROFILE-CREATION-FLOW SECTION.
+
     INITIALIZE WS-PROFILE-DATA.
     MOVE "--- Create/Edit Profile ---" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
@@ -218,57 +223,39 @@ PROFILE-CREATION-FLOW SECTION.
     *> Get Required Data: First Name
     MOVE "Enter First Name:" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
-    PERFORM READ-FROM-INPUT-FILE.
-    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
-        MOVE "First Name cannot be blank. Please enter it again."
-            TO WS-MESSAGE
-        PERFORM DISPLAY-AND-LOG
-        MOVE "Enter First Name:" TO WS-MESSAGE
-        PERFORM DISPLAY-AND-LOG
-        PERFORM READ-FROM-INPUT-FILE
-    END-PERFORM.
+    PERFORM GET-REQUIRED-INPUT.
+    IF WS-END-FILE = 'Y'
+        PERFORM CLOSE-PROGRAM
+    END-IF.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-FIRST-NAME.
+
 
     *> Get Required Data: Last Name
     MOVE "Enter Last Name:" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
-    PERFORM READ-FROM-INPUT-FILE.
-    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
-        MOVE "Last Name cannot be blank. Please enter it again."
-            TO WS-MESSAGE
-        PERFORM DISPLAY-AND-LOG
-        MOVE "Enter Last Name:" TO WS-MESSAGE
-        PERFORM DISPLAY-AND-LOG
-        PERFORM READ-FROM-INPUT-FILE
-    END-PERFORM.
+    PERFORM GET-REQUIRED-INPUT.
+    IF WS-END-FILE = 'Y'
+        PERFORM CLOSE-PROGRAM
+    END-IF.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-LAST-NAME.
+    DISPLAY WS-END-FILE
 
     *> Get Required Data: University
     MOVE "Enter University/College Attended:" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
-    PERFORM READ-FROM-INPUT-FILE.
-    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
-        MOVE "University cannot be blank. Please enter it again."
-            TO WS-MESSAGE
-        PERFORM DISPLAY-AND-LOG
-        MOVE "Enter University/College Attended:" TO WS-MESSAGE
-        PERFORM DISPLAY-AND-LOG
-        PERFORM READ-FROM-INPUT-FILE
-    END-PERFORM.
+    PERFORM GET-REQUIRED-INPUT.
+    IF WS-END-FILE = 'Y'
+        PERFORM CLOSE-PROGRAM
+    END-IF.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-UNIVERSITY.
 
     *> Get Required Data: Major
     MOVE "Enter Major:" TO WS-MESSAGE.
     PERFORM DISPLAY-AND-LOG.
-    PERFORM READ-FROM-INPUT-FILE.
-    PERFORM UNTIL FUNCTION TRIM(INPUT-RECORD) > SPACES
-        MOVE "Major cannot be blank. Please enter it again."
-            TO WS-MESSAGE
-        PERFORM DISPLAY-AND-LOG
-        MOVE "Enter Major:" TO WS-MESSAGE
-        PERFORM DISPLAY-AND-LOG
-        PERFORM READ-FROM-INPUT-FILE
-    END-PERFORM.
+    PERFORM GET-REQUIRED-INPUT.
+    IF WS-END-FILE = 'Y'
+        PERFORM CLOSE-PROGRAM
+    END-IF.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-MAJOR.
 
     *> Get Required Data: Graduation Year
@@ -344,27 +331,27 @@ PROFILE-CREATION-FLOW SECTION.
                 MOVE FUNCTION TRIM(WS-INPUT-BUFFER) TO WS-EXP-TITLE(I)
 
                 INITIALIZE WS-MESSAGE
+                PERFORM READ-FROM-INPUT-FILE
                 STRING "Experience #" WS-EXP-DISPLAY-NUM
                        " - Company/Organization:"
                        DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
-                PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EXP-COMPANY(I)
 
                 INITIALIZE WS-MESSAGE
+                PERFORM READ-FROM-INPUT-FILE
                 STRING "Experience #" WS-EXP-DISPLAY-NUM
                        " - Dates (e.g., Summer 2024):"
                        DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
-                PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EXP-DATES(I)
 
                 INITIALIZE WS-MESSAGE
+                PERFORM READ-FROM-INPUT-FILE
                 STRING "Experience #" WS-EXP-DISPLAY-NUM
                      " - Description (optional, blank to skip):"
                      DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
-                PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EXP-DESC(I)
                 SET I UP BY 1
             END-IF
@@ -400,20 +387,22 @@ PROFILE-CREATION-FLOW SECTION.
 
 
                 INITIALIZE WS-MESSAGE
+                PERFORM READ-FROM-INPUT-FILE
                 STRING "Education #" WS-EDU-DISPLAY-NUM
                        " - University/College:"
                        DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
-                PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EDU-UNIV(J)
 
+
                 INITIALIZE WS-MESSAGE
+                PERFORM READ-FROM-INPUT-FILE
                 STRING "Education #" WS-EDU-DISPLAY-NUM
                        " - Years Attended (e.g., 2023-2025):"
                        DELIMITED BY SIZE INTO WS-MESSAGE
                 PERFORM DISPLAY-AND-LOG
-                PERFORM READ-FROM-INPUT-FILE
                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-EDU-YEARS(J)
+
                 SET J UP BY 1
             END-IF
         END-IF
@@ -638,6 +627,20 @@ CHOICE SECTION.
     END-IF.
     EXIT.
 
+
+GET-REQUIRED-INPUT SECTION.
+    PERFORM READ-FROM-INPUT-FILE.
+    PERFORM UNTIL WS-END-FILE = 'Y' OR
+                  FUNCTION TRIM(INPUT-RECORD) > SPACES
+        MOVE "Input cannot be blank. Please provide a value."
+            TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
+        PERFORM READ-FROM-INPUT-FILE
+    END-PERFORM.
+    EXIT.
+
+
+
 DISPLAY-AND-LOG SECTION.
     DISPLAY WS-MESSAGE.
     MOVE WS-MESSAGE TO OUTPUT-RECORD.
@@ -646,7 +649,7 @@ DISPLAY-AND-LOG SECTION.
 
 READ-FROM-INPUT-FILE SECTION.
     IF WS-END-FILE = 'Y'
-        EXIT PARAGRAPH
+        PERFORM CLOSE-PROGRAM
     END-IF.
 
     READ INPUT-FILE
@@ -657,4 +660,13 @@ READ-FROM-INPUT-FILE SECTION.
     END-READ.
 
     EXIT.
+
+CLOSE-PROGRAM SECTION.
+       IF WS-END-FILE = 'Y'
+           MOVE "Inactivity. You quit successfully." TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+
+           CLOSE INPUT-FILE, OUTPUT-FILE
+           STOP RUN
+       END-IF.
 
