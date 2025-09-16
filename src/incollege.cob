@@ -238,7 +238,6 @@ PROFILE-CREATION-FLOW SECTION.
         PERFORM CLOSE-PROGRAM
     END-IF.
     MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-LAST-NAME.
-    DISPLAY WS-END-FILE
 
     *> Get Required Data: University
     MOVE "Enter University/College Attended:" TO WS-MESSAGE.
