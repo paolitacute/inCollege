@@ -1,0 +1,56 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice as a number:
+Enter username:
+Enter password:
+Login successful
+Welcome, user123!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+6. Exit
+Enter your choice as a number:
+Not a valid choice. Try again.
+--- Create/Edit Profile ---
+Enter First Name:
+Input cannot be blank. Please provide a value.
+Input cannot be blank. Please provide a value.
+Input cannot be blank. Please provide a value.
+Input cannot be blank. Please provide a value.
+Enter Last Name:
+Enter University/College Attended:
+Enter Major:
+Enter Graduation Year (YYYY):
+Invalid year. Enter a year between 2023 and 2035.
+Enter Graduation Year (YYYY):
+Enter About Me (optional, max 200 chars, enter blank line to skip):
+Add Experience (optional, max 3 entries. Enter 'DONE' to finish):
+Add Education (optional, max 3 entries. Enter 'DONE' to finish):
+Profile saved successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+6. Exit
+Enter your choice as a number:
+Not a valid choice. Try again.
+---Your Profile---
+Name: abcd 20
+University: university 1
+Major: comp sci
+Graduation Year: 2025
+About Me: About me blah blah blah
+Experience:
+Education:
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+6. Exit
+Enter your choice as a number:
+You quit successfully.
