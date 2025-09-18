@@ -44,9 +44,11 @@ WORKING-STORAGE SECTION.
 
     *> Used to hold a line of text before displaying it
     01  WS-MESSAGE        PIC X(80).
+    01  WS-TEMP           PIC X(80).
 
     *> Stores the entered username
     01  WS-USERNAME       PIC X(20).
+    01  WS-VIEW-USER      PIC X(20).
 
     *> Stores the entered password
     01  WS-PASSWORD       PIC X(20).
@@ -64,8 +66,10 @@ WORKING-STORAGE SECTION.
     01  WS-LOOP-FLAG      PIC X.
 
     01  WS-RETURN-CODE     PIC X.
+    01  WS-RETURN-USER     PIC X.
     01  WS-ACCOUNTS-STATUS PIC X(2).
     01  WS-INPUT-BUFFER    PIC X(80).
+    01  WS-TRIGGER         PIC X VALUE "0".
 
     01  WS-PROFILE-DATA.
         05 WS-FIRST-NAME     PIC X(50).
@@ -194,7 +198,17 @@ PROCESS-MAIN-MENU-CHOICE SECTION.
 
 VIEW-PROFILE SECTION.
     CLOSE OUTPUT-FILE
-    CALL "View-Profile" USING WS-USERNAME, WS-PROFILE-DATA, WS-RETURN-CODE.
+    IF WS-TRIGGER = '0'
+       MOVE "---Your Profile---" TO WS-MESSAGE
+       PERFORM DISPLAY-AND-LOG
+       MOVE WS-USERNAME TO WS-VIEW-USER
+    END-IF
+    IF WS-TRIGGER = '1'
+       MOVE "---Found User Profile---" TO WS-MESSAGE
+       PERFORM DISPLAY-AND-LOG
+       MOVE WS-RETURN-USER TO WS-VIEW-USER
+    END-IF
+    CALL "VIEW-PROFILE" USING WS-VIEW-USER, WS-PROFILE-DATA, WS-RETURN-CODE.
 
     EVALUATE WS-RETURN-CODE
         WHEN 'S'
@@ -524,8 +538,51 @@ SEARCH-JOB SECTION.
 
 
 FIND-SOMEONE SECTION.
-    MOVE "Find someone you know is under construction." TO WS-MESSAGE.
-    PERFORM DISPLAY-AND-LOG.
+    PERFORM UNTIL WS-RETURN-CODE = 'T'
+       INITIALIZE WS-FIRST-NAME
+       INITIALIZE WS-LAST-NAME
+       PERFORM READ-FROM-INPUT-FILE
+       IF WS-END-FILE ='Y'
+           PERFORM CLOSE-PROGRAM
+       END-IF
+       MOVE "Enter the full name of the person you are looking for:" TO WS-MESSAGE
+       PERFORM DISPLAY-AND-LOG
+
+
+       IF WS-END-FILE = 'N'
+           MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-TEMP
+           UNSTRING WS-TEMP
+               DELIMITED BY ALL space
+               INTO WS-FIRST-NAME
+                    WS-LAST-NAME
+           MOVE FUNCTION TRIM(WS-FIRST-NAME) TO WS-FIRST-NAME
+           MOVE FUNCTION TRIM(WS-LAST-NAME) TO WS-LAST-NAME
+       END-IF
+
+       DISPLAY WS-FIRST-NAME
+       CALL "SEARCH" USING WS-FIRST-NAME, WS-LAST-NAME, WS-PROFILE-DATA, WS-RETURN-CODE, WS-RETURN-USER
+
+       EVALUATE WS-RETURN-CODE
+            WHEN 'T'
+                MOVE "1" TO WS-TRIGGER
+                PERFORM VIEW-PROFILE
+
+            WHEN 'F'
+                MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+            WHEN 'X'
+                MOVE "Error accessing accounts file." TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                CLOSE INPUT-FILE, OUTPUT-FILE
+                STOP RUN
+            WHEN OTHER
+                MOVE "An unknown error occurred." TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                CLOSE INPUT-FILE, OUTPUT-FILE
+                STOP RUN
+        END-EVALUATE
+
+    END-PERFORM
     EXIT.
 
 LEARN-SKILL SECTION.
