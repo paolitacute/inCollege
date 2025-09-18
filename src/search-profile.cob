@@ -81,9 +81,8 @@ PROCEDURE DIVISION USING LS-FIRST, LS-LAST, LS-PROFILE-DATA, LS-RETURN-CODE, LS-
                    WHEN PROFILE-RECORD(1:5) = "LNAM:"
                        MOVE PROFILE-RECORD(6:) TO WS-CURRENT-LAST
                END-EVALUATE
-               
-               IF WS-CURRENT-FIRST = LS-FIRST
-                   DISPLAY WS-CURRENT-FIRST LS-FIRST
+
+               IF WS-CURRENT-FIRST = LS-FIRST AND WS-CURRENT-LAST = LS-LAST
                    MOVE WS-TEMP-ONE TO LS-RETURN-USER
                    MOVE 'T' TO LS-RETURN-CODE
                    MOVE 'Y' TO WS-EOF-FLAG

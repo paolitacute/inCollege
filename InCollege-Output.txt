@@ -5,7 +5,7 @@ Enter your choice as a number:
 Enter username:
 Enter password:
 Login successful
-Welcome, user123!
+Welcome, user1234!
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -13,3 +13,25 @@ Welcome, user123!
 5. Learn a new skill
 6. Exit
 Enter your choice as a number:
+Enter the full name of the person you are looking for:
+---Found User Profile---
+
+Name: John Doe
+University: USF
+Major: Computer Science
+Graduation Year: 2026
+About Me: Updated about me after internship.
+Experience:
+ Title: Software Engineer Intern
+ Company: FutureTech
+ Dates: Summer 2026
+ Description: Built CI tests.
+
+Education:
+ Degree: B.S. Computer Science
+ University: USF
+ Years: 2022-2026
+
+Enter the full name of the person you are looking for:
+This user profile does not exist, Try again:
+Inactivity. You quit successfully.

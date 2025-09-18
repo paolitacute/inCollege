@@ -66,7 +66,7 @@ WORKING-STORAGE SECTION.
     01  WS-LOOP-FLAG      PIC X.
 
     01  WS-RETURN-CODE     PIC X.
-    01  WS-RETURN-USER     PIC X.
+    01  WS-RETURN-USER     PIC X(20).
     01  WS-ACCOUNTS-STATUS PIC X(2).
     01  WS-INPUT-BUFFER    PIC X(80).
     01  WS-TRIGGER         PIC X VALUE "0".
@@ -197,7 +197,6 @@ PROCESS-MAIN-MENU-CHOICE SECTION.
 
 
 VIEW-PROFILE SECTION.
-    CLOSE OUTPUT-FILE
     IF WS-TRIGGER = '0'
        MOVE "---Your Profile---" TO WS-MESSAGE
        PERFORM DISPLAY-AND-LOG
@@ -208,8 +207,10 @@ VIEW-PROFILE SECTION.
        PERFORM DISPLAY-AND-LOG
        MOVE WS-RETURN-USER TO WS-VIEW-USER
     END-IF
+    CLOSE OUTPUT-FILE
     CALL "VIEW-PROFILE" USING WS-VIEW-USER, WS-PROFILE-DATA, WS-RETURN-CODE.
 
+    OPEN EXTEND OUTPUT-FILE
     EVALUATE WS-RETURN-CODE
         WHEN 'S'
             *> Profile displayed successfully - no additional message needed
@@ -224,7 +225,7 @@ VIEW-PROFILE SECTION.
             MOVE "Unknown error occurred while viewing profile." TO WS-MESSAGE
             PERFORM DISPLAY-AND-LOG
     END-EVALUATE.
-    OPEN EXTEND OUTPUT-FILE
+
     EXIT.
 
 
@@ -559,13 +560,13 @@ FIND-SOMEONE SECTION.
            MOVE FUNCTION TRIM(WS-LAST-NAME) TO WS-LAST-NAME
        END-IF
 
-       DISPLAY WS-FIRST-NAME
        CALL "SEARCH" USING WS-FIRST-NAME, WS-LAST-NAME, WS-PROFILE-DATA, WS-RETURN-CODE, WS-RETURN-USER
 
        EVALUATE WS-RETURN-CODE
             WHEN 'T'
                 MOVE "1" TO WS-TRIGGER
                 PERFORM VIEW-PROFILE
+                
 
             WHEN 'F'
                 MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
