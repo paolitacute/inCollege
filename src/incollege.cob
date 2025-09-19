@@ -566,7 +566,8 @@ FIND-SOMEONE SECTION.
             WHEN 'T'
                 MOVE "1" TO WS-TRIGGER
                 PERFORM VIEW-PROFILE
-                
+                MOVE "T" TO WS-RETURN-CODE
+
 
             WHEN 'F'
                 MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
