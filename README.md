@@ -32,7 +32,7 @@ Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
 ## Compilation
 Compile using
 
-mkdir -p bin && cobc -x -free -o bin/incollege /workspace/src/incollege.cob /workspace/src/create-account.cob /workspace/src/create-profile.cob /workspace/src/login.cob /workspace/src/view-profile.cob
+mkdir -p bin && cobc -x -free -o bin/incollege /workspace/src/incollege.cob /workspace/src/create-account.cob /workspace/src/create-profile.cob /workspace/src/login.cob /workspace/src/view-profile.cob /workspace/src/search-profile.cob
 
 once more files are added just add the /workspace/src/name_of_module.cob to the end
 
