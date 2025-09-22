@@ -131,8 +131,8 @@ PROCEDURE DIVISION USING LS-USERNAME LS-PROFILE-DATA LS-RETURN-CODE.
 *> Display formatted profile information to screen and output file
 PROFILE-DISPLAY.
     *> Write blank line separator
-    MOVE WS-MESSAGE TO OUTPUT-RECORD
-    WRITE OUTPUT-RECORD
+    *>MOVE WS-MESSAGE TO OUTPUT-RECORD
+    *>WRITE OUTPUT-RECORD
 
     *> Display full name
     INITIALIZE WS-MESSAGE
@@ -331,4 +331,5 @@ PARSE-EDUCATION-LINE.
              LS-EDU-UNIV(LS-EDU-COUNT)
              LS-EDU-YEARS(LS-EDU-COUNT)
     END-UNSTRING.
+
     
