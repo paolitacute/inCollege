@@ -1,0 +1,20 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice as a number:
+Enter username:
+Enter password:
+Login successful
+Welcome, testuser!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a new skill
+6. Exit
+Enter your choice as a number:
+Enter the full name of the person you are looking for:
+This user profile does not exist, Try again:
+Enter the full name of the person you are looking for:
+This user profile does not exist, Try again:
+Inactivity. You quit successfully.
