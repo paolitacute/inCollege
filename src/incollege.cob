@@ -538,54 +538,64 @@ SEARCH-JOB SECTION.
     EXIT.
 
 
-FIND-SOMEONE SECTION.
-    PERFORM UNTIL WS-RETURN-CODE = 'T'
-       INITIALIZE WS-FIRST-NAME
-       INITIALIZE WS-LAST-NAME
-       PERFORM READ-FROM-INPUT-FILE
-       IF WS-END-FILE ='Y'
-           PERFORM CLOSE-PROGRAM
-       END-IF
-       MOVE "Enter the full name of the person you are looking for:" TO WS-MESSAGE
-       PERFORM DISPLAY-AND-LOG
+       FIND-SOMEONE SECTION.
+           PERFORM UNTIL WS-RETURN-CODE = 'T'
 
+               INITIALIZE WS-FIRST-NAME
+               INITIALIZE WS-LAST-NAME
 
-       IF WS-END-FILE = 'N'
-           MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-TEMP
-           UNSTRING WS-TEMP
-               DELIMITED BY ALL space
-               INTO WS-FIRST-NAME
-                    WS-LAST-NAME
-           MOVE FUNCTION TRIM(WS-FIRST-NAME) TO WS-FIRST-NAME
-           MOVE FUNCTION TRIM(WS-LAST-NAME) TO WS-LAST-NAME
-       END-IF
+               *> Display the prompt to user first (before reading input)
+               MOVE "Enter the full name of the person you are looking for:" TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
 
-       CALL "SEARCH" USING WS-FIRST-NAME, WS-LAST-NAME, WS-PROFILE-DATA, WS-RETURN-CODE, WS-RETURN-USER
+               *> Now read the user's input after showing the prompt
+               PERFORM READ-FROM-INPUT-FILE
+               IF WS-END-FILE = 'Y'
+                   PERFORM CLOSE-PROGRAM
+               END-IF
 
-       EVALUATE WS-RETURN-CODE
-            WHEN 'T'
-                MOVE "1" TO WS-TRIGGER
-                PERFORM VIEW-PROFILE
-                MOVE "T" TO WS-RETURN-CODE
+               IF WS-END-FILE = 'N'
+                   MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-TEMP
 
+                   *> Check if user entered a blank line (no name provided)
+                   IF WS-TEMP = SPACES
+                       *> Show error message for blank input and loop back for retry
+                       MOVE "Please enter a name. Try again:" TO WS-MESSAGE
+                       PERFORM DISPLAY-AND-LOG
+                   ELSE
+                       *> Valid input received
+                       UNSTRING WS-TEMP
+                           DELIMITED BY ALL SPACE
+                           INTO WS-FIRST-NAME
+                                WS-LAST-NAME
+                       MOVE FUNCTION TRIM(WS-FIRST-NAME) TO WS-FIRST-NAME
+                       MOVE FUNCTION TRIM(WS-LAST-NAME) TO WS-LAST-NAME
 
-            WHEN 'F'
-                MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
-                PERFORM DISPLAY-AND-LOG
-            WHEN 'X'
-                MOVE "Error accessing accounts file." TO WS-MESSAGE
-                PERFORM DISPLAY-AND-LOG
-                CLOSE INPUT-FILE, OUTPUT-FILE
-                STOP RUN
-            WHEN OTHER
-                MOVE "An unknown error occurred." TO WS-MESSAGE
-                PERFORM DISPLAY-AND-LOG
-                CLOSE INPUT-FILE, OUTPUT-FILE
-                STOP RUN
-        END-EVALUATE
+                       CALL "SEARCH" USING WS-FIRST-NAME, WS-LAST-NAME, WS-PROFILE-DATA, WS-RETURN-CODE, WS-RETURN-USER
 
-    END-PERFORM
-    EXIT.
+                       EVALUATE WS-RETURN-CODE
+                           WHEN 'T'
+                               MOVE "1" TO WS-TRIGGER
+                               PERFORM VIEW-PROFILE
+                               MOVE "T" TO WS-RETURN-CODE
+                           WHEN 'F'
+                               MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
+                               PERFORM DISPLAY-AND-LOG
+                           WHEN 'X'
+                               MOVE "Error accessing accounts file." TO WS-MESSAGE
+                               PERFORM DISPLAY-AND-LOG
+                               CLOSE INPUT-FILE, OUTPUT-FILE
+                               STOP RUN
+                           WHEN OTHER
+                               MOVE "An unknown error occurred." TO WS-MESSAGE
+                               PERFORM DISPLAY-AND-LOG
+                               CLOSE INPUT-FILE, OUTPUT-FILE
+                               STOP RUN
+                       END-EVALUATE
+                   END-IF
+               END-IF
+           END-PERFORM
+           EXIT.
 
 LEARN-SKILL SECTION.
     MOVE "Learn a New Skill:" TO WS-MESSAGE.
@@ -727,4 +737,5 @@ CLOSE-PROGRAM SECTION.
            CLOSE INPUT-FILE, OUTPUT-FILE
            STOP RUN
        END-IF.
+
 
