@@ -149,6 +149,7 @@ WELCOME-SCREEN SECTION.
     EXIT.
 
 MAIN-MENU-LOOP SECTION.
+    INITIALIZE WS-RETURN-CODE *>clean up for each menu operation
     PERFORM DISPLAY-MAIN-MENU.
     PERFORM PROCESS-MAIN-MENU-CHOICE.
     EXIT.
@@ -539,53 +540,70 @@ SEARCH-JOB SECTION.
 
 
 FIND-SOMEONE SECTION.
-    PERFORM UNTIL WS-RETURN-CODE = 'T'
-       INITIALIZE WS-FIRST-NAME
-       INITIALIZE WS-LAST-NAME
-       PERFORM READ-FROM-INPUT-FILE
-       IF WS-END-FILE ='Y'
-           PERFORM CLOSE-PROGRAM
-       END-IF
-       MOVE "Enter the full name of the person you are looking for:" TO WS-MESSAGE
-       PERFORM DISPLAY-AND-LOG
-
-
-       IF WS-END-FILE = 'N'
-           MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-TEMP
-           UNSTRING WS-TEMP
-               DELIMITED BY ALL space
-               INTO WS-FIRST-NAME
-                    WS-LAST-NAME
-           MOVE FUNCTION TRIM(WS-FIRST-NAME) TO WS-FIRST-NAME
-           MOVE FUNCTION TRIM(WS-LAST-NAME) TO WS-LAST-NAME
-       END-IF
-
-       CALL "SEARCH" USING WS-FIRST-NAME, WS-LAST-NAME, WS-PROFILE-DATA, WS-RETURN-CODE, WS-RETURN-USER
-
-       EVALUATE WS-RETURN-CODE
-            WHEN 'T'
-                MOVE "1" TO WS-TRIGGER
-                PERFORM VIEW-PROFILE
-                MOVE "T" TO WS-RETURN-CODE
-
-
-            WHEN 'F'
-                MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
-                PERFORM DISPLAY-AND-LOG
-            WHEN 'X'
-                MOVE "Error accessing accounts file." TO WS-MESSAGE
-                PERFORM DISPLAY-AND-LOG
-                CLOSE INPUT-FILE, OUTPUT-FILE
-                STOP RUN
-            WHEN OTHER
-                MOVE "An unknown error occurred." TO WS-MESSAGE
-                PERFORM DISPLAY-AND-LOG
-                CLOSE INPUT-FILE, OUTPUT-FILE
-                STOP RUN
-        END-EVALUATE
-
+    *> Initialize search loop control variable
+    MOVE 'N' TO WS-LOOP-FLAG
+    
+    *> Continue searching until user chooses to stop
+    PERFORM UNTIL WS-LOOP-FLAG = 'Y'
+      *> Clear any previous name data before starting new search
+      INITIALIZE WS-FIRST-NAME
+      INITIALIZE WS-LAST-NAME
+    
+      *> Display the prompt to user first
+      MOVE "Enter the full name of the person you are looking for:" TO WS-MESSAGE
+      PERFORM DISPLAY-AND-LOG
+    
+      PERFORM READ-FROM-INPUT-FILE
+      IF WS-END-FILE ='Y'
+          PERFORM CLOSE-PROGRAM
+      END-IF
+    
+      *> Process the input only if we successfully read from file
+      IF WS-END-FILE = 'N'
+          MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-TEMP
+    
+          *> Check if user entered a blank line (no name provided)
+          IF WS-TEMP = SPACES
+              *> Show error message for blank input and continue loop
+              MOVE "Please enter a name. Try again:" TO WS-MESSAGE
+              PERFORM DISPLAY-AND-LOG
+          ELSE
+              UNSTRING WS-TEMP
+                  DELIMITED BY ALL SPACE
+                  INTO WS-FIRST-NAME
+                       WS-LAST-NAME
+              MOVE FUNCTION TRIM(WS-FIRST-NAME) TO WS-FIRST-NAME
+              MOVE FUNCTION TRIM(WS-LAST-NAME) TO WS-LAST-NAME
+    
+              CALL "SEARCH" USING WS-FIRST-NAME, WS-LAST-NAME, WS-PROFILE-DATA, WS-RETURN-CODE, WS-RETURN-USER
+    
+              EVALUATE WS-RETURN-CODE
+                   WHEN 'T'
+                       MOVE "1" TO WS-TRIGGER
+                       PERFORM VIEW-PROFILE
+                       MOVE "0" TO WS-TRIGGER
+                       MOVE 'Y' TO WS-LOOP-FLAG
+                   WHEN 'F'
+                       MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
+                       PERFORM DISPLAY-AND-LOG
+                   WHEN 'X'
+                       MOVE "Error accessing accounts file." TO WS-MESSAGE
+                       PERFORM DISPLAY-AND-LOG
+                       CLOSE INPUT-FILE, OUTPUT-FILE
+                       STOP RUN
+                   WHEN OTHER
+                       MOVE "An unknown error occurred." TO WS-MESSAGE
+                       PERFORM DISPLAY-AND-LOG
+                       CLOSE INPUT-FILE, OUTPUT-FILE
+                       STOP RUN
+               END-EVALUATE
+          END-IF
+      END-IF
     END-PERFORM
-    EXIT.
+
+   *> Reset return code so it doesn't interfere with main menu
+   INITIALIZE WS-RETURN-CODE
+   EXIT.
 
 LEARN-SKILL SECTION.
     MOVE "Learn a New Skill:" TO WS-MESSAGE.
@@ -727,4 +745,5 @@ CLOSE-PROGRAM SECTION.
            CLOSE INPUT-FILE, OUTPUT-FILE
            STOP RUN
        END-IF.
+
 
