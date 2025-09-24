@@ -25,4 +25,5 @@ LNAM:Doe
 UNIV:University of somewhere
 MAJR:something
 GRAD:2027
+ABOU: I'm Jane Doe studying at University of somewhere  
 ENDPROFILE
