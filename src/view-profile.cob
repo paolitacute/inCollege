@@ -1,14 +1,14 @@
->>SOURCE FREE
-*> Program to view user profiles from a file
-IDENTIFICATION DIVISION.
-PROGRAM-ID. VIEW-PROFILE.
-AUTHOR. Jacob.
-DATE-WRITTEN. 09/12/2025.
-
-*> Define file handling and I/O operations
-ENVIRONMENT DIVISION.
-INPUT-OUTPUT SECTION.
-FILE-CONTROL.
+ >>SOURCE FREE
+ *> Program to view user profiles from a file
+ IDENTIFICATION DIVISION.
+ PROGRAM-ID. VIEW-PROFILE.
+ AUTHOR. Jacob.
+ DATE-WRITTEN. 09/12/2025.
+ 
+ *> Define file handling and I/O operations
+ ENVIRONMENT DIVISION.
+ INPUT-OUTPUT SECTION.
+ FILE-CONTROL.
     *> Input file containing profile data in line sequential format
     SELECT PROFILE-FILE ASSIGN TO 'profiles.txt'
         ORGANIZATION IS LINE SEQUENTIAL
@@ -16,36 +16,36 @@ FILE-CONTROL.
     *> Output file for writing profile display results
     SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
         ORGANIZATION IS LINE SEQUENTIAL.
-
-DATA DIVISION.
-
-*> File record structures
-FILE SECTION.
-*> Record structure for reading profile data (250 chars max)
-FD PROFILE-FILE.
-01 PROFILE-RECORD       PIC X(250).
-
-*> Record structure for writing output data (350 chars max)
-FD OUTPUT-FILE.
-01 OUTPUT-RECORD        PIC X(350).
-
-*> Working variables for program processing
-WORKING-STORAGE SECTION.
-01 WS-FILE-STATUS       PIC XX.              *> File operation status codes
-01 WS-EOF-FLAG          PIC X VALUE 'N'.     *> End-of-file indicator
-01 I                    PIC 9.               *> Loop counter for experience entries
-01 J                    PIC 9.               *> Loop counter for education entries
-01 WS-MESSAGE           PIC X(80).           *> Buffer for formatted output messages
-01 WS-TEMP-ONE          PIC X(80).           *> Temporary work area
-01 WS-TEMP-TWO          PIC X(80).           *> Temporary work area
-
-*> Parameters passed from calling program
-LINKAGE SECTION.
-*> Username to search for in profiles file
-01 LS-USERNAME          PIC X(20).
-
-*> Complete profile data structure
-01 LS-PROFILE-DATA.
+ 
+ DATA DIVISION.
+ 
+ *> File record structures
+ FILE SECTION.
+ *> Record structure for reading profile data (250 chars max)
+ FD PROFILE-FILE.
+ 01 PROFILE-RECORD       PIC X(250).
+ 
+ *> Record structure for writing output data (350 chars max)
+ FD OUTPUT-FILE.
+ 01 OUTPUT-RECORD        PIC X(350).
+ 
+ *> Working variables for program processing
+ WORKING-STORAGE SECTION.
+ 01 WS-FILE-STATUS       PIC XX.              *> File operation status codes
+ 01 WS-EOF-FLAG          PIC X VALUE 'N'.     *> End-of-file indicator
+ 01 I                    PIC 9.               *> Loop counter for experience entries
+ 01 J                    PIC 9.               *> Loop counter for education entries
+ 01 WS-MESSAGE           PIC X(80).           *> Buffer for formatted output messages
+ 01 WS-TEMP-ONE          PIC X(80).           *> Temporary work area
+ 01 WS-TEMP-TWO          PIC X(80).           *> Temporary work area
+ 
+ *> Parameters passed from calling program
+ LINKAGE SECTION.
+ *> Username to search for in profiles file
+ 01 LS-USERNAME          PIC X(20).
+ 
+ *> Complete profile data structure
+ 01 LS-PROFILE-DATA.
    05 LS-FIRST-NAME     PIC X(50).           *> User's first name
    05 LS-LAST-NAME      PIC X(50).           *> User's last name
    05 LS-UNIVERSITY     PIC X(100).          *> University name
@@ -67,24 +67,24 @@ LINKAGE SECTION.
          15 LS-EDU-UNIV     PIC X(50).       *> University name
          15 LS-EDU-YEARS    PIC X(50).       *> Years attended
    05 LS-EDU-COUNT      PIC 9.               *> Number of education entries
-
-*> Return code to indicate success/failure to calling program
-01 LS-RETURN-CODE       PIC X.
-
-*> Main program logic - searches for and displays user profile
-PROCEDURE DIVISION USING LS-USERNAME LS-PROFILE-DATA LS-RETURN-CODE.
-
+ 
+ *> Return code to indicate success/failure to calling program
+ 01 LS-RETURN-CODE       PIC X.
+ 
+ *> Main program logic - searches for and displays user profile
+ PROCEDURE DIVISION USING LS-USERNAME LS-PROFILE-DATA LS-RETURN-CODE.
+ 
     *> Initialize return code to 'F' (failure) and reset EOF flag
     MOVE 'F' TO LS-RETURN-CODE
     MOVE 'N' TO WS-EOF-FLAG
-
+ 
     *> Clean up input username by removing extra spaces/newlines
     MOVE FUNCTION TRIM(LS-USERNAME) TO LS-USERNAME
-
+ 
     *> Open input file for reading and output file for appending
     OPEN INPUT PROFILE-FILE.
     OPEN EXTEND OUTPUT-FILE.
-
+ 
     *> Check if file opened successfully
     IF WS-FILE-STATUS NOT = "00"
         DISPLAY "Error opening profiles file."
@@ -93,7 +93,7 @@ PROCEDURE DIVISION USING LS-USERNAME LS-PROFILE-DATA LS-RETURN-CODE.
         CLOSE PROFILE-FILE
         GOBACK
     END-IF
-
+ 
     *> Main search loop - read through file looking for matching username
     PERFORM UNTIL WS-EOF-FLAG = 'Y'
         READ PROFILE-FILE
@@ -102,7 +102,7 @@ PROCEDURE DIVISION USING LS-USERNAME LS-PROFILE-DATA LS-RETURN-CODE.
             NOT AT END
                 MOVE 'N' TO WS-EOF-FLAG
         END-READ
-
+ 
         *> Process record if not at end of file
         IF WS-EOF-FLAG = 'N'
             *> Check if this line contains a username marker
@@ -117,23 +117,23 @@ PROCEDURE DIVISION USING LS-USERNAME LS-PROFILE-DATA LS-RETURN-CODE.
             END-IF
         END-IF
     END-PERFORM
-
+ 
     *> If profile was found successfully, display it
     IF LS-RETURN-CODE = 'S'
         PERFORM PROFILE-DISPLAY
     END-IF
-
+ 
     *> Clean up - close files and return to calling program
     CLOSE PROFILE-FILE
     CLOSE OUTPUT-FILE
     GOBACK.
-
-*> Display formatted profile information to screen and output file
-PROFILE-DISPLAY.
+ 
+ *> Display formatted profile information to screen and output file
+ PROFILE-DISPLAY.
     *> Write blank line separator
     *>MOVE WS-MESSAGE TO OUTPUT-RECORD
     *>WRITE OUTPUT-RECORD
-
+ 
     *> Display full name
     INITIALIZE WS-MESSAGE
     STRING "Name: " FUNCTION TRIM(LS-FIRST-NAME) " " FUNCTION TRIM(LS-LAST-NAME)
@@ -141,7 +141,7 @@ PROFILE-DISPLAY.
     DISPLAY WS-MESSAGE
     MOVE WS-MESSAGE TO OUTPUT-RECORD
     WRITE OUTPUT-RECORD
-
+ 
     *> Display university
     INITIALIZE WS-MESSAGE
     STRING "University: " LS-UNIVERSITY
@@ -149,7 +149,7 @@ PROFILE-DISPLAY.
     DISPLAY WS-MESSAGE
     MOVE WS-MESSAGE TO OUTPUT-RECORD
     WRITE OUTPUT-RECORD
-
+ 
     *> Display major
     INITIALIZE WS-MESSAGE
     STRING "Major: " LS-MAJOR
@@ -157,7 +157,7 @@ PROFILE-DISPLAY.
     DISPLAY WS-MESSAGE
     MOVE WS-MESSAGE TO OUTPUT-RECORD
     WRITE OUTPUT-RECORD
-
+ 
     *> Display graduation year
     INITIALIZE WS-MESSAGE
     STRING "Graduation Year: " LS-GRAD-YEAR
@@ -165,7 +165,7 @@ PROFILE-DISPLAY.
     DISPLAY WS-MESSAGE
     MOVE WS-MESSAGE TO OUTPUT-RECORD
     WRITE OUTPUT-RECORD
-
+ 
     *> Display about me section
     INITIALIZE WS-MESSAGE
     STRING "About Me: " LS-ABOUT-ME
@@ -173,14 +173,14 @@ PROFILE-DISPLAY.
     DISPLAY WS-MESSAGE
     MOVE WS-MESSAGE TO OUTPUT-RECORD
     WRITE OUTPUT-RECORD
-
+ 
     *> Display experience section header
     INITIALIZE WS-MESSAGE
     MOVE "Experience: " TO WS-MESSAGE
     DISPLAY WS-MESSAGE
     MOVE WS-MESSAGE TO OUTPUT-RECORD
     WRITE OUTPUT-RECORD
-
+ 
     *> Loop through and display each experience entry
     PERFORM VARYING I FROM 1 BY 1 UNTIL I > LS-EXP-COUNT
        *> Display job title
@@ -190,7 +190,7 @@ PROFILE-DISPLAY.
        DISPLAY WS-MESSAGE
        MOVE WS-MESSAGE TO OUTPUT-RECORD
        WRITE OUTPUT-RECORD
-
+ 
        *> Display company name
        INITIALIZE WS-MESSAGE
        STRING " Company: "        LS-EXP-COMPANY(I)
@@ -198,7 +198,7 @@ PROFILE-DISPLAY.
        DISPLAY WS-MESSAGE
        MOVE WS-MESSAGE TO OUTPUT-RECORD
        WRITE OUTPUT-RECORD
-
+ 
        *> Display employment dates
        INITIALIZE WS-MESSAGE
        STRING " Dates: "          LS-EXP-DATES(I)
@@ -206,7 +206,7 @@ PROFILE-DISPLAY.
        DISPLAY WS-MESSAGE
        MOVE WS-MESSAGE TO OUTPUT-RECORD
        WRITE OUTPUT-RECORD
-
+ 
        *> Display job description
        INITIALIZE WS-MESSAGE
        STRING " Description: "    LS-EXP-DESC(I)
@@ -214,22 +214,22 @@ PROFILE-DISPLAY.
        DISPLAY WS-MESSAGE
        MOVE WS-MESSAGE TO OUTPUT-RECORD
        WRITE OUTPUT-RECORD
-
+ 
        *> Add blank line between experience entries
-       INITIALIZE WS-MESSAGE
-       MOVE " " TO WS-MESSAGE
-       DISPLAY WS-MESSAGE
-       MOVE WS-MESSAGE TO OUTPUT-RECORD
-       WRITE OUTPUT-RECORD
+       *>INITIALIZE WS-MESSAGE
+       *>MOVE " " TO WS-MESSAGE
+       *>DISPLAY WS-MESSAGE
+       *>MOVE WS-MESSAGE TO OUTPUT-RECORD
+       *>WRITE OUTPUT-RECORD
     END-PERFORM
-
+ 
     *> Display education section header
     INITIALIZE WS-MESSAGE
     MOVE "Education: " TO WS-MESSAGE
     DISPLAY WS-MESSAGE
     MOVE WS-MESSAGE TO OUTPUT-RECORD
     WRITE OUTPUT-RECORD
-
+ 
     *> Loop through and display each education entry
     PERFORM VARYING J FROM 1 BY 1 UNTIL J > LS-EDU-COUNT
        *> Display degree type
@@ -239,7 +239,7 @@ PROFILE-DISPLAY.
        DISPLAY WS-MESSAGE
        MOVE WS-MESSAGE TO OUTPUT-RECORD
        WRITE OUTPUT-RECORD
-
+ 
        *> Display university name
        INITIALIZE WS-MESSAGE
        STRING " University: "     LS-EDU-UNIV(J)
@@ -247,7 +247,7 @@ PROFILE-DISPLAY.
        DISPLAY WS-MESSAGE
        MOVE WS-MESSAGE TO OUTPUT-RECORD
        WRITE OUTPUT-RECORD
-
+ 
        *> Display years attended
        INITIALIZE WS-MESSAGE
        STRING " Years: "          LS-EDU-YEARS(J)
@@ -255,21 +255,21 @@ PROFILE-DISPLAY.
        DISPLAY WS-MESSAGE
        MOVE WS-MESSAGE TO OUTPUT-RECORD
        WRITE OUTPUT-RECORD
-
+ 
        *> Add blank line between education entries
-       INITIALIZE WS-MESSAGE
-       MOVE " " TO WS-MESSAGE
-       DISPLAY WS-MESSAGE
-       MOVE WS-MESSAGE TO OUTPUT-RECORD
-       WRITE OUTPUT-RECORD
+       *>INITIALIZE WS-MESSAGE
+       *>MOVE " " TO WS-MESSAGE
+       *>DISPLAY WS-MESSAGE
+       *>MOVE WS-MESSAGE TO OUTPUT-RECORD
+       *>WRITE OUTPUT-RECORD
     END-PERFORM.
-
-*> Parse profile data from file after finding matching username
-PARSE-PROFILE.
+ 
+ *> Parse profile data from file after finding matching username
+ PARSE-PROFILE.
     *> Initialize counters for experience and education entries
     MOVE 0 TO LS-EXP-COUNT
     MOVE 0 TO LS-EDU-COUNT
-
+ 
     *> Continue reading and parsing until we hit the end marker
     PERFORM UNTIL PROFILE-RECORD(1:10) = "ENDPROFILE"
         READ PROFILE-FILE INTO PROFILE-RECORD
@@ -277,7 +277,7 @@ PARSE-PROFILE.
                 MOVE 'Y' TO WS-EOF-FLAG
                 EXIT PERFORM
         END-READ
-
+ 
         *> Parse different types of profile data based on line prefix
         EVALUATE TRUE
             *> Parse first name
@@ -310,9 +310,9 @@ PARSE-PROFILE.
                 PERFORM PARSE-EDUCATION-LINE
         END-EVALUATE
     END-PERFORM.
-
-*> Parse a single experience entry line using tilde (~) as delimiter
-PARSE-EXPERIENCE-LINE.
+ 
+ *> Parse a single experience entry line using tilde (~) as delimiter
+ PARSE-EXPERIENCE-LINE.
     ADD 1 TO LS-EXP-COUNT                    *> Increment experience counter
     *> Split the line into components: title~company~dates~description
     UNSTRING PROFILE-RECORD(7:) DELIMITED BY "~"
@@ -321,9 +321,9 @@ PARSE-EXPERIENCE-LINE.
              LS-EXP-DATES(LS-EXP-COUNT)
              LS-EXP-DESC(LS-EXP-COUNT)
     END-UNSTRING.
-
-*> Parse a single education entry line using tilde (~) as delimiter
-PARSE-EDUCATION-LINE.
+ 
+ *> Parse a single education entry line using tilde (~) as delimiter
+ PARSE-EDUCATION-LINE.
     ADD 1 TO LS-EDU-COUNT                    *> Increment education counter
     *> Split the line into components: degree~university~years
     UNSTRING PROFILE-RECORD(7:) DELIMITED BY "~"
@@ -331,5 +331,5 @@ PARSE-EDUCATION-LINE.
              LS-EDU-UNIV(LS-EDU-COUNT)
              LS-EDU-YEARS(LS-EDU-COUNT)
     END-UNSTRING.
-
-    
+ 
+ 
