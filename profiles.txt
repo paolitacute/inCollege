@@ -19,3 +19,10 @@ EXP01:Software Tester~Test Corp~Summer 2025~Tested software
 EXP02:QA Analyst~Another Test Corp~Fall 2026~More testing
 EDU01:B.S. in Testing~Test University~2023-2027
 ENDPROFILE
+USER:no_exp_user
+FNAM:Jane
+LNAM:Doe
+UNIV:University of somewhere
+MAJR:something
+GRAD:2027
+ENDPROFILE
