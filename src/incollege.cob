@@ -616,10 +616,12 @@
        VIEW-PENDING-REQUESTS SECTION.
                  MOVE "VIEW" TO WS-TEMP.
                  MOVE SPACES TO WS-VIEW-USER. *> Clear the target user for viewing
+                 *> Call CONNECTIONS to view pending requests; returns 'S' if any are found.
                  CALL "CONNECTIONS" USING WS-TEMP, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE.
 
                  EVALUATE WS-RETURN-CODE
                      WHEN 'S'
+                         *> Prompt user to manage the requests they just viewed
                          MOVE "Would you like to manage a pending connection request?" TO WS-MESSAGE
                          PERFORM DISPLAY-AND-LOG
                          MOVE "1. Yes, manage a request" TO WS-MESSAGE
@@ -636,13 +638,16 @@
                          MOVE "Error accessing connections file." TO WS-MESSAGE
                          PERFORM DISPLAY-AND-LOG
                      WHEN OTHER
+                         *> This handles 'F' (no requests) and unknown status
                          MOVE "Unknown error occurred while viewing requests." TO WS-MESSAGE
                          PERFORM DISPLAY-AND-LOG
                  END-EVALUATE.
           EXIT.
 
        MANAGE-CONNECTION-FLOW SECTION.
+                 *> Get the username of the request to be accepted
                  MOVE "Enter the username of the person you want to connect with:" TO WS-MESSAGE
+                 *> Call CONNECTIONS to change request status from PENDING to CONNECTED
                  PERFORM DISPLAY-AND-LOG
                  PERFORM READ-FROM-INPUT-FILE
                  IF WS-END-FILE = 'Y'
@@ -656,6 +661,7 @@
                          MOVE "Connection accepted successfully!" TO WS-MESSAGE
                          PERFORM DISPLAY-AND-LOG
                      WHEN 'F'
+                         *> Request not found (wasn't pending from that user)
                          MOVE "No pending requests ." TO WS-MESSAGE
                          PERFORM DISPLAY-AND-LOG
                      WHEN 'X'
