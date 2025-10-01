@@ -14,7 +14,6 @@
   "extensions": [
     "bitlang.cobol",
     "ms-vscode.makefile-tools"
-    
   ],
   "postCreateCommand": "mkdir -p bin src && echo 'Devcontainer ready.'"
 }

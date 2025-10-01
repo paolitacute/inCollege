@@ -14,7 +14,8 @@
                   ORGANIZATION IS LINE SEQUENTIAL.
               *> OUTPUT-FILE defines what file will have the output stored
               SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
-                  ORGANIZATION IS LINE SEQUENTIAL.
+                  ORGANIZATION IS LINE SEQUENTIAL
+                  FILE STATUS IS WS-OUTPUT-STATUS.
 
               SELECT ACCOUNTS-FILE ASSIGN TO "accounts.txt"
                   ORGANIZATION IS LINE SEQUENTIAL
@@ -28,7 +29,7 @@
           01  INPUT-RECORD      PIC X(350).
 
           *> FD describes the structure of the OUTPUT-FILE
-          FD  OUTPUT-FILE.
+          FD  OUTPUT-FILE EXTERNAL.
 
           *> Defines each record as a 80 charecter line of text
           01  OUTPUT-RECORD     PIC X(350).
@@ -71,6 +72,7 @@
           01  WS-RETURN-CODE     PIC X.
           01  WS-RETURN-USER     PIC X(20).
           01  WS-ACCOUNTS-STATUS PIC X(2).
+          01  WS-OUTPUT-STATUS PIC X(2).
           01  WS-INPUT-BUFFER    PIC X(80).
           01  WS-TRIGGER         PIC X VALUE "0".
 
@@ -209,51 +211,37 @@
           END-EVALUATE.
           EXIT.
 
+
        VIEW-PROFILE SECTION.
-             IF WS-TRIGGER = '0'
-           MOVE "---Your Profile---" TO WS-MESSAGE
-           PERFORM DISPLAY-AND-LOG
-           MOVE WS-USERNAME TO WS-VIEW-USER
-       END-IF
-       IF WS-TRIGGER = '1'
-           MOVE "---Found User Profile---" TO WS-MESSAGE
-           PERFORM DISPLAY-AND-LOG
-           MOVE WS-RETURN-USER TO WS-VIEW-USER
-       END-IF
-       CLOSE OUTPUT-FILE
-           CALL "VIEW-PROFILE" USING WS-VIEW-USER, WS-PROFILE-DATA, WS-RETURN-CODE.
+            IF WS-TRIGGER = '0'
+                MOVE "---Your Profile---" TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                MOVE WS-USERNAME TO WS-VIEW-USER
+            END-IF
+            IF WS-TRIGGER = '1'
+                MOVE "---Found User Profile---" TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                MOVE WS-RETURN-USER TO WS-VIEW-USER
+            END-IF
+            CLOSE OUTPUT-FILE
+            CALL "VIEW-PROFILE" USING WS-VIEW-USER, WS-PROFILE-DATA, WS-RETURN-CODE
 
-           OPEN EXTEND OUTPUT-FILE
-           EVALUATE WS-RETURN-CODE
-           WHEN 'S'
-               *> Profile displayed successfully
-               IF WS-TRIGGER = '1'
-                   *> Prompt user before sending connection request
-                   MOVE "Would you like to send a connection request?" TO WS-MESSAGE
-                   PERFORM DISPLAY-AND-LOG
-                   MOVE "1. Yes" TO WS-MESSAGE
-                   PERFORM DISPLAY-AND-LOG
-                   MOVE "2. No" TO WS-MESSAGE
-                   PERFORM DISPLAY-AND-LOG
-                   MOVE 1 TO MIN-VALUE-CHOICE
-                   MOVE 2 TO MAX-VALUE-CHOICE
-                   PERFORM CHOICE
-                   IF WS-CHOICE = 1
-                       PERFORM SEND-CONNECTION-REQUEST
-                   END-IF
-               END-IF
-       WHEN 'F'
-               MOVE "No profile found for this user." TO WS-MESSAGE
-               PERFORM DISPLAY-AND-LOG
-       WHEN 'X'
-               MOVE "Error accessing profile file." TO WS-MESSAGE
-               PERFORM DISPLAY-AND-LOG
-       WHEN OTHER
-               MOVE "Unknown error occurred while viewing profile." TO WS-MESSAGE
-               PERFORM DISPLAY-AND-LOG
-           END-EVALUATE.
+            OPEN EXTEND OUTPUT-FILE
+            EVALUATE WS-RETURN-CODE
+                WHEN 'S'
+                    CONTINUE
+                WHEN 'F'
+                    MOVE "No profile found for this user." TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+                WHEN 'X'
+                    MOVE "Error accessing profile file." TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+                WHEN OTHER
+                    MOVE "Unknown error occurred while viewing profile." TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+            END-EVALUATE
 
-           EXIT.
+            EXIT.
 
 
        PROFILE-CREATION-FLOW SECTION.
@@ -557,71 +545,84 @@
           EXIT.
 
 
-       FIND-SOMEONE SECTION.
-          *> Initialize search loop control variable
-          MOVE 'N' TO WS-LOOP-FLAG
+FIND-SOMEONE SECTION.
+    *> Initialize search loop control variable
+    MOVE 'N' TO WS-LOOP-FLAG
 
-          *> Continue searching until user chooses to stop
-          PERFORM UNTIL WS-LOOP-FLAG = 'Y'
-            *> Clear any previous name data before starting new search
-            INITIALIZE WS-FIRST-NAME
-            INITIALIZE WS-LAST-NAME
+    *> Continue searching until user chooses to stop
+    PERFORM UNTIL WS-LOOP-FLAG = 'Y'
+        *> Clear any previous name data before starting new search
+        INITIALIZE WS-FIRST-NAME
+        INITIALIZE WS-LAST-NAME
 
-            *> Display the prompt to user first
-            MOVE "Enter the full name of the person you are looking for:" TO WS-MESSAGE
-            PERFORM DISPLAY-AND-LOG
+        *> Display the prompt to user first
+        MOVE "Enter the full name of the person you are looking for:" TO WS-MESSAGE
+        PERFORM DISPLAY-AND-LOG
 
-            PERFORM READ-FROM-INPUT-FILE
-            IF WS-END-FILE ='Y'
-                PERFORM CLOSE-PROGRAM
+        PERFORM READ-FROM-INPUT-FILE
+        IF WS-END-FILE = 'Y'
+            PERFORM CLOSE-PROGRAM
+        END-IF
+
+        *> Process the input only if we successfully read from file
+        IF WS-END-FILE = 'N'
+            MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-TEMP
+
+            *> Check if user entered a blank line (no name provided)
+            IF WS-TEMP = SPACES
+                *> Show error message for blank input and continue loop
+                MOVE "Please enter a name. Try again:" TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+            ELSE
+                UNSTRING WS-TEMP
+                    DELIMITED BY ALL SPACE
+                    INTO WS-FIRST-NAME
+                        WS-LAST-NAME
+                MOVE FUNCTION TRIM(WS-FIRST-NAME) TO WS-FIRST-NAME
+                MOVE FUNCTION TRIM(WS-LAST-NAME) TO WS-LAST-NAME
+
+                CALL "SEARCH" USING WS-FIRST-NAME, WS-LAST-NAME, WS-PROFILE-DATA, WS-RETURN-CODE, WS-RETURN-USER
+
+                EVALUATE WS-RETURN-CODE
+                    WHEN 'T'
+                        MOVE "1" TO WS-TRIGGER
+                        PERFORM VIEW-PROFILE
+                        MOVE "0" TO WS-TRIGGER
+                        *> Prompt for sending connection request
+                        MOVE "Would you like to send a connection request? (1 = Yes, 2 = No)" TO WS-MESSAGE
+                        PERFORM DISPLAY-AND-LOG
+                        MOVE 1 TO MIN-VALUE-CHOICE
+                        MOVE 2 TO MAX-VALUE-CHOICE
+                        PERFORM CHOICE
+                        IF WS-CHOICE = 1
+                            MOVE WS-RETURN-USER TO WS-VIEW-USER
+                            PERFORM SEND-CONNECTION-REQUEST
+                        ELSE
+                            MOVE "No connection request sent." TO WS-MESSAGE
+                            PERFORM DISPLAY-AND-LOG
+                        END-IF
+                        MOVE 'Y' TO WS-LOOP-FLAG
+                    WHEN 'F'
+                        MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
+                        PERFORM DISPLAY-AND-LOG
+                    WHEN 'X'
+                        MOVE "Error accessing accounts file." TO WS-MESSAGE
+                        PERFORM DISPLAY-AND-LOG
+                        CLOSE INPUT-FILE, OUTPUT-FILE
+                        STOP RUN
+                    WHEN OTHER
+                        MOVE "An unknown error occurred." TO WS-MESSAGE
+                        PERFORM DISPLAY-AND-LOG
+                        CLOSE INPUT-FILE, OUTPUT-FILE
+                        STOP RUN
+                END-EVALUATE  *> Corrected from END-ENDIF
             END-IF
+        END-IF
+    END-PERFORM
 
-            *> Process the input only if we successfully read from file
-            IF WS-END-FILE = 'N'
-                MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-TEMP
-
-                *> Check if user entered a blank line (no name provided)
-                IF WS-TEMP = SPACES
-                    *> Show error message for blank input and continue loop
-                    MOVE "Please enter a name. Try again:" TO WS-MESSAGE
-                    PERFORM DISPLAY-AND-LOG
-                ELSE
-                    UNSTRING WS-TEMP
-                        DELIMITED BY ALL SPACE
-                        INTO WS-FIRST-NAME
-                             WS-LAST-NAME
-                    MOVE FUNCTION TRIM(WS-FIRST-NAME) TO WS-FIRST-NAME
-                    MOVE FUNCTION TRIM(WS-LAST-NAME) TO WS-LAST-NAME
-
-                    CALL "SEARCH" USING WS-FIRST-NAME, WS-LAST-NAME, WS-PROFILE-DATA, WS-RETURN-CODE, WS-RETURN-USER
-
-                    EVALUATE WS-RETURN-CODE
-                         WHEN 'T'
-                             MOVE "1" TO WS-TRIGGER
-                             PERFORM VIEW-PROFILE
-                             MOVE "0" TO WS-TRIGGER
-                             MOVE 'Y' TO WS-LOOP-FLAG
-                         WHEN 'F'
-                             MOVE "This user profile does not exist, Try again:" TO WS-MESSAGE
-                             PERFORM DISPLAY-AND-LOG
-                         WHEN 'X'
-                             MOVE "Error accessing accounts file." TO WS-MESSAGE
-                             PERFORM DISPLAY-AND-LOG
-                             CLOSE INPUT-FILE, OUTPUT-FILE
-                             STOP RUN
-                         WHEN OTHER
-                             MOVE "An unknown error occurred." TO WS-MESSAGE
-                             PERFORM DISPLAY-AND-LOG
-                             CLOSE INPUT-FILE, OUTPUT-FILE
-                             STOP RUN
-                     END-EVALUATE
-                END-IF
-            END-IF
-          END-PERFORM
-
-         *> Reset return code so it doesn't interfere with main menu
-         INITIALIZE WS-RETURN-CODE
-         EXIT.
+    *> Reset return code so it doesn't interfere with main menu
+    INITIALIZE WS-RETURN-CODE
+    EXIT.
 
 
        VIEW-PENDING-REQUESTS SECTION.
@@ -684,30 +685,37 @@
                  END-EVALUATE.
                  EXIT.
        SEND-CONNECTION-REQUEST SECTION.
-          MOVE "SEND" TO WS-ACTION.
-          CALL "CONNECTIONS" USING WS-ACTION, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE.
+            *> Check if sending to self
+            IF FUNCTION TRIM(WS-USERNAME) = FUNCTION TRIM(WS-VIEW-USER)
+                MOVE "Cannot send connection request to yourself." TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                EXIT SECTION
+            END-IF
 
-          EVALUATE WS-RETURN-CODE
-              WHEN 'S'
-                  MOVE "Connection request sent successfully!" TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-              WHEN 'C'
-                  MOVE "You are already connected with this user." TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-              WHEN 'P'
-                  MOVE "This user has already sent you a connection request. Check option 6." TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-              WHEN 'A'
-                  MOVE "You have already sent a connection request to this user." TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-              WHEN 'X'
-                  MOVE "Error occurred while sending connection request." TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-              WHEN OTHER
-                  MOVE "Unknown error occurred." TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-          END-EVALUATE.
-          EXIT.
+            MOVE "SEND" TO WS-ACTION
+            CALL "CONNECTIONS" USING WS-ACTION, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
+
+            EVALUATE WS-RETURN-CODE
+                WHEN 'S'
+                    MOVE "Connection request sent successfully!" TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+                WHEN 'C'
+                    MOVE "You are already connected with this user." TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+                WHEN 'P'
+                    MOVE "This user has already sent you a connection request. Check option 6." TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+                WHEN 'A'
+                    MOVE "You have already sent a connection request to this user." TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+                WHEN 'X'
+                    MOVE "Error occurred while sending connection request." TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+                WHEN OTHER
+                    MOVE "Unknown error occurred." TO WS-MESSAGE
+                    PERFORM DISPLAY-AND-LOG
+            END-EVALUATE
+            EXIT.
 
        LEARN-SKILL SECTION.
           MOVE "Learn a New Skill:" TO WS-MESSAGE.

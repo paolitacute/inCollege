@@ -14,7 +14,7 @@ Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
 **Run the template**
 1. Clone this repo and open it in VS Code.
 2. When prompted, click **“Reopen in Container”**. (Or run *Dev Containers: Reopen in Container* from the Command Palette.)
-3. Build the files using the command ```cobc -x src/incollege.cob src/login.cob src/create-profile.cob src/view-profile.cob src/create-account.cob src/search-profile.cob src/connections.cob -o bin/inCollege```
+3. Build the files using the command ```cobc -x src/incollege.cob src/login.cob src/create-profile.cob src/view-profile.cob src/create-account.cob src/search-profile.cob -o bin/inCollege```
 4. The compiled program will be placed in `bin/` and run in the VS Code terminal.
 
 ## Features
@@ -32,7 +32,7 @@ Works the same on **Windows 11** and **macOS** (Apple Silicon and Intel).
 ## Compilation
 Compile using
 
-mkdir -p bin && cobc -x -free -o bin/incollege /workspace/src/incollege.cob /workspace/src/create-account.cob /workspace/src/create-profile.cob /workspace/src/login.cob /workspace/src/view-profile.cob /workspace/src/search-profile.cob /workspace/src/connections.cob
+mkdir -p bin && cobc -x -free -o bin/incollege /workspace/src/incollege.cob /workspace/src/create-account.cob /workspace/src/create-profile.cob /workspace/src/login.cob /workspace/src/view-profile.cob /workspace/src/search-profile.cob
 
 once more files are added just add the /workspace/src/name_of_module.cob to the end
 

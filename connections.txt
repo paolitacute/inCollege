@@ -1,2 +1,2 @@
-alice:alice:CONNECTED
-bob:alice:CONNECTED
+user123:testuser:CONNECTED
+testuser:no_exp_user:PENDING

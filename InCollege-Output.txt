@@ -5,7 +5,7 @@ Enter your choice:
 Please enter your username:
 Please enter your password:
 You have successfully logged in.
-Welcome, alice!
+Welcome, testuser!
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -14,6 +14,28 @@ Welcome, alice!
 6. View My Pending Connection Requests
 7. Exit
 Enter your choice:
+Enter the full name of the person you are looking for:
+---Found User Profile---
+Name: Jane Doe
+University: University of somewhere
+Major: something
+Graduation Year: 2027
+About Me:  I'm Jane Doe studying at University of somewhere
+Experience: None
+Education: None
+--------------------
+Would you like to send a connection request? (1 = Yes, 2 = No)
+Connection request sent successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a New Skill
+6. View My Pending Connection Requests
+7. Exit
+Enter your choice:
+Your Pending Connection Requests:
+- user123 wants to connect with you
 Would you like to manage a pending connection request?
 1. Yes, manage a request
 2. No, go back to the main menu
