@@ -1,1 +1,2 @@
-user123:testuser:PENDING
+user123:testuser:CONNECTED
+testuser:no_exp_user:PENDING
