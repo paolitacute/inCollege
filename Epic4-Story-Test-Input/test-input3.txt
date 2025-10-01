@@ -1,0 +1,23 @@
+2
+bob
+BobPass1!
+1
+Bob
+Builder
+Builder University
+Construction
+2026
+I'm Bob and I connect to Alice.
+Foreman
+BuildCo
+Summer 2025
+Built bridges
+DONE
+M.S. in Building
+Builder University
+2022-2026
+DONE
+4
+Alice Anderson
+1
+7

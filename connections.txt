@@ -1,1 +1,2 @@
-user123:testuser:PENDING
+alice:alice:CONNECTED
+bob:alice:CONNECTED

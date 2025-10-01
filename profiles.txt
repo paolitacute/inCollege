@@ -1,29 +1,20 @@
-USER:user123
-FNAM:John
-LNAM:Doe
-UNIV:USF
-MAJR:Computer Science
-GRAD:2026
-ABOU:Updated about me after internship.
-EXP01:Software Engineer Intern~FutureTech~Summer 2026~Built CI tests.
-EDU01:B.S. Computer Science~USF~2022-2026
-ENDPROFILE
-USER:testuser
-FNAM:Test
-LNAM:User
+USER:alice
+FNAM:Alice
+LNAM:Anderson
 UNIV:Test University
-MAJR:Testing
-GRAD:2027
-ABOU:This is a test profile with all optional fields.
-EXP01:Software Tester~Test Corp~Summer 2025~Tested software
-EXP02:QA Analyst~Another Test Corp~Fall 2026~More testing
+MAJR:Computer Science
+GRAD:2025
+ABOU:I am Alice and I test connections.
+EXP01:Software Engineer~Acme Corp~Summer 2024~Built systems
 EDU01:B.S. in Testing~Test University~2023-2027
 ENDPROFILE
-USER:no_exp_user
-FNAM:Jane
-LNAM:Doe
-UNIV:University of somewhere
-MAJR:something
-GRAD:2027
-ABOU: I'm Jane Doe studying at University of somewhere  
+USER:bob
+FNAM:Bob
+LNAM:Builder
+UNIV:Builder University
+MAJR:Construction
+GRAD:2026
+ABOU:I'm Bob and I connect to Alice.
+EXP01:Foreman~BuildCo~Summer 2025~Built bridges
+EDU01:M.S. in Building~Builder University~2022-2026
 ENDPROFILE
