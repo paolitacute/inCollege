@@ -1,0 +1,50 @@
+Welcome to InCollege!
+1. Log In
+2. Create New Account
+Enter your choice:
+Please enter your username:
+Please enter your password:
+You have successfully logged in.
+Welcome, user123!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a New Skill
+6. View My Pending Connection Requests
+7. Exit
+Enter your choice:
+Enter the full name of the person you are looking for:
+---Found User Profile---
+Name: Test User
+University: Test University
+Major: Testing
+Graduation Year: 2027
+About Me: This is a test profile with all optional fields.
+Experience:
+ Title: Software Tester
+ Company: Test Corp
+ Dates: Summer 2025
+ Description: Tested software
+ Title: QA Analyst
+ Company: Another Test Corp
+ Dates: Fall 2026
+ Description: More testing
+Education:
+ Degree: B.S. in Testing
+ University: Test University
+ Years: 2023-2027
+--------------------
+Would you like to send a connection request?
+1. Yes
+2. No
+Connection request sent successfully!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a New Skill
+6. View My Pending Connection Requests
+7. Exit
+Enter your choice:
+You quit successfully.
