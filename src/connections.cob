@@ -11,17 +11,19 @@
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-CONNECTIONS-STATUS.
            SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
-               ORGANIZATION IS LINE SEQUENTIAL.
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-OUTPUT-STATUS.
 
        DATA DIVISION.
        FILE SECTION.
        FD  CONNECTIONS-FILE.
        01  CONNECTION-RECORD    PIC X(100).
 
-       FD  OUTPUT-FILE.
+       FD  OUTPUT-FILE EXTERNAL.
        01  OUTPUT-RECORD        PIC X(350).
 
        WORKING-STORAGE SECTION.
+       01  WS-OUTPUT-STATUS PIC X(2).
        01  WS-CONNECTIONS-STATUS PIC X(2).
        01  WS-EOF-FLAG          PIC X VALUE 'N'.
        01  WS-FROM-USER         PIC X(20).
@@ -29,8 +31,10 @@
        01  WS-STATUS            PIC X(10).
        01  WS-MESSAGE           PIC X(80).
        01  WS-PENDING-COUNT     PIC 9(3) VALUE 0.
+       01  WS-LAST-INDEX        PIC 9(3) VALUE 0.
 
-       01  I                    PIC 99.
+       01  I                    PIC 9(3).
+       01  J                    PIC 9(3).
        01  WS-TEMP-TABLE.
            *> In-memory storage for file read/write operations
            05 WS-TEMP-RECORD OCCURS 200 TIMES PIC X(100).
@@ -137,27 +141,80 @@
            EXIT.
 
        ADD-CONNECTION-REQUEST SECTION.
-           OPEN EXTEND CONNECTIONS-FILE.
-
-           IF WS-CONNECTIONS-STATUS NOT = "00"
-               DISPLAY "Error opening connections file for writing."
-               MOVE 'X' TO LS-RETURN-CODE
-               EXIT PARAGRAPH
-           END-IF.
-
-           *> Format and write the new "PENDING" record
-           INITIALIZE CONNECTION-RECORD.
-           STRING FUNCTION TRIM(LS-USERNAME) DELIMITED BY SIZE
-                  ":" DELIMITED BY SIZE
-                  FUNCTION TRIM(LS-TARGET-USERNAME) DELIMITED BY SIZE
-                  ":" DELIMITED BY SIZE
-                  "PENDING" DELIMITED BY SIZE
-                  INTO CONNECTION-RECORD.
-
-           WRITE CONNECTION-RECORD.
-
-           CLOSE CONNECTIONS-FILE.
-           EXIT.
+            MOVE 0 TO I
+            MOVE 'N' TO WS-EOF-FLAG
+            *> Initialize the temp record table to avoid garbage
+            PERFORM VARYING I FROM 1 BY 1 UNTIL I > 200
+                MOVE SPACES TO WS-TEMP-RECORD(I)
+            END-PERFORM
+            MOVE 0 TO I
+            *> Open for input to read existing records, create if not found
+            OPEN INPUT CONNECTIONS-FILE
+            IF WS-CONNECTIONS-STATUS = "35"
+                CLOSE CONNECTIONS-FILE
+                OPEN OUTPUT CONNECTIONS-FILE
+                IF WS-CONNECTIONS-STATUS NOT = "00"
+                    MOVE 'X' TO LS-RETURN-CODE
+                    EXIT PARAGRAPH
+                END-IF
+                CLOSE CONNECTIONS-FILE
+                OPEN INPUT CONNECTIONS-FILE
+            END-IF
+            IF WS-CONNECTIONS-STATUS NOT = "00"
+                MOVE 'X' TO LS-RETURN-CODE
+                EXIT PARAGRAPH
+            END-IF
+            *> Read all existing records into the in-memory table
+            PERFORM UNTIL WS-EOF-FLAG = 'Y'
+                READ CONNECTIONS-FILE
+                    AT END
+                        MOVE 'Y' TO WS-EOF-FLAG
+                    NOT AT END
+                        ADD 1 TO I
+                        IF I <= 200
+                            MOVE CONNECTION-RECORD TO WS-TEMP-RECORD(I)
+                        ELSE
+                            MOVE 'Y' TO WS-EOF-FLAG
+                        END-IF
+                END-READ
+            END-PERFORM
+            CLOSE CONNECTIONS-FILE
+            *> Add the new "PENDING" record
+            ADD 1 TO I
+            IF I <= 200
+                INITIALIZE CONNECTION-RECORD
+                STRING FUNCTION TRIM(LS-USERNAME) DELIMITED BY SIZE
+                    ":" DELIMITED BY SIZE
+                    FUNCTION TRIM(LS-TARGET-USERNAME) DELIMITED BY SIZE
+                    ":" DELIMITED BY SIZE
+                    "PENDING" DELIMITED BY SIZE
+                    INTO CONNECTION-RECORD
+                MOVE CONNECTION-RECORD TO WS-TEMP-RECORD(I)
+            ELSE
+                MOVE 'X' TO LS-RETURN-CODE
+                EXIT PARAGRAPH
+            END-IF
+            *> Write all records back to the file, preserving all lines
+            OPEN OUTPUT CONNECTIONS-FILE
+            IF WS-CONNECTIONS-STATUS NOT = "00"
+                MOVE 'X' TO LS-RETURN-CODE
+                EXIT PARAGRAPH
+            END-IF
+            MOVE I TO WS-LAST-INDEX  *> Store the last valid index
+            PERFORM VARYING I FROM 1 BY 1 UNTIL I > WS-LAST-INDEX
+                IF WS-TEMP-RECORD(I) NOT = SPACES AND WS-TEMP-RECORD(I) NOT = LOW-VALUES
+                    WRITE CONNECTION-RECORD FROM WS-TEMP-RECORD(I)
+                    IF WS-CONNECTIONS-STATUS NOT = "00"
+                        MOVE 'X' TO LS-RETURN-CODE
+                        EXIT PERFORM
+                    END-IF
+                END-IF
+            END-PERFORM
+            IF LS-RETURN-CODE = 'S'
+                MOVE 'S' TO LS-RETURN-CODE
+            END-IF
+            CLOSE CONNECTIONS-FILE
+            EXIT.
 
 
        ACCEPT-CONNECTION-REQUEST SECTION.
@@ -230,64 +287,63 @@
            EXIT.
 
        VIEW-PENDING-CONNECTIONS SECTION.
-           MOVE 0 TO WS-PENDING-COUNT.
+            MOVE 0 TO WS-PENDING-COUNT.
 
-           OPEN INPUT CONNECTIONS-FILE.
-           OPEN EXTEND OUTPUT-FILE.
+            OPEN INPUT CONNECTIONS-FILE.
 
-           *> Check for file not found
-           IF WS-CONNECTIONS-STATUS = "35"
-               MOVE "You have no pending connection requests." TO WS-MESSAGE
-               PERFORM DISPLAY-AND-LOG
-               CLOSE CONNECTIONS-FILE
-               CLOSE OUTPUT-FILE
-               EXIT SECTION
-           END-IF.
+            *> If file missing, treat as "no pending"
+            IF WS-CONNECTIONS-STATUS = "35"
+                MOVE "You have no pending connection requests." TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                CLOSE CONNECTIONS-FILE
+                EXIT SECTION
+            END-IF
 
-           IF WS-CONNECTIONS-STATUS NOT = "00"
-               DISPLAY "Error opening connections file."
-               MOVE 'X' TO LS-RETURN-CODE
-               CLOSE CONNECTIONS-FILE
-               CLOSE OUTPUT-FILE
-               EXIT SECTION
-           END-IF.
+            *> Other errors on connections file
+            IF WS-CONNECTIONS-STATUS NOT = "00"
+                MOVE "Error accessing connections file." TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+                MOVE 'X' TO LS-RETURN-CODE
+                CLOSE CONNECTIONS-FILE
+                EXIT SECTION
+            END-IF
 
-           MOVE "Your Pending Connection Requests:" TO WS-MESSAGE.
-           PERFORM DISPLAY-AND-LOG.
+            *> NOTE: Do NOT open OUTPUT-FILE here. Main already has it open.
+            *> Also remove any WS-OUTPUT-STATUS check here.
 
-           MOVE 'N' TO WS-EOF-FLAG.
-           PERFORM UNTIL WS-EOF-FLAG = 'Y'
-               READ CONNECTIONS-FILE
-                   AT END
-                       MOVE 'Y' TO WS-EOF-FLAG
-                   NOT AT END
-                       *> Check for pending requests directed TO the current user
-                       UNSTRING CONNECTION-RECORD DELIMITED BY ":"
-                           INTO WS-FROM-USER, WS-TO-USER, WS-STATUS
+            MOVE "Your Pending Connection Requests:" TO WS-MESSAGE
+            PERFORM DISPLAY-AND-LOG
 
-                       IF WS-TO-USER = LS-USERNAME AND WS-STATUS = "PENDING"
-                           ADD 1 TO WS-PENDING-COUNT
-                           INITIALIZE WS-MESSAGE
-                           STRING "- " DELIMITED BY SIZE
-                                  FUNCTION TRIM(WS-FROM-USER) DELIMITED BY SPACE
-                                  " wants to connect with you" DELIMITED BY SIZE
-                                  INTO WS-MESSAGE
-                           PERFORM DISPLAY-AND-LOG
-                       END-IF
-               END-READ
-           END-PERFORM.
+            MOVE 'N' TO WS-EOF-FLAG
+            PERFORM UNTIL WS-EOF-FLAG = 'Y'
+                READ CONNECTIONS-FILE
+                    AT END
+                        MOVE 'Y' TO WS-EOF-FLAG
+                    NOT AT END
+                        UNSTRING CONNECTION-RECORD DELIMITED BY ":"
+                            INTO WS-FROM-USER WS-TO-USER WS-STATUS
+                        IF WS-TO-USER = LS-USERNAME AND WS-STATUS = "PENDING"
+                            ADD 1 TO WS-PENDING-COUNT
+                            INITIALIZE WS-MESSAGE
+                            STRING "- " DELIMITED BY SIZE
+                                FUNCTION TRIM(WS-FROM-USER) DELIMITED BY SPACE
+                                " wants to connect with you" DELIMITED BY SIZE
+                                INTO WS-MESSAGE
+                            PERFORM DISPLAY-AND-LOG
+                        END-IF
+                END-READ
+            END-PERFORM
 
-           IF WS-PENDING-COUNT = 0
-               MOVE "You have no pending connection requests." TO WS-MESSAGE
-               PERFORM DISPLAY-AND-LOG
-           ELSE
-               *> Set success code to prompt user for manage action in main program
-               MOVE 'S' TO LS-RETURN-CODE
-           END-IF.
+            IF WS-PENDING-COUNT = 0
+                MOVE "You have no pending connection requests." TO WS-MESSAGE
+                PERFORM DISPLAY-AND-LOG
+            ELSE
+                MOVE 'S' TO LS-RETURN-CODE
+            END-IF
 
-           CLOSE CONNECTIONS-FILE.
-           CLOSE OUTPUT-FILE.
-           EXIT.
+            CLOSE CONNECTIONS-FILE
+            EXIT.
+
 
        DISPLAY-AND-LOG SECTION.
            DISPLAY WS-MESSAGE.
