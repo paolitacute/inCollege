@@ -14,6 +14,8 @@ Welcome, alice!
 6. View My Pending Connection Requests
 7. Exit
 Enter your choice:
+Your Pending Connection Requests:
+- bob wants to connect with you
 Would you like to manage a pending connection request?
 1. Yes, manage a request
 2. No, go back to the main menu
