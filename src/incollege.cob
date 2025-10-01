@@ -209,41 +209,51 @@
           END-EVALUATE.
           EXIT.
 
+VIEW-PROFILE SECTION.
+             IF WS-TRIGGER = '0'
+           MOVE "---Your Profile---" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE WS-USERNAME TO WS-VIEW-USER
+       END-IF
+       IF WS-TRIGGER = '1'
+           MOVE "---Found User Profile---" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE WS-RETURN-USER TO WS-VIEW-USER
+       END-IF
+       CLOSE OUTPUT-FILE
+           CALL "VIEW-PROFILE" USING WS-VIEW-USER, WS-PROFILE-DATA, WS-RETURN-CODE.
 
-       VIEW-PROFILE SECTION.
-          IF WS-TRIGGER = '0'
-             MOVE "---Your Profile---" TO WS-MESSAGE
-             PERFORM DISPLAY-AND-LOG
-             MOVE WS-USERNAME TO WS-VIEW-USER
-          END-IF
-          IF WS-TRIGGER = '1'
-             MOVE "---Found User Profile---" TO WS-MESSAGE
-             PERFORM DISPLAY-AND-LOG
-             MOVE WS-RETURN-USER TO WS-VIEW-USER
-          END-IF
-          CLOSE OUTPUT-FILE
-          CALL "VIEW-PROFILE" USING WS-VIEW-USER, WS-PROFILE-DATA, WS-RETURN-CODE.
+           OPEN EXTEND OUTPUT-FILE
+           EVALUATE WS-RETURN-CODE
+           WHEN 'S'
+               *> Profile displayed successfully
+               IF WS-TRIGGER = '1'
+                   *> Prompt user before sending connection request
+                   MOVE "Would you like to send a connection request?" TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   MOVE "1. Yes" TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   MOVE "2. No" TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+                   MOVE 1 TO MIN-VALUE-CHOICE
+                   MOVE 2 TO MAX-VALUE-CHOICE
+                   PERFORM CHOICE
+                   IF WS-CHOICE = 1
+                       PERFORM SEND-CONNECTION-REQUEST
+                   END-IF
+               END-IF
+       WHEN 'F'
+               MOVE "No profile found for this user." TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+       WHEN 'X'
+               MOVE "Error accessing profile file." TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+       WHEN OTHER
+               MOVE "Unknown error occurred while viewing profile." TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+           END-EVALUATE.
 
-          OPEN EXTEND OUTPUT-FILE
-          EVALUATE WS-RETURN-CODE
-          WHEN 'S'
-              *> Profile displayed successfully
-              IF WS-TRIGGER = '1'
-                  PERFORM SEND-CONNECTION-REQUEST
-              END-IF
-              WHEN 'F'
-                  MOVE "No profile found for this user." TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-              WHEN 'X'
-                  MOVE "Error accessing profile file." TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-              WHEN OTHER
-                  MOVE "Unknown error occurred while viewing profile." TO WS-MESSAGE
-                  PERFORM DISPLAY-AND-LOG
-          END-EVALUATE.
-
-          EXIT.
-
+           EXIT.
 
        PROFILE-CREATION-FLOW SECTION.
 
