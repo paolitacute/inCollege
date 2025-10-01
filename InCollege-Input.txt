@@ -1,9 +1,7 @@
 1
-testuser
-p@ssworD!1
-4
-Jane Doe
-1
+alice
+Passw0rd!
 6
 1
-user123
+bob
+7

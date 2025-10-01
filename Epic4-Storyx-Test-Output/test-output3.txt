@@ -58,9 +58,7 @@ Education:
  University: Test University
  Years: 2023-2027
 --------------------
-Would you like to send a connection request?
-1. Yes
-2. No
+Would you like to send a connection request? (1 = Yes, 2 = No)
 Connection request sent successfully!
 1. Create/Edit My Profile
 2. View My Profile

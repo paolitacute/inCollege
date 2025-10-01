@@ -60,12 +60,8 @@ Education:
  University: Test University
  Years: 2023-2027
 --------------------
-Your Pending Connection Requests:
-- alice wants to connect with you
-Would you like to send a connection request?
-1. Yes
-2. No
-Connection request sent successfully!
+Would you like to send a connection request? (1 = Yes, 2 = No)
+Cannot send connection request to yourself.
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -74,11 +70,13 @@ Connection request sent successfully!
 6. View My Pending Connection Requests
 7. Exit
 Enter your choice:
+Your Pending Connection Requests:
+You have no pending connection requests.
 Would you like to manage a pending connection request?
 1. Yes, manage a request
 2. No, go back to the main menu
 Enter the username of the person you want to connect with:
-Connection accepted successfully!
+No pending requests .
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -104,12 +102,8 @@ Education:
  University: Test University
  Years: 2023-2027
 --------------------
-Your Pending Connection Requests:
-You have no pending connection requests.
-Would you like to send a connection request?
-1. Yes
-2. No
-You are already connected with this user.
+Would you like to send a connection request? (1 = Yes, 2 = No)
+Cannot send connection request to yourself.
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -118,6 +112,8 @@ You are already connected with this user.
 6. View My Pending Connection Requests
 7. Exit
 Enter your choice:
+Your Pending Connection Requests:
+You have no pending connection requests.
 Would you like to manage a pending connection request?
 1. Yes, manage a request
 2. No, go back to the main menu
