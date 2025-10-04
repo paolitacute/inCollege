@@ -1,6 +1,0 @@
-1
-testuser
-p@ssworD!1
-4
-John Deer
-6
