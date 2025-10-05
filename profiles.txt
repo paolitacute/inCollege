@@ -18,3 +18,23 @@ ABOU:I'm Bob and I connect to Alice.
 EXP01:Foreman~BuildCo~Summer 2025~Built bridges
 EDU01:M.S. in Building~Builder University~2022-2026
 ENDPROFILE
+USER:john
+FNAM:John
+LNAM:Doe
+UNIV:Builder University
+MAJR:Construction
+GRAD:2026
+ABOU:I'm Bob and I connect to Alice.
+EXP01:Foreman~BuildCo~Summer 2025~Built bridges
+EDU01:M.S. in Building~Builder University~2022-2026
+ENDPROFILE
+USER:jake
+FNAM:Jake
+LNAM:Paul
+UNIV:Builder University
+MAJR:Construction
+GRAD:2026
+ABOU:I'm Bob and I connect to Alice.
+EXP01:Foreman~BuildCo~Summer 2025~Built bridges
+EDU01:M.S. in Building~Builder University~2022-2026
+ENDPROFILE

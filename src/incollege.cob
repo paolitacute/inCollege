@@ -175,11 +175,13 @@
           PERFORM DISPLAY-AND-LOG.
           MOVE "6. View My Pending Connection Requests" TO WS-MESSAGE.
           PERFORM DISPLAY-AND-LOG.
-          MOVE "7. Exit" TO WS-MESSAGE.
+          MOVE "7. View My Network" TO WS-MESSAGE.
+          PERFORM DISPLAY-AND-LOG.
+          MOVE "8. Exit" TO WS-MESSAGE.
           PERFORM DISPLAY-AND-LOG.
 
           MOVE 1 TO MIN-VALUE-CHOICE.
-          MOVE 7 TO MAX-VALUE-CHOICE.
+          MOVE 8 TO MAX-VALUE-CHOICE.
 
 
           MOVE "Enter your choice:" TO WS-MESSAGE.
@@ -202,6 +204,8 @@
               WHEN 6
                   PERFORM VIEW-PENDING-REQUESTS
               WHEN 7
+                  PERFORM VIEW-MY-NETWORK
+              WHEN 8
                   MOVE 'Y' TO WS-EXIT-FLAG
                   MOVE "You quit successfully." TO WS-MESSAGE
                   PERFORM DISPLAY-AND-LOG
@@ -646,44 +650,86 @@ FIND-SOMEONE SECTION.
                          IF WS-CHOICE = 1
                              PERFORM MANAGE-CONNECTION-FLOW
                          END-IF
+                     WHEN 'F'
+                         *> No pending requests (message already printed by subprogram) -> return to menu
+                         CONTINUE
                      WHEN 'X'
                          MOVE "Error accessing connections file." TO WS-MESSAGE
                          PERFORM DISPLAY-AND-LOG
                      WHEN OTHER
-                         *> This handles 'F' (no requests) and unknown status
-                         MOVE "Unknown error occurred while viewing requests." TO WS-MESSAGE
-                         PERFORM DISPLAY-AND-LOG
+                         *> Unknown/unused status -> quietly return
+                         CONTINUE
                  END-EVALUATE.
+
           EXIT.
 
        MANAGE-CONNECTION-FLOW SECTION.
-                 *> Get the username of the request to be accepted
-                 MOVE "Enter the username of the person you want to connect with:" TO WS-MESSAGE
-                 *> Call CONNECTIONS to change request status from PENDING to CONNECTED
-                 PERFORM DISPLAY-AND-LOG
-                 PERFORM READ-FROM-INPUT-FILE
-                 IF WS-END-FILE = 'Y'
-                     PERFORM CLOSE-PROGRAM
-                 END-IF
-                 MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-VIEW-USER
-                 MOVE "ACCEPT" TO WS-ACTION
-                 CALL "CONNECTIONS" USING WS-ACTION, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
-                 EVALUATE WS-RETURN-CODE
-                     WHEN 'S'
-                         MOVE "Connection accepted successfully!" TO WS-MESSAGE
-                         PERFORM DISPLAY-AND-LOG
-                     WHEN 'F'
-                         *> Request not found (wasn't pending from that user)
-                         MOVE "No pending requests ." TO WS-MESSAGE
-                         PERFORM DISPLAY-AND-LOG
-                     WHEN 'X'
-                         MOVE "Error updating connections file." TO WS-MESSAGE
-                         PERFORM DISPLAY-AND-LOG
-                     WHEN OTHER
-                         MOVE "Unknown error occurred." TO WS-MESSAGE
-                         PERFORM DISPLAY-AND-LOG
-                 END-EVALUATE.
-                 EXIT.
+           *> Get the username whose pending request you want to manage
+           MOVE "Enter the username of the person you want to connect with:" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           PERFORM READ-FROM-INPUT-FILE
+           IF WS-END-FILE = 'Y'
+               PERFORM CLOSE-PROGRAM
+           END-IF
+           MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-VIEW-USER
+
+           *> Offer action: Accept or Reject
+           MOVE "1. Accept" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+           MOVE "2. Reject" TO WS-MESSAGE
+           PERFORM DISPLAY-AND-LOG
+
+           PERFORM READ-FROM-INPUT-FILE
+           IF WS-END-FILE = 'Y'
+               PERFORM CLOSE-PROGRAM
+           END-IF
+
+           EVALUATE FUNCTION TRIM(INPUT-RECORD)
+               WHEN "1"
+                   *> ACCEPT: same behavior as before
+                   MOVE "ACCEPT" TO WS-ACTION
+                   CALL "CONNECTIONS" USING WS-ACTION, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
+                   EVALUATE WS-RETURN-CODE
+                       WHEN 'S'
+                           MOVE "Connection accepted successfully!" TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                       WHEN 'F'
+                           MOVE "No pending requests ." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                       WHEN 'X'
+                           MOVE "Error updating connections file." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                       WHEN OTHER
+                           MOVE "Unknown error occurred." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                   END-EVALUATE
+
+               WHEN "2"
+                   *> REJECT: remove pending request from connections.txt
+                   MOVE "REJECT" TO WS-ACTION
+                   CALL "CONNECTIONS" USING WS-ACTION, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
+                   EVALUATE WS-RETURN-CODE
+                       WHEN 'S'
+                           MOVE "Request rejected and removed successfully." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                       WHEN 'F'
+                           MOVE "No matching pending request found to reject." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                       WHEN 'X'
+                           MOVE "Error updating connections file during rejection." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                       WHEN OTHER
+                           MOVE "Unknown error occurred while rejecting request." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                   END-EVALUATE
+
+               WHEN OTHER
+                   MOVE "Invalid choice." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+           END-EVALUATE.
+           EXIT.
+
+
        SEND-CONNECTION-REQUEST SECTION.
             *> Check if sending to self
             IF FUNCTION TRIM(WS-USERNAME) = FUNCTION TRIM(WS-VIEW-USER)
@@ -858,4 +904,22 @@ FIND-SOMEONE SECTION.
                  STOP RUN
              END-IF.
 
+        VIEW-MY-NETWORK SECTION.
+           MOVE "NETWORK" TO WS-ACTION
+           MOVE SPACES TO WS-VIEW-USER  *> not used here
+           CALL "CONNECTIONS" USING WS-ACTION, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
+
+           EVALUATE WS-RETURN-CODE
+               WHEN 'S'
+                   CONTINUE  *> list already printed by subprogram
+               WHEN 'F'
+                   *> subprogram already printed "no connections"; keep quiet
+                   CONTINUE
+               WHEN 'X'
+                   MOVE "Error accessing connections or profiles file." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+               WHEN OTHER
+                   CONTINUE
+           END-EVALUATE
+           EXIT.
 
