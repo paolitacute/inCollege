@@ -12,21 +12,20 @@ Welcome, alice!
 4. Find someone you know
 5. Learn a New Skill
 6. View My Pending Connection Requests
-7. Exit
+7. View My Network
+8. Exit
 Enter your choice:
-Your Pending Connection Requests:
-- bob wants to connect with you
-Would you like to manage a pending connection request?
-1. Yes, manage a request
-2. No, go back to the main menu
-Enter the username of the person you want to connect with:
-Connection accepted successfully!
+Your Network:
+- Bob Builder
+- John Doe
+- Jake Paul
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
 4. Find someone you know
 5. Learn a New Skill
 6. View My Pending Connection Requests
-7. Exit
+7. View My Network
+8. Exit
 Enter your choice:
 You quit successfully.

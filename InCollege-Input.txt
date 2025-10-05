@@ -1,7 +1,4 @@
 1
 alice
 Passw0rd!
-6
-1
-bob
 7
