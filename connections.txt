@@ -1,3 +1,3 @@
 bob:alice:CONNECTED
-john:alice:CONNECTED
-jake:alice:CONNECTED
+alice:john:CONNECTED
+alice:jake:PENDING
