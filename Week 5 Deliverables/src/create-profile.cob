@@ -1,0 +1,195 @@
+       >>SOURCE FREE
+       IDENTIFICATION DIVISION.
+       PROGRAM-ID. CREATE-PROFILE.
+       AUTHOR. Paola.
+       DATE-WRITTEN. 09/11/2025.
+
+       ENVIRONMENT DIVISION.
+       INPUT-OUTPUT SECTION.
+       FILE-CONTROL.
+           SELECT PROFILES-FILE ASSIGN TO "profiles.txt"
+               ORGANIZATION IS LINE SEQUENTIAL
+               FILE STATUS IS WS-PROFILES-STATUS.
+
+       DATA DIVISION.
+       FILE SECTION.
+       FD  PROFILES-FILE.
+       01  PROFILE-RECORD      PIC X(250).
+
+       WORKING-STORAGE SECTION.
+       01  WS-PROFILES-STATUS  PIC X(2).
+       01  WS-EOF-FLAG         PIC X VALUE 'N'.
+
+       *> In-memory table to hold profiles before writing to file
+       01  WS-ALL-PROFILES-STORAGE.
+           05 WS-PROFILE-LINE OCCURS 200 TIMES PIC X(250).
+       01  WS-LINE-INDEX       PIC 999 VALUE 0.
+       01  WS-LOOP-FLAG        PIC X.
+       01  I                   PIC 99.
+       01  J                   PIC 99.
+
+       LINKAGE SECTION.
+       01  LS-USERNAME         PIC X(20).
+       01  LS-PROFILE-DATA.
+           05 LS-FIRST-NAME     PIC X(50).
+           05 LS-LAST-NAME      PIC X(50).
+           05 LS-UNIVERSITY     PIC X(100).
+           05 LS-MAJOR          PIC X(50).
+           05 LS-GRAD-YEAR      PIC X(4).
+           05 LS-ABOUT-ME       PIC X(200).
+           05 LS-EXPERIENCE-TABLE.
+              10 LS-EXPERIENCE OCCURS 3 TIMES.
+                 15 LS-EXP-TITLE    PIC X(50).
+                 15 LS-EXP-COMPANY  PIC X(50).
+                 15 LS-EXP-DATES    PIC X(50).
+                 15 LS-EXP-DESC     PIC X(100).
+           05 LS-EXP-COUNT      PIC 9.
+           05 LS-EDUCATION-TABLE.
+              10 LS-EDUCATION OCCURS 3 TIMES.
+                 15 LS-EDU-DEGREE   PIC X(50).
+                 15 LS-EDU-UNIV     PIC X(50).
+                 15 LS-EDU-YEARS    PIC X(50).
+           05 LS-EDU-COUNT      PIC 9.
+       01  LS-RETURN-CODE      PIC X.
+
+       PROCEDURE DIVISION USING LS-USERNAME, LS-PROFILE-DATA, LS-RETURN-CODE.
+
+           PERFORM VALIDATE-INPUT.
+
+           IF LS-RETURN-CODE = 'S'
+               PERFORM SAVE-PROFILE-DATA
+           END-IF.
+
+           GOBACK.
+
+       VALIDATE-INPUT SECTION.
+           MOVE 'S' TO LS-RETURN-CODE.
+           IF LS-GRAD-YEAR IS NOT NUMERIC OR FUNCTION LENGTH(FUNCTION TRIM(LS-GRAD-YEAR)) NOT = 4
+               MOVE 'F' TO LS-RETURN-CODE
+           END-IF.
+           EXIT.
+
+       SAVE-PROFILE-DATA SECTION.
+           *> Read all other user profiles into memory.
+           INITIALIZE WS-ALL-PROFILES-STORAGE.
+           MOVE 0 TO WS-LINE-INDEX.
+           MOVE 'N' to WS-EOF-FLAG.
+           OPEN INPUT PROFILES-FILE.
+
+           IF WS-PROFILES-STATUS = "00"
+               PERFORM READ-AND-FILTER-PROFILES
+           ELSE IF WS-PROFILES-STATUS NOT = "35" *> "35" means file not found, which is ok
+               MOVE 'E' TO LS-RETURN-CODE
+               CLOSE PROFILES-FILE
+               EXIT PARAGRAPH
+           END-IF.
+           CLOSE PROFILES-FILE.
+
+           *> Add the new profile data for the current user to memory.
+           ADD 1 TO WS-LINE-INDEX.
+           STRING "USER:" FUNCTION TRIM(LS-USERNAME)
+               INTO WS-PROFILE-LINE(WS-LINE-INDEX).
+
+           ADD 1 TO WS-LINE-INDEX.
+           STRING "FNAM:" FUNCTION TRIM(LS-FIRST-NAME)
+               INTO WS-PROFILE-LINE(WS-LINE-INDEX).
+
+           ADD 1 TO WS-LINE-INDEX.
+           STRING "LNAM:" FUNCTION TRIM(LS-LAST-NAME)
+               INTO WS-PROFILE-LINE(WS-LINE-INDEX).
+
+           ADD 1 TO WS-LINE-INDEX.
+           STRING "UNIV:" FUNCTION TRIM(LS-UNIVERSITY)
+               INTO WS-PROFILE-LINE(WS-LINE-INDEX).
+
+           ADD 1 TO WS-LINE-INDEX.
+           STRING "MAJR:" FUNCTION TRIM(LS-MAJOR)
+               INTO WS-PROFILE-LINE(WS-LINE-INDEX).
+
+           ADD 1 TO WS-LINE-INDEX.
+           STRING "GRAD:" FUNCTION TRIM(LS-GRAD-YEAR)
+               INTO WS-PROFILE-LINE(WS-LINE-INDEX).
+
+           IF LS-ABOUT-ME > " "
+               ADD 1 TO WS-LINE-INDEX
+               STRING "ABOU:" FUNCTION TRIM(LS-ABOUT-ME)
+                   INTO WS-PROFILE-LINE(WS-LINE-INDEX)
+           END-IF.
+
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > LS-EXP-COUNT
+               ADD 1 TO WS-LINE-INDEX
+               STRING "EXP" I ":" FUNCTION TRIM(LS-EXP-TITLE(I)) "~"
+                      FUNCTION TRIM(LS-EXP-COMPANY(I)) "~"
+                      FUNCTION TRIM(LS-EXP-DATES(I)) "~"
+                      FUNCTION TRIM(LS-EXP-DESC(I))
+                      INTO WS-PROFILE-LINE(WS-LINE-INDEX)
+           END-PERFORM.
+
+           PERFORM VARYING J FROM 1 BY 1 UNTIL J > LS-EDU-COUNT
+               ADD 1 TO WS-LINE-INDEX
+               STRING "EDU" J ":" FUNCTION TRIM(LS-EDU-DEGREE(J)) "~"
+                      FUNCTION TRIM(LS-EDU-UNIV(J)) "~"
+                      FUNCTION TRIM(LS-EDU-YEARS(J))
+                      INTO WS-PROFILE-LINE(WS-LINE-INDEX)
+           END-PERFORM.
+
+           ADD 1 TO WS-LINE-INDEX.
+           MOVE "ENDPROFILE" TO WS-PROFILE-LINE(WS-LINE-INDEX).
+
+           *> Write the entire memory table back to the file.
+           OPEN OUTPUT PROFILES-FILE.
+           PERFORM VARYING I FROM 1 BY 1 UNTIL I > WS-LINE-INDEX
+               WRITE PROFILE-RECORD FROM WS-PROFILE-LINE(I)
+           END-PERFORM.
+           CLOSE PROFILES-FILE.
+           EXIT.
+
+       READ-AND-FILTER-PROFILES SECTION.
+           PERFORM UNTIL WS-EOF-FLAG = 'Y'
+               READ PROFILES-FILE
+                   AT END
+                       MOVE 'Y' TO WS-EOF-FLAG
+                   NOT AT END
+                       IF PROFILE-RECORD(1:5) = "USER:" AND
+                          FUNCTION TRIM(PROFILE-RECORD(6:)) =
+                          FUNCTION TRIM(LS-USERNAME)
+                           PERFORM SKIP-UNTIL-ENDPROFILE
+                       ELSE
+                           ADD 1 TO WS-LINE-INDEX
+                           MOVE PROFILE-RECORD TO WS-PROFILE-LINE(WS-LINE-INDEX)
+                           PERFORM COPY-UNTIL-ENDPROFILE
+                       END-IF
+           END-PERFORM.
+           EXIT.
+
+       COPY-UNTIL-ENDPROFILE SECTION.
+           MOVE 'N' TO WS-LOOP-FLAG.
+           PERFORM UNTIL WS-LOOP-FLAG = 'Y' OR WS-EOF-FLAG = 'Y'
+               READ PROFILES-FILE
+                   AT END
+                       MOVE 'Y' TO WS-EOF-FLAG
+                       MOVE 'Y' TO WS-LOOP-FLAG
+                   NOT AT END
+                       ADD 1 TO WS-LINE-INDEX
+                       MOVE PROFILE-RECORD TO
+                           WS-PROFILE-LINE(WS-LINE-INDEX)
+                       IF PROFILE-RECORD = "ENDPROFILE"
+                           MOVE 'Y' TO WS-LOOP-FLAG
+                       END-IF
+           END-PERFORM.
+           EXIT.
+
+       SKIP-UNTIL-ENDPROFILE SECTION.
+           MOVE 'N' TO WS-LOOP-FLAG.
+           PERFORM UNTIL WS-LOOP-FLAG = 'Y' OR WS-EOF-FLAG = 'Y'
+               READ PROFILES-FILE
+                   AT END
+                       MOVE 'Y' TO WS-EOF-FLAG
+                       MOVE 'Y' TO WS-LOOP-FLAG
+                   NOT AT END
+                       IF PROFILE-RECORD = "ENDPROFILE"
+                           MOVE 'Y' TO WS-LOOP-FLAG
+                       END-IF
+           END-PERFORM.
+           EXIT.
+
