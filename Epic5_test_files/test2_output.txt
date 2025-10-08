@@ -17,7 +17,7 @@ Welcome, alice!
 Enter your choice:
 Your Network:
 - Bob Builder
--
+- John Doe
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -45,7 +45,7 @@ Education:
  Years: 2022-2026
 --------------------
 Would you like to send a connection request? (1 = Yes, 2 = No)
-Connection request sent successfully!
+You are already connected with this user.
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -73,7 +73,7 @@ Education:
  Years: 2022-2026
 --------------------
 Would you like to send a connection request? (1 = Yes, 2 = No)
-Connection request sent successfully!
+You have already sent a connection request to this user.
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -85,6 +85,7 @@ Connection request sent successfully!
 Enter your choice:
 Your Network:
 - Bob Builder
+- John Doe
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
