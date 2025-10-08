@@ -1,5 +1,0 @@
-Roles:	Scrum Master:	Paola
-	Coder #1:	Kaden
-	Coder #2:	Ady
-	Tester #1:	Vamsi	
-	Tester #2:	Jacob

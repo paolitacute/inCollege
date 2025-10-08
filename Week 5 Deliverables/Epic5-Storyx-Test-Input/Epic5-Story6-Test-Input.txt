@@ -1,7 +1,0 @@
-1
-alice
-Passw0rd!
-6
-2
-7
-8

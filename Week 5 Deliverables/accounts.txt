@@ -1,5 +1,0 @@
-
-alice               Passw0rd!
-bob                 BobPass1!
-john                Passw0rd!
-jake                Passw0rd!
