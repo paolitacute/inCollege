@@ -1,7 +1,7 @@
        >>SOURCE FREE
        IDENTIFICATION DIVISION.
        PROGRAM-ID. CONNECTIONS.
-       AUTHOR. Vamsi Dandu
+       AUTHOR. Vamsi Dandu and Kaden
        DATE-WRITTEN. 09/28/2025.
 
        ENVIRONMENT DIVISION.
@@ -63,6 +63,9 @@
        01  LS-TARGET-USERNAME   PIC X(20).
        01  LS-RETURN-CODE       PIC X.     *> S=Success, F=Failure, X=Error
 
+       01  WS-TARGET-FOUND          PIC X VALUE 'N'.
+
+
        PROCEDURE DIVISION USING LS-ACTION, LS-USERNAME, LS-TARGET-USERNAME, LS-RETURN-CODE.
 
            MOVE 'S' TO LS-RETURN-CODE.
@@ -88,6 +91,49 @@
        SEND-CONNECTION-REQUEST SECTION.
            MOVE 'N' TO WS-ALREADY-CONNECTED.
            MOVE 'N' TO WS-PENDING-EXISTS.
+
+           *> Verify that the target user exists in profiles.txt
+           MOVE 'N' TO WS-TARGET-FOUND.
+           OPEN INPUT PROFILES-FILE.
+
+           IF WS-PROFILES-STATUS = "35"
+               MOVE "User does not exist." TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               MOVE 'F' TO LS-RETURN-CODE
+               CLOSE PROFILES-FILE
+               EXIT SECTION
+           END-IF
+
+           IF WS-PROFILES-STATUS NOT = "00"
+               MOVE "Error accessing profiles file." TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               MOVE 'X' TO LS-RETURN-CODE
+               CLOSE PROFILES-FILE
+               EXIT SECTION
+           END-IF
+
+           MOVE 'N' TO WS-EOF-FLAG
+           PERFORM UNTIL WS-EOF-FLAG = 'Y'
+               READ PROFILES-FILE
+                   AT END
+                       MOVE 'Y' TO WS-EOF-FLAG
+                   NOT AT END
+                       IF PROFILES-RECORD(1:5) = "USER:" AND
+                          FUNCTION TRIM(PROFILES-RECORD(6:20)) = FUNCTION TRIM(LS-TARGET-USERNAME)
+                           MOVE 'Y' TO WS-TARGET-FOUND
+                           MOVE 'Y' TO WS-EOF-FLAG
+                       END-IF
+               END-READ
+           END-PERFORM
+           CLOSE PROFILES-FILE
+
+           IF WS-TARGET-FOUND NOT = 'Y'
+               MOVE "User does not exist." TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               MOVE 'F' TO LS-RETURN-CODE
+               EXIT SECTION
+           END-IF
+
 
            *> Check for existing connections or pending requests
            PERFORM CHECK-EXISTING-CONNECTIONS.
