@@ -1,9 +1,0 @@
-1
-john
-Passw0rd!
-6
-1
-alice
-1
-7
-8

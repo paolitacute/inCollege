@@ -21,6 +21,9 @@
                   ORGANIZATION IS LINE SEQUENTIAL
                   FILE STATUS IS WS-ACCOUNTS-STATUS.
 
+              SELECT JOBS-FILE ASSIGN TO "jobs.txt"
+                  ORGANIZATION IS LINE SEQUENTIAL.
+
        DATA DIVISION.
        FILE SECTION.
           *> FD describes the structure of the INPUT-FILE
@@ -39,6 +42,9 @@
           01  ACCOUNTS-RECORD-DATA.
               05  ACCOUNTS-USERNAME    PIC X(20).
               05  ACCOUNTS-PASSWORD    PIC X(20).
+
+          FD  JOBS-FILE.
+          01  JOB-RECORD-DATA      PIC X(500).
 
           *> Working storeage section is where the variables of the program are stored
        WORKING-STORAGE SECTION.
@@ -75,6 +81,13 @@
           01  WS-OUTPUT-STATUS PIC X(2).
           01  WS-INPUT-BUFFER    PIC X(80).
           01  WS-TRIGGER         PIC X VALUE "0".
+
+          01  WS-JOB-DATA.
+              05 WS-JOB-TITLE     PIC X(50).
+              05 WS-JOB-DESC      PIC X(200).
+              05 WS-JOB-EMPLOYER  PIC X(50).
+              05 WS-JOB-LOCATION  PIC X(50).
+              05 WS-JOB-SALARY    PIC X(50).
 
           01  WS-PROFILE-DATA.
               05 WS-FIRST-NAME     PIC X(50).
@@ -196,7 +209,7 @@
               WHEN 2
                   PERFORM VIEW-PROFILE
               WHEN 3
-                  PERFORM SEARCH-JOB
+                  PERFORM JOB-MENU-FLOW
               WHEN 4
                   PERFORM FIND-SOMEONE
               WHEN 5
@@ -543,8 +556,96 @@
           EXIT.
 
 
-       SEARCH-JOB SECTION.
-          MOVE "Job search/internship is under construction." TO WS-MESSAGE.
+       JOB-MENU-FLOW SECTION.
+          MOVE 'N' TO WS-LOOP-FLAG.
+
+          PERFORM UNTIL WS-LOOP-FLAG = 'Y'
+              MOVE "--- Job Search/Internship Menu ---" TO WS-MESSAGE
+              PERFORM DISPLAY-AND-LOG
+              MOVE "1. Post a Job/Internship" TO WS-MESSAGE
+              PERFORM DISPLAY-AND-LOG
+              MOVE "2. Browse Jobs/Internships" TO WS-MESSAGE
+              PERFORM DISPLAY-AND-LOG
+              MOVE "3. Back to Main Menu" TO WS-MESSAGE
+              PERFORM DISPLAY-AND-LOG
+
+              MOVE 1 TO MIN-VALUE-CHOICE
+              MOVE 3 TO MAX-VALUE-CHOICE
+              MOVE "Enter your choice:" TO WS-MESSAGE
+              PERFORM DISPLAY-AND-LOG
+              PERFORM CHOICE
+
+              EVALUATE WS-CHOICE
+                  WHEN 1
+                      PERFORM POST-JOB-FLOW
+                  WHEN 2
+                      MOVE "Browse Jobs/Internships is under construction."
+                          TO WS-MESSAGE
+                      PERFORM DISPLAY-AND-LOG
+                   WHEN 3
+                      MOVE 'Y' TO WS-LOOP-FLAG
+              END-EVALUATE
+          END-PERFORM.
+          EXIT.
+
+       POST-JOB-FLOW SECTION.
+          INITIALIZE WS-JOB-DATA.
+          MOVE "Post a New Job/Internship" TO WS-MESSAGE
+          PERFORM DISPLAY-AND-LOG.
+
+          MOVE "Enter Job Title:" TO WS-MESSAGE.
+          PERFORM DISPLAY-AND-LOG.
+          PERFORM GET-REQUIRED-INPUT.
+          IF WS-END-FILE = 'Y'
+              PERFORM CLOSE-PROGRAM
+          END-IF.
+          MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-JOB-TITLE.
+
+          MOVE "Enter Description (max 200 chars):" TO WS-MESSAGE.
+          PERFORM DISPLAY-AND-LOG.
+          PERFORM GET-REQUIRED-INPUT.
+          IF WS-END-FILE = 'Y'
+              PERFORM CLOSE-PROGRAM
+          END-IF.
+          MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-JOB-DESC.
+
+          MOVE "Enter Employer Name:" TO WS-MESSAGE.
+          PERFORM DISPLAY-AND-LOG.
+          PERFORM GET-REQUIRED-INPUT.
+          IF WS-END-FILE = 'Y'
+              PERFORM CLOSE-PROGRAM
+          END-IF.
+          MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-JOB-EMPLOYER.
+
+          MOVE "Enter Location:" TO WS-MESSAGE.
+          PERFORM DISPLAY-AND-LOG.
+          PERFORM GET-REQUIRED-INPUT.
+          IF WS-END-FILE = 'Y'
+              PERFORM CLOSE-PROGRAM
+          END-IF.
+          MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-JOB-LOCATION.
+
+          MOVE "Enter Salary (optional, enter 'NONE' to skip):"
+              TO WS-MESSAGE.
+          PERFORM DISPLAY-AND-LOG.
+          PERFORM READ-FROM-INPUT-FILE.
+          IF WS-END-FILE = 'Y'
+              PERFORM CLOSE-PROGRAM
+          END-IF.
+          MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-JOB-SALARY.
+          IF WS-JOB-SALARY = "NONE"
+              MOVE SPACES TO WS-JOB-SALARY
+          END-IF.
+
+          CALL "POST-JOB" USING WS-USERNAME, WS-JOB-TITLE, WS-JOB-DESC,
+                               WS-JOB-EMPLOYER, WS-JOB-LOCATION,
+                               WS-JOB-SALARY, WS-RETURN-CODE.
+
+          IF WS-RETURN-CODE = 'S'
+              MOVE "Job posted successfully!" TO WS-MESSAGE
+          ELSE
+              MOVE "Error: Job could not be posted." TO WS-MESSAGE
+          END-IF.
           PERFORM DISPLAY-AND-LOG.
           EXIT.
 
