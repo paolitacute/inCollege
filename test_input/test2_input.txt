@@ -1,0 +1,12 @@
+1
+alice
+Passw0rd!
+3
+1
+Data Analyst
+Analyze platform metrics
+BigData Inc
+New York, NY
+NONE
+3
+8
