@@ -22,6 +22,7 @@ Enter your choice:
 Enter your choice:
 Post a New Job/Internship
 Enter Job Title:
+Input cannot be blank. Please provide a value.
 Enter Description (max 200 chars):
 Enter Employer Name:
 Enter Location:
