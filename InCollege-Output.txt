@@ -18,28 +18,33 @@ Enter your choice:
 --- Job Search/Internship Menu ---
 1. Post a Job/Internship
 2. Browse Jobs/Internships
-3. Back to Main Menu
+3. View My Applications
+4. Back to Main Menu
 Enter your choice:
-Post a New Job/Internship
-Enter Job Title:
-Input cannot be blank. Please provide a value.
-Enter Description (max 200 chars):
-Enter Employer Name:
-Enter Location:
-Enter Salary (optional, enter 'NONE' to skip):
-Job posted successfully!
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+Enter the job number to view full details or 0 to return:
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234
+Would you like to apply for this job? (1 = Yes, 2 = No)
+You have already applied to this job.
+Error submitting application.
 --- Job Search/Internship Menu ---
 1. Post a Job/Internship
 2. Browse Jobs/Internships
-3. Back to Main Menu
+3. View My Applications
+4. Back to Main Menu
 Enter your choice:
-1. Create/Edit My Profile
-2. View My Profile
-3. Search for a job
-4. Find someone you know
-5. Learn a New Skill
-6. View My Pending Connection Requests
-7. View My Network
-8. Exit
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Total applications: 1
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
 Enter your choice:
-You quit successfully.
+You quit successfully. 

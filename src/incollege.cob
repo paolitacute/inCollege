@@ -566,11 +566,13 @@
               PERFORM DISPLAY-AND-LOG
               MOVE "2. Browse Jobs/Internships" TO WS-MESSAGE
               PERFORM DISPLAY-AND-LOG
-              MOVE "3. Back to Main Menu" TO WS-MESSAGE
+              MOVE "3. View My Applications" TO WS-MESSAGE
+              PERFORM DISPLAY-AND-LOG
+              MOVE "4. Back to Main Menu" TO WS-MESSAGE
               PERFORM DISPLAY-AND-LOG
 
               MOVE 1 TO MIN-VALUE-CHOICE
-              MOVE 3 TO MAX-VALUE-CHOICE
+              MOVE 4 TO MAX-VALUE-CHOICE
               MOVE "Enter your choice:" TO WS-MESSAGE
               PERFORM DISPLAY-AND-LOG
               PERFORM CHOICE
@@ -579,10 +581,10 @@
                   WHEN 1
                       PERFORM POST-JOB-FLOW
                   WHEN 2
-                      MOVE "Browse Jobs/Internships is under construction."
-                          TO WS-MESSAGE
-                      PERFORM DISPLAY-AND-LOG
-                   WHEN 3
+                      PERFORM BROWSE-JOB-FLOW
+                  WHEN 3
+                      PERFORM VIEW-APPLICATION-FLOW
+                  WHEN 4
                       MOVE 'Y' TO WS-LOOP-FLAG
               END-EVALUATE
           END-PERFORM.
@@ -648,7 +650,98 @@
           END-IF.
           PERFORM DISPLAY-AND-LOG.
           EXIT.
+       BROWSE-JOB-FLOW SECTION.
+          *> Use the external BROWSE-JOB subprogram to list jobs, show details, and apply
+          *> Close output so the subprogram can open and write to it safely
+          CLOSE OUTPUT-FILE
 
+          *> Request the subprogram to list all jobs
+          MOVE "LIST" TO WS-ACTION
+          CALL "BROWSE-JOB" USING WS-USERNAME, WS-ACTION, WS-CHOICE, WS-RETURN-CODE
+
+          *> Reopen output file for main program logging
+          OPEN EXTEND OUTPUT-FILE
+
+          EVALUATE WS-RETURN-CODE
+              WHEN 'X'
+                  MOVE "Error accessing job listings." TO WS-MESSAGE
+                  PERFORM DISPLAY-AND-LOG
+                  EXIT
+              WHEN OTHER
+                  CONTINUE
+          END-EVALUATE
+
+          *> Prompt user to select a job to view details or return
+          MOVE "Enter the job number to view full details or 0 to return:" TO WS-MESSAGE
+          PERFORM DISPLAY-AND-LOG
+          PERFORM GET-REQUIRED-INPUT
+          IF WS-END-FILE = 'Y'
+              PERFORM CLOSE-PROGRAM
+          END-IF
+
+          *> Validate numeric choice
+          IF FUNCTION TRIM(INPUT-RECORD) IS NUMERIC
+              IF FUNCTION LENGTH(FUNCTION TRIM(INPUT-RECORD)) = 1
+                  MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-CHOICE
+              ELSE
+                  MOVE 0 TO WS-CHOICE
+              END-IF
+          ELSE
+              MOVE 0 TO WS-CHOICE
+          END-IF
+
+          IF WS-CHOICE = 0
+              EXIT
+          END-IF
+
+          *> Show full details for selected job
+          CLOSE OUTPUT-FILE
+          MOVE "DETAIL" TO WS-ACTION
+          CALL "BROWSE-JOB" USING WS-USERNAME, WS-ACTION, WS-CHOICE, WS-RETURN-CODE
+          OPEN EXTEND OUTPUT-FILE
+          IF WS-RETURN-CODE = "S"
+               *> Ask whether to apply (1 = Yes, 2 = No)
+               MOVE "Would you like to apply for this job? (1 = Yes, 2 = No)" TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               PERFORM READ-FROM-INPUT-FILE
+               IF WS-END-FILE = 'Y'
+                   PERFORM CLOSE-PROGRAM
+               END-IF
+
+               IF FUNCTION TRIM(INPUT-RECORD) = "1"
+                   CLOSE OUTPUT-FILE
+                   MOVE "APPLY" TO WS-ACTION
+                   CALL "BROWSE-JOB" USING WS-USERNAME, WS-ACTION, WS-CHOICE, WS-RETURN-CODE
+                   OPEN EXTEND OUTPUT-FILE
+                   EVALUATE WS-RETURN-CODE
+                       WHEN 'S'
+                           MOVE "Application submitted." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                       WHEN OTHER
+                           MOVE "Error submitting application." TO WS-MESSAGE
+                           PERFORM DISPLAY-AND-LOG
+                   END-EVALUATE
+               ELSE
+                   MOVE "No application submitted." TO WS-MESSAGE
+                   PERFORM DISPLAY-AND-LOG
+               END-IF
+          END-IF
+          EXIT.
+       VIEW-APPLICATION-FLOW SECTION.
+       *> Ask the browse subprogram to print this user's applications
+       CLOSE OUTPUT-FILE
+       MOVE "VIEW" TO WS-ACTION
+       CALL "BROWSE-JOB" USING WS-USERNAME, WS-ACTION, WS-CHOICE, WS-RETURN-CODE
+       OPEN EXTEND OUTPUT-FILE
+
+       EVALUATE WS-RETURN-CODE
+           WHEN 'X'
+               MOVE "Error accessing applications file." TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+           WHEN OTHER
+               CONTINUE
+       END-EVALUATE
+       EXIT.
 
 FIND-SOMEONE SECTION.
     *> Initialize search loop control variable
