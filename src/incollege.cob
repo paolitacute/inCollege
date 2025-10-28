@@ -9,7 +9,7 @@
           FILE-CONTROL.
 
               *> Select INPUT-FILE tells COBOL what the input file is
-              SELECT INPUT-FILE ASSIGN TO "test_input/test_input6"
+              SELECT INPUT-FILE ASSIGN TO "test_input/test_input6.txt"
               *> LINE SEQUENTIAL means each line in text is a record
                   ORGANIZATION IS LINE SEQUENTIAL.
               *> OUTPUT-FILE defines what file will have the output stored
