@@ -9,11 +9,11 @@
           FILE-CONTROL.
 
               *> Select INPUT-FILE tells COBOL what the input file is
-              SELECT INPUT-FILE ASSIGN TO "test_input/test_input6.txt"
+              SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
               *> LINE SEQUENTIAL means each line in text is a record
                   ORGANIZATION IS LINE SEQUENTIAL.
               *> OUTPUT-FILE defines what file will have the output stored
-              SELECT OUTPUT-FILE ASSIGN TO "test_output/test_output6.txt"
+              SELECT OUTPUT-FILE ASSIGN TO "InCollege-Ouput.txt"
                   ORGANIZATION IS LINE SEQUENTIAL
                   FILE STATUS IS WS-OUTPUT-STATUS.
 
@@ -643,11 +643,15 @@
                                WS-JOB-EMPLOYER, WS-JOB-LOCATION,
                                WS-JOB-SALARY, WS-RETURN-CODE.
 
-          IF WS-RETURN-CODE = 'S'
-              MOVE "Job posted successfully!" TO WS-MESSAGE
-          ELSE
-              MOVE "Error: Job could not be posted." TO WS-MESSAGE
-          END-IF.
+          EVALUATE WS-RETURN-CODE
+              WHEN 'S'
+                  MOVE "Job posted successfully!" TO WS-MESSAGE
+              WHEN 'D'
+                  MOVE "Error: You have already posted a job with this title." TO WS-MESSAGE
+              WHEN OTHER
+                  MOVE "Error: Job could not be posted." TO WS-MESSAGE
+          END-EVALUATE.
+
           PERFORM DISPLAY-AND-LOG.
           EXIT.
        BROWSE-JOB-FLOW SECTION.

@@ -1,4 +1,4 @@
-       >>SOURCE FREE
+>>SOURCE FREE
        IDENTIFICATION DIVISION.
        PROGRAM-ID. BROWSE-JOB.
        AUTHOR. Assistant.
@@ -10,25 +10,20 @@
            SELECT JOBS-FILE ASSIGN TO "jobs.txt"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-JOBS-STATUS.
-
            SELECT APPLICATIONS-FILE ASSIGN TO "applications.txt"
                ORGANIZATION IS LINE SEQUENTIAL
                FILE STATUS IS WS-APP-STATUS.
-
            SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
                ORGANIZATION IS LINE SEQUENTIAL.
-
        DATA DIVISION.
        FILE SECTION.
        FD  JOBS-FILE.
        01  JOB-RECORD        PIC X(500).
-
        FD  APPLICATIONS-FILE.
        01  APPLICATION-RECORD PIC X(500).
 
        FD  OUTPUT-FILE.
        01  OUTPUT-RECORD     PIC X(350).
-
        WORKING-STORAGE SECTION.
        01  WS-JOBS-STATUS    PIC XX.
        01  WS-APP-STATUS     PIC XX.
@@ -40,13 +35,21 @@
        01  WS-TEMP           PIC X(200).
        01  WS-USER           PIC X(20).
        01  WS-LINE           PIC X(500).
-
        01  WS-JOB-TITLE      PIC X(50).
        01  WS-JOB-DESC       PIC X(200).
        01  WS-JOB-EMPLOYER   PIC X(50).
        01  WS-JOB-LOCATION   PIC X(50).
        01  WS-JOB-SALARY     PIC X(50).
        01  WS-JOB-POSTER     PIC X(50).
+
+       *> --- NEW VARIABLES FOR DUPLICATE CHECK ---
+       01  WS-CHECK-VARS.
+           05 WS-CHECK-USER      PIC X(20).
+           05 WS-CHECK-JOB-NUM   PIC X(200).
+           05 WS-CHECK-TITLE     PIC X(50).
+           05 WS-CHECK-EMPLOYER  PIC X(50).
+           05 WS-CHECK-LOCATION  PIC X(50).
+       *> --- END OF NEW VARIABLES ---
 
        LINKAGE SECTION.
        01  LS-USERNAME       PIC X(20).
@@ -55,7 +58,6 @@
        01  LS-RETURN-CODE    PIC X.
 
        PROCEDURE DIVISION USING LS-USERNAME, LS-ACTION, LS-JOB-NUM, LS-RETURN-CODE.
-
        *> Default return to failure
        MOVE 'F' TO LS-RETURN-CODE.
        *> Normalize username and action
@@ -75,7 +77,6 @@
                MOVE 'X' TO LS-RETURN-CODE
        END-EVALUATE
        GOBACK.
-
        JOB-LIST.
            MOVE 'N' TO WS-EOF
            MOVE 0 TO WS-COUNT
@@ -216,7 +217,6 @@
            CLOSE JOBS-FILE
            CLOSE OUTPUT-FILE
            GOBACK.
-
        JOB-APPLY.
            *> Find the job details first
            MOVE 'N' TO WS-EOF
@@ -277,12 +277,17 @@
                    END-READ
                    IF WS-EOF = 'N'
                        MOVE APPLICATION-RECORD TO WS-LINE
+
+                       *> --- MODIFIED LINE: Use new check variables ---
                        UNSTRING WS-LINE DELIMITED BY "~"
-                           INTO WS-USER WS-TEMP WS-JOB-TITLE WS-JOB-EMPLOYER WS-JOB-LOCATION
+                           INTO WS-CHECK-USER WS-CHECK-JOB-NUM
+                                WS-CHECK-TITLE WS-CHECK-EMPLOYER
+                                WS-CHECK-LOCATION
                        END-UNSTRING
 
-                       IF FUNCTION TRIM(WS-USER) = FUNCTION TRIM(LS-USERNAME)
-                          AND FUNCTION TRIM(WS-TEMP) = FUNCTION TRIM(WS-DISLPAY-NUMBER)
+                       *> --- MODIFIED LINE: Use new check variables ---
+                       IF FUNCTION TRIM(WS-CHECK-USER) = FUNCTION TRIM(LS-USERNAME)
+                          AND FUNCTION TRIM(WS-CHECK-JOB-NUM) = FUNCTION TRIM(WS-DISLPAY-NUMBER)
                            *> Already applied — inform user and exit
                            CLOSE APPLICATIONS-FILE
                            OPEN EXTEND OUTPUT-FILE
@@ -298,54 +303,57 @@
                END-PERFORM
            END-IF
            CLOSE APPLICATIONS-FILE
+
+           *> --- BEGINNING OF COMBINED FIX ---
            INITIALIZE WS-LINE
            STRING FUNCTION TRIM(LS-USERNAME) DELIMITED BY SIZE
                   "~" DELIMITED BY SIZE
                   FUNCTION TRIM(WS-COUNT) DELIMITED BY SIZE
                   "~" DELIMITED BY SIZE
+                  *> These variables are now safe and were not overwritten
                   FUNCTION TRIM(WS-JOB-TITLE) DELIMITED BY SPACE
                   "~" DELIMITED BY SIZE
                   FUNCTION TRIM(WS-JOB-EMPLOYER) DELIMITED BY SIZE
                   "~" DELIMITED BY SIZE
                   FUNCTION TRIM(WS-JOB-LOCATION) DELIMITED BY SIZE
-
                   INTO WS-LINE
 
+           *> Open for append, or create if it doesn't exist
            OPEN EXTEND APPLICATIONS-FILE
            IF WS-APP-STATUS = "35"
-               *> File not found; create new one
                OPEN OUTPUT APPLICATIONS-FILE
-               MOVE "00" TO WS-APP-STATUS
            END-IF
 
+           *> Write the new application record ONCE
            IF WS-APP-STATUS = "00"
                WRITE APPLICATION-RECORD FROM WS-LINE
-               CLOSE APPLICATIONS-FILE
+               *> Set success code ONLY if write is successful
+               MOVE 'S' TO LS-RETURN-CODE
            ELSE
+               *> Set error code if file couldn't be opened
                MOVE 'X' TO LS-RETURN-CODE
-               CLOSE APPLICATIONS-FILE
-               GOBACK
            END-IF
 
-
-           WRITE APPLICATION-RECORD FROM WS-LINE
+           *> Close the file ONCE
            CLOSE APPLICATIONS-FILE
 
-           *> Log confirmation
-           OPEN EXTEND OUTPUT-FILE
-           INITIALIZE WS-MESSAGE
-           STRING "Your application for " FUNCTION TRIM(WS-JOB-TITLE)
-                  " at " FUNCTION TRIM(WS-JOB-EMPLOYER)
-                  " has been submitted." DELIMITED BY SIZE
-                  INTO WS-MESSAGE
-           DISPLAY WS-MESSAGE
-           MOVE WS-MESSAGE TO OUTPUT-RECORD
-           WRITE OUTPUT-RECORD
-           CLOSE OUTPUT-FILE
+           *> Log confirmation only if write was successful
+           IF LS-RETURN-CODE = 'S'
+               OPEN EXTEND OUTPUT-FILE
+               INITIALIZE WS-MESSAGE
+               STRING "Your application for " FUNCTION TRIM(WS-JOB-TITLE)
+                      " at " FUNCTION TRIM(WS-JOB-EMPLOYER)
+                      " has been submitted."
+                      DELIMITED BY SIZE
+                      INTO WS-MESSAGE
+               DISPLAY WS-MESSAGE
+               MOVE WS-MESSAGE TO OUTPUT-RECORD
+               WRITE OUTPUT-RECORD
+               CLOSE OUTPUT-FILE
+           END-IF
+           *> --- END OF COMBINED FIX ---
 
-           MOVE 'S' TO LS-RETURN-CODE
            GOBACK.
-
        VIEW-APPLICATIONS.
            MOVE 0 TO WS-COUNT
            OPEN INPUT APPLICATIONS-FILE
@@ -376,7 +384,7 @@
                    AT END
                        MOVE 'Y' TO WS-EOF
                    NOT AT END
-                       MOVE 'N' TO WS-EOF
+                       MOVE 'N' to WS-EOF
                END-READ
                IF WS-EOF = 'N'
                    MOVE APPLICATION-RECORD TO WS-LINE
@@ -384,7 +392,7 @@
                        INTO WS-USER WS-TEMP WS-JOB-TITLE WS-JOB-EMPLOYER WS-JOB-LOCATION
                    END-UNSTRING
 
-                   *> WS-TEMP contains applicant then jobnum in two fields used above
+                   *> WS-TEMP contains jobnum
                    IF FUNCTION TRIM(WS-USER) = FUNCTION TRIM(LS-USERNAME)
                        ADD 1 TO WS-COUNT
                        INITIALIZE WS-MESSAGE
@@ -401,7 +409,9 @@
            END-PERFORM
 
            INITIALIZE WS-MESSAGE
-           STRING "Total applications: " FUNCTION TRIM(WS-COUNT) INTO WS-MESSAGE
+           MOVE WS-COUNT TO WS-DISLPAY-NUMBER
+           STRING "Total applications: " FUNCTION TRIM(WS-DISLPAY-NUMBER)
+                  INTO WS-MESSAGE
            DISPLAY WS-MESSAGE
            MOVE WS-MESSAGE TO OUTPUT-RECORD
            WRITE OUTPUT-RECORD

@@ -524,3 +524,317 @@ Job 2: Job1 at Employer name (Example Location)
 Job 1: Job1 at Employer name (Example Location)
 Job 3: Job1 at Employer name (Example Location)
 Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Job 1: Job1 at Employer name (Example Location)
+Job 3: Job1 at Employer name (Example Location)
+Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Job 1: Job1 at Employer name (Example Location)
+Job 3: Job1 at Employer name (Example Location)
+Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Job 1: Job1 at Employer name (Example Location)
+Job 3: Job1 at Employer name (Example Location)
+Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Job 1: Job1 at Employer name (Example Location)
+Job 3: Job1 at Employer name (Example Location)
+Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Job 1: Job1 at Employer name (Example Location)
+Job 3: Job1 at Employer name (Example Location)
+Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Job 1: Job1 at Employer name (Example Location)
+Job 3: Job1 at Employer name (Example Location)
+Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Job 1: Job1 at Employer name (Example Location)
+Job 3: Job1 at Employer name (Example Location)
+Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your Job Applications
+Job 2: Job1 at Employer name (Example Location)
+Job 1: Job1 at Employer name (Example Location)
+Job 3: Job1 at Employer name (Example Location)
+Total applications: 3
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Requested job not found.
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+Your application for Product Manager at InCollege has been submitted.
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+You have already applied to this job.
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+Your application for Product Manager at InCollege has been submitted.
+Your Job Applications
+Job 1: Product at InCollege (USA)
+Total applications: 1
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Product Manager
+Description: Manage the product lifecycle
+Employer: InCollege
+Location: USA
+You have already applied to this job.
+Your Job Applications
+Job 1: Product at InCollege (USA)
+Total applications: 1
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Requested job not found.
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+Your application for Product at InCollege has been submitted.
+Your Job Applications
+Job 1: Product at InCollege (USA)
+Job 2: Product at InCollege (USA)
+Total applications: 2
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+You have already applied to this job.
+Your Job Applications
+Job 1: Product at InCollege (USA)
+Job 2: Product at InCollege (USA)
+Total applications: 2
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Job1
+Description: This is a job description
+Employer: Employer name
+Location: Example Location
+Salary: 1234alice
+Your application for Job1 at Employer name has been submitted.
+Your Job Applications
+Job 1: Product at InCollege (USA)
+Job 2: Job1 at Employer name (Example Location)
+Total applications: 2
+1. Product Manager at InCollege (USA)
+2. Job1 at Employer name (Example Location)
+3. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Engineer
+Description: This role is for programmers who want to program
+Employer: Anderson Inc.
+Location: Tampa, Florida
+Your application for Software Engineer at Anderson Inc. has been submitted.
+Your Job Applications
+Job 1: Product at InCollege (USA)
+Job 2: Job1 at Employer name (Example Location)
+Job 3: Software at Anderson Inc. (Tampa, Florida)
+Total applications: 3
