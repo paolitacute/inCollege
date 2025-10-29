@@ -13,7 +13,7 @@
               *> LINE SEQUENTIAL means each line in text is a record
                   ORGANIZATION IS LINE SEQUENTIAL.
               *> OUTPUT-FILE defines what file will have the output stored
-              SELECT OUTPUT-FILE ASSIGN TO "InCollege-Ouput.txt"
+              SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
                   ORGANIZATION IS LINE SEQUENTIAL
                   FILE STATUS IS WS-OUTPUT-STATUS.
 
@@ -721,6 +721,7 @@
                        WHEN 'S'
                            MOVE "Application submitted." TO WS-MESSAGE
                            PERFORM DISPLAY-AND-LOG
+                        
                        WHEN OTHER
                            MOVE "Error submitting application." TO WS-MESSAGE
                            PERFORM DISPLAY-AND-LOG

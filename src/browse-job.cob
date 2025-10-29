@@ -31,7 +31,7 @@
        01  WS-COUNT          PIC 9(1) VALUE 0.
 
        01  WS-DISLPAY-NUMBER PIC Z(3).
-       01  WS-MESSAGE        PIC X(200).
+       01  WS-MESSAGE        PIC X(80).
        01  WS-TEMP           PIC X(200).
        01  WS-USER           PIC X(20).
        01  WS-LINE           PIC X(500).
@@ -122,6 +122,7 @@
            END-PERFORM
 
            IF WS-COUNT = 0
+               INITIALIZE WS-MESSAGE
                MOVE "No job listings available." TO WS-MESSAGE
                DISPLAY WS-MESSAGE
                MOVE WS-MESSAGE TO OUTPUT-RECORD
@@ -208,6 +209,7 @@
            END-PERFORM
 
            IF LS-RETURN-CODE NOT = 'S'
+               INITIALIZE WS-MESSAGE
                MOVE "Requested job not found." TO WS-MESSAGE
                DISPLAY WS-MESSAGE
                MOVE WS-MESSAGE TO OUTPUT-RECORD
