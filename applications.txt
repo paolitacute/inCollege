@@ -1,3 +1,0 @@
-alice~1~Product~InCollege~USA
-alice~2~Job1~Employer name~Example Location
-alice~3~Software~Anderson Inc.~Tampa, Florida

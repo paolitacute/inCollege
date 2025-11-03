@@ -1,3 +1,0 @@
-bob:alice:CONNECTED
-alice:john:CONNECTED
-alice:jake:PENDING

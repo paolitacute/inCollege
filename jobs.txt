@@ -1,3 +1,0 @@
-alice~Product Manager~Manage the product lifecycle~InCollege~USA~
-alice~Job1~This is a job description~Employer name~Example Location~1234alice~Software Engineer~This role is for programmers who want to program~Anderson Inc.~Tampa, Florida~
-alice~Software Engineer~This role is for programmers who want to program~Anderson Inc.~Tampa, Florida~
