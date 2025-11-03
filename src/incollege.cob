@@ -721,7 +721,7 @@
                        WHEN 'S'
                            MOVE "Application submitted." TO WS-MESSAGE
                            PERFORM DISPLAY-AND-LOG
-                        
+
                        WHEN OTHER
                            MOVE "Error submitting application." TO WS-MESSAGE
                            PERFORM DISPLAY-AND-LOG
@@ -937,9 +937,12 @@ FIND-SOMEONE SECTION.
                 EXIT SECTION
             END-IF
 
+            CLOSE OUTPUT-FILE
+
             MOVE "SEND" TO WS-ACTION
             CALL "CONNECTIONS" USING WS-ACTION, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
 
+            OPEN EXTEND OUTPUT-FILE
             EVALUATE WS-RETURN-CODE
                 WHEN 'S'
                     MOVE "Connection request sent successfully!" TO WS-MESSAGE

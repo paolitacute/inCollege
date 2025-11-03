@@ -22,7 +22,7 @@
        FD  CONNECTIONS-FILE.
        01  CONNECTION-RECORD    PIC X(100).
 
-       FD  OUTPUT-FILE EXTERNAL.
+       FD  OUTPUT-FILE.
        01  OUTPUT-RECORD        PIC X(350).
 
        FD  PROFILES-FILE.
@@ -56,14 +56,14 @@
 
        01  WS-ALREADY-CONNECTED PIC X VALUE 'N'.
        01  WS-PENDING-EXISTS    PIC X VALUE 'N'.
+    01  WS-TARGET-FOUND          PIC X VALUE 'N'.
+    LINKAGE SECTION.
+    01  LS-ACTION            PIC X(10).  *> Action: SEND, VIEW, ACCEPT
+    01  LS-USERNAME          PIC X(20).
+    01  LS-TARGET-USERNAME   PIC X(20).
+    01  LS-RETURN-CODE       PIC X.     *> S=Success, F=Failure, X=Error
 
-       LINKAGE SECTION.
-       01  LS-ACTION            PIC X(10).  *> Action: SEND, VIEW, ACCEPT
-       01  LS-USERNAME          PIC X(20).
-       01  LS-TARGET-USERNAME   PIC X(20).
-       01  LS-RETURN-CODE       PIC X.     *> S=Success, F=Failure, X=Error
-
-       01  WS-TARGET-FOUND          PIC X VALUE 'N'.
+    *> Local working storage accidentally placed in LINKAGE before.
 
 
        PROCEDURE DIVISION USING LS-ACTION, LS-USERNAME, LS-TARGET-USERNAME, LS-RETURN-CODE.
