@@ -190,11 +190,13 @@
           PERFORM DISPLAY-AND-LOG.
           MOVE "7. View My Network" TO WS-MESSAGE.
           PERFORM DISPLAY-AND-LOG.
-          MOVE "8. Exit" TO WS-MESSAGE.
+          MOVE "8. Messages" TO WS-MESSAGE.
+          PERFORM DISPLAY-AND-LOG.
+          MOVE "9. Exit" TO WS-MESSAGE.
           PERFORM DISPLAY-AND-LOG.
 
           MOVE 1 TO MIN-VALUE-CHOICE.
-          MOVE 8 TO MAX-VALUE-CHOICE.
+          MOVE 9 TO MAX-VALUE-CHOICE.
 
 
           MOVE "Enter your choice:" TO WS-MESSAGE.
@@ -219,6 +221,8 @@
               WHEN 7
                   PERFORM VIEW-MY-NETWORK
               WHEN 8
+                  PERFORM MESSAGE-FLOW
+              WHEN 9
                   MOVE 'Y' TO WS-EXIT-FLAG
                   MOVE "You quit successfully." TO WS-MESSAGE
                   PERFORM DISPLAY-AND-LOG
@@ -937,12 +941,9 @@ FIND-SOMEONE SECTION.
                 EXIT SECTION
             END-IF
 
-            CLOSE OUTPUT-FILE
-
             MOVE "SEND" TO WS-ACTION
             CALL "CONNECTIONS" USING WS-ACTION, WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
 
-            OPEN EXTEND OUTPUT-FILE
             EVALUATE WS-RETURN-CODE
                 WHEN 'S'
                     MOVE "Connection request sent successfully!" TO WS-MESSAGE
@@ -1013,7 +1014,39 @@ FIND-SOMEONE SECTION.
           END-EVALUATE.
           EXIT.
 
-
+       MESSAGE-FLOW SECTION.
+       INITIALIZE WS-VIEW-USER
+       MOVE "--- Message Menu ---" to WS-MESSAGE
+       PERFORM DISPLAY-AND-LOG
+       MOVE "1. Send a New Message" to WS-MESSAGE
+       PERFORM DISPLAY-AND-LOG
+       MOVE "2. View My Messages" to WS-MESSAGE
+       PERFORM DISPLAY-AND-LOG
+       MOVE "3. Back to Main Menu" to WS-MESSAGE
+       PERFORM DISPLAY-AND-LOG
+       MOVE "Enter you choice:" to WS-MESSAGE
+       PERFORM DISPLAY-AND-LOG
+       MOVE 1 TO MIN-VALUE-CHOICE.
+       MOVE 3 TO MAX-VALUE-CHOICE.
+       PERFORM CHOICE
+       EVALUATE WS-CHOICE
+           WHEN 1
+               MOVE "Enter recipient's username (must be a connection):" to WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               PERFORM GET-REQUIRED-INPUT
+               MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-VIEW-USER
+               *> Close output so the SEND-MESSAGE subprogram can open/append to it
+               CLOSE OUTPUT-FILE
+               CALL "SEND-MESSAGE" USING WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
+               OPEN EXTEND OUTPUT-FILE
+           WHEN 2
+               MOVE "View My Messages is under construction" to WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               PERFORM MESSAGE-FLOW
+           WHEN 3
+               EXIT SECTION
+       END-EVALUATE.
+       EXIT.
        CHOICE SECTION.
 
           INITIALIZE WS-CHOICE.

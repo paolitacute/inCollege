@@ -1,1 +1,1 @@
-John:Alice:PENDING
+John:Alice:CONNECTED

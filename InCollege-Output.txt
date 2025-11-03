@@ -5,7 +5,7 @@ Enter your choice:
 Please enter your username:
 Please enter your password:
 You have successfully logged in.
-Welcome, John!
+Welcome, Alice!
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -13,20 +13,15 @@ Welcome, John!
 5. Learn a New Skill
 6. View My Pending Connection Requests
 7. View My Network
-8. Exit
+8. Messages
+9. Exit
 Enter your choice:
-Enter the full name of the person you are looking for:
----Found User Profile---
-Name: Alice Smith
-University: USF
-Major: TEST
-Graduation Year: 2026
-About Me:
-Experience: None
-Education: None
---------------------
-Would you like to send a connection request? (1 = Yes, 2 = No)
-Connection request sent successfully!
+--- Message Menu ---
+1. Send a New Message
+2. View My Messages
+3. Back to Main Menu
+Enter you choice:
+Enter recipient's username (must be a connection):
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -34,6 +29,8 @@ Connection request sent successfully!
 5. Learn a New Skill
 6. View My Pending Connection Requests
 7. View My Network
-8. Exit
+8. Messages
+9. Exit
 Enter your choice:
+Not a valid choice. Try again.
 You quit successfully.
