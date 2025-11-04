@@ -6,3 +6,5 @@ John:Alice>>Hello John!!>>01:44 pm-11/04
 John:Alice>>This is going to be a very long message because sometimes people do not know how to properly sum up what they want to say. Now I am going to add latin giberish because typing a very long sentence is n>>01:44 pm-11/04
 John:Alice>>Hello John!!>>01:48 pm-11/04
 John:Alice>>This is going to be a very long message because sometimes people do not know how to properly sum up what they want to say. Now I am going to add latin giberish because typing a very long sentence is n>>01:48 pm-11/04
+John:Alice>>Hello John!!>>01:55 pm-11/04
+John:Alice>>This is going to be a very long message because sometimes people do not know how to properly sum up what they want to say. Now I am going to add latin giberish because typing a very long sentence is n>>01:55 pm-11/04
