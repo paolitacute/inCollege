@@ -1,1 +1,2 @@
 John:Alice:CONNECTED
+Walter1:Alice:PENDING
