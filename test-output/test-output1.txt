@@ -32,5 +32,4 @@ Enter recipient's username (must be a connection):
 8. Messages
 9. Exit
 Enter your choice:
-Not a valid choice. Try again.
 You quit successfully.
