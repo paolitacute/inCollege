@@ -32,45 +32,4 @@ Enter recipient's username (must be a connection):
 8. Messages
 9. Exit
 Enter your choice:
-Not a valid choice. Try again.
 You quit successfully.
-Name: Alice Smith
-University: USF
-Major: TEST
-Graduation Year: 2026
-About Me:
-Experience: None
-Education: None
---------------------
-Name: Alice Smith
-University: USF
-Major: TEST
-Graduation Year: 2026
-About Me:
-Experience: None
-Education: None
---------------------
-Name: Alice Smith
-University: USF
-Major: TEST
-Graduation Year: 2026
-About Me:
-Experience: None
-Education: None
---------------------
-Name: Alice Smith
-University: USF
-Major: TEST
-Graduation Year: 2026
-About Me:
-Experience: None
-Education: None
---------------------
-Name: Alice Smith
-University: USF
-Major: TEST
-Graduation Year: 2026
-About Me:
-Experience: None
-Education: None
---------------------

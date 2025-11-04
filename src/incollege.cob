@@ -9,11 +9,11 @@
           FILE-CONTROL.
 
               *> Select INPUT-FILE tells COBOL what the input file is
-              SELECT INPUT-FILE ASSIGN TO "test-input/test-input5.txt"
+              SELECT INPUT-FILE ASSIGN TO "InCollege-Input.txt"
               *> LINE SEQUENTIAL means each line in text is a record
                   ORGANIZATION IS LINE SEQUENTIAL.
               *> OUTPUT-FILE defines what file will have the output stored
-              SELECT OUTPUT-FILE ASSIGN TO "test-output/test-output5.txt"
+              SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
                   ORGANIZATION IS LINE SEQUENTIAL
                   FILE STATUS IS WS-OUTPUT-STATUS.
 
@@ -1035,6 +1035,10 @@ FIND-SOMEONE SECTION.
                PERFORM DISPLAY-AND-LOG
                PERFORM GET-REQUIRED-INPUT
                MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-VIEW-USER
+               *> This reads the message line from the input file to
+               *> advance the main program's file pointer,
+               *> matching what the subprogram will do.
+               PERFORM READ-FROM-INPUT-FILE
                *> Close output so the SEND-MESSAGE subprogram can open/append to it
                CLOSE OUTPUT-FILE
                CALL "SEND-MESSAGE" USING WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
