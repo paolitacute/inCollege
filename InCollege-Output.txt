@@ -5,11 +5,7 @@ Enter your choice:
 Please enter your username:
 Please enter your password:
 You have successfully logged in.
-<<<<<<< HEAD
-Welcome, John!
-=======
 Welcome, Alice!
->>>>>>> parent of 351ade3 (merge)
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -36,8 +32,4 @@ Enter recipient's username (must be a connection):
 8. Messages
 9. Exit
 Enter your choice:
-<<<<<<< HEAD
-=======
-Not a valid choice. Try again.
->>>>>>> parent of 351ade3 (merge)
 You quit successfully.
