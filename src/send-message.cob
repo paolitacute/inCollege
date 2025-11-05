@@ -89,6 +89,11 @@
        *> Trim inputs
        MOVE FUNCTION TRIM(LS-SENDER) TO LS-SENDER
        MOVE FUNCTION TRIM(LS-RECIPIENT) TO LS-RECIPIENT
+    *> Ensure output file is open for logging throughout this subprogram
+    OPEN EXTEND OUTPUT-FILE
+    *> WS-OUTPUT-STATUS will indicate whether open succeeded; subsequent
+    *> writes are attempted only if the open succeeded (close is conditional
+    *> before each GOBACK to avoid closing an unopened file).
 
        *> 1) Verify recipient exists in accounts.txt (username present)
        MOVE 'N' TO WS-FOUND-FLAG
@@ -99,12 +104,18 @@
                PERFORM DISPLAY-AND-LOG
                MOVE 'F' TO LS-RETURN-CODE
                CLOSE ACCOUNTS-FILE
+               IF WS-OUTPUT-STATUS = "00"
+                   CLOSE OUTPUT-FILE
+               END-IF
                GOBACK
            ELSE
                MOVE "Error accessing accounts file." TO WS-MESSAGE
                PERFORM DISPLAY-AND-LOG
                MOVE 'X' TO LS-RETURN-CODE
                CLOSE ACCOUNTS-FILE
+               IF WS-OUTPUT-STATUS = "00"
+                   CLOSE OUTPUT-FILE
+               END-IF
                GOBACK
            END-IF
        END-IF
@@ -125,12 +136,15 @@
                   END-IF
            END-READ
        END-PERFORM
-       CLOSE ACCOUNTS-FILE
+           CLOSE ACCOUNTS-FILE
 
        IF WS-FOUND-FLAG NOT = 'Y'
            MOVE "User does not exist." TO WS-MESSAGE
            PERFORM DISPLAY-AND-LOG
            MOVE 'F' TO LS-RETURN-CODE
+           IF WS-OUTPUT-STATUS = "00"
+               CLOSE OUTPUT-FILE
+           END-IF
            GOBACK
        END-IF
 
@@ -143,12 +157,18 @@
                PERFORM DISPLAY-AND-LOG
                MOVE 'F' TO LS-RETURN-CODE
                CLOSE CONNECTIONS-FILE
+               IF WS-OUTPUT-STATUS = "00"
+                   CLOSE OUTPUT-FILE
+               END-IF
                GOBACK
            ELSE
                MOVE "Error accessing connections file." TO WS-MESSAGE
                PERFORM DISPLAY-AND-LOG
                MOVE 'X' TO LS-RETURN-CODE
                CLOSE CONNECTIONS-FILE
+               IF WS-OUTPUT-STATUS = "00"
+                   CLOSE OUTPUT-FILE
+               END-IF
                GOBACK
            END-IF
        END-IF
@@ -177,6 +197,9 @@
            MOVE "You can only message users you are connected with." TO WS-MESSAGE
            PERFORM DISPLAY-AND-LOG
            MOVE 'F' TO LS-RETURN-CODE
+           IF WS-OUTPUT-STATUS = "00"
+               CLOSE OUTPUT-FILE
+           END-IF
            GOBACK
        END-IF
 
@@ -186,21 +209,27 @@
 
         *> Read the input file and find the recipient's name; the next line after the recipient is the message
         OPEN INPUT INPUT-FILE
-        IF WS-INPUT-STATUS NOT = "00"
-            IF WS-INPUT-STATUS = "35"
-                MOVE "No input available for message." TO WS-MESSAGE
-                PERFORM DISPLAY-AND-LOG
-                MOVE 'F' TO LS-RETURN-CODE
-                CLOSE INPUT-FILE
-                GOBACK
-            ELSE
-                MOVE "Error opening input file." TO WS-MESSAGE
-                PERFORM DISPLAY-AND-LOG
-                MOVE 'X' TO LS-RETURN-CODE
-                CLOSE INPUT-FILE
-                GOBACK
-            END-IF
-        END-IF
+                IF WS-INPUT-STATUS NOT = "00"
+                    IF WS-INPUT-STATUS = "35"
+                        MOVE "No input available for message." TO WS-MESSAGE
+                        PERFORM DISPLAY-AND-LOG
+                        MOVE 'F' TO LS-RETURN-CODE
+                        CLOSE INPUT-FILE
+                        IF WS-OUTPUT-STATUS = "00"
+                            CLOSE OUTPUT-FILE
+                        END-IF
+                        GOBACK
+                    ELSE
+                        MOVE "Error opening input file." TO WS-MESSAGE
+                        PERFORM DISPLAY-AND-LOG
+                        MOVE 'X' TO LS-RETURN-CODE
+                        CLOSE INPUT-FILE
+                        IF WS-OUTPUT-STATUS = "00"
+                            CLOSE OUTPUT-FILE
+                        END-IF
+                        GOBACK
+                    END-IF
+                END-IF
 
         MOVE 'N' TO WS-EOF-FLAG
         MOVE 'N' TO WS-MSG-FOUND
@@ -233,6 +262,9 @@
             MOVE "No message provided." TO WS-MESSAGE
             PERFORM DISPLAY-AND-LOG
             MOVE 'F' TO LS-RETURN-CODE
+            IF WS-OUTPUT-STATUS = "00"
+                CLOSE OUTPUT-FILE
+            END-IF
             GOBACK
         END-IF
 
@@ -254,6 +286,9 @@
                MOVE "Error accessing messages file." TO WS-MESSAGE
                PERFORM DISPLAY-AND-LOG
                MOVE 'X' TO LS-RETURN-CODE
+               IF WS-OUTPUT-STATUS = "00"
+                   CLOSE OUTPUT-FILE
+               END-IF
                GOBACK
            END-IF
        END-IF
@@ -314,6 +349,9 @@
        PERFORM DISPLAY-AND-LOG
 
        MOVE 'S' TO LS-RETURN-CODE
+       IF WS-OUTPUT-STATUS = "00"
+           CLOSE OUTPUT-FILE
+       END-IF
        GOBACK.
 
        DISPLAY-AND-LOG SECTION.
