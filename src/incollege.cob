@@ -1015,42 +1015,65 @@ FIND-SOMEONE SECTION.
           EXIT.
 
        MESSAGE-FLOW SECTION.
-       INITIALIZE WS-VIEW-USER
-       MOVE "--- Message Menu ---" to WS-MESSAGE
-       PERFORM DISPLAY-AND-LOG
-       MOVE "1. Send a New Message" to WS-MESSAGE
-       PERFORM DISPLAY-AND-LOG
-       MOVE "2. View My Messages" to WS-MESSAGE
-       PERFORM DISPLAY-AND-LOG
-       MOVE "3. Back to Main Menu" to WS-MESSAGE
-       PERFORM DISPLAY-AND-LOG
-       MOVE "Enter you choice:" to WS-MESSAGE
-       PERFORM DISPLAY-AND-LOG
-       MOVE 1 TO MIN-VALUE-CHOICE.
-       MOVE 3 TO MAX-VALUE-CHOICE.
-       PERFORM CHOICE
-       EVALUATE WS-CHOICE
-           WHEN 1
-               MOVE "Enter recipient's username (must be a connection):" to WS-MESSAGE
+           MOVE 'N' TO WS-LOOP-FLAG
+           PERFORM UNTIL WS-LOOP-FLAG = 'Y'
+               INITIALIZE WS-VIEW-USER
+               MOVE "--- Messages Menu ---" TO WS-MESSAGE
                PERFORM DISPLAY-AND-LOG
-               PERFORM GET-REQUIRED-INPUT
-               MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-VIEW-USER
-               *> This reads the message line from the input file to
-               *> advance the main program's file pointer,
-               *> matching what the subprogram will do.
-               PERFORM READ-FROM-INPUT-FILE
-               *> Close output so the SEND-MESSAGE subprogram can open/append to it
-               CLOSE OUTPUT-FILE
-               CALL "SEND-MESSAGE" USING WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
-               OPEN EXTEND OUTPUT-FILE
-           WHEN 2
-               MOVE "View My Messages is under construction" to WS-MESSAGE
+               MOVE "1. Send a New Message" TO WS-MESSAGE
                PERFORM DISPLAY-AND-LOG
-               PERFORM MESSAGE-FLOW
-           WHEN 3
-               EXIT SECTION
-       END-EVALUATE.
-       EXIT.
+               MOVE "2. View My Messages" TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               MOVE "3. Back to Main Menu" TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+               MOVE "Enter your choice:" TO WS-MESSAGE
+               PERFORM DISPLAY-AND-LOG
+
+               MOVE 1 TO MIN-VALUE-CHOICE
+               MOVE 3 TO MAX-VALUE-CHOICE
+               PERFORM CHOICE
+
+               EVALUATE WS-CHOICE
+                   WHEN 1
+                       MOVE "Enter recipient's username (must be a connection):" TO WS-MESSAGE
+                       PERFORM DISPLAY-AND-LOG
+                       PERFORM GET-REQUIRED-INPUT
+                       MOVE FUNCTION TRIM(INPUT-RECORD) TO WS-VIEW-USER
+
+                       *> Advance past the message line (the subprogram will read it too)
+                       PERFORM READ-FROM-INPUT-FILE
+
+                       *> Let the subprogram safely write to output
+                       CLOSE OUTPUT-FILE
+                       CALL "SEND-MESSAGE" USING WS-USERNAME, WS-VIEW-USER, WS-RETURN-CODE
+                       OPEN EXTEND OUTPUT-FILE
+
+                   WHEN 2
+                       *> Let the subprogram safely write to output
+                       CLOSE OUTPUT-FILE
+                       CALL "VIEW-MESSAGE" USING WS-USERNAME, WS-RETURN-CODE
+                       OPEN EXTEND OUTPUT-FILE
+
+                       *> Optional: react to status
+                       EVALUATE WS-RETURN-CODE
+                           WHEN 'S'
+                               CONTINUE  *> messages printed
+                           WHEN 'F'
+                               CONTINUE  *> "no messages" already printed
+                           WHEN 'X'
+                               MOVE "Error accessing messages file." TO WS-MESSAGE
+                               PERFORM DISPLAY-AND-LOG
+                           WHEN OTHER
+                               CONTINUE
+                       END-EVALUATE
+
+                   WHEN 3
+                       MOVE 'Y' TO WS-LOOP-FLAG
+               END-EVALUATE
+           END-PERFORM.
+           EXIT.
+
+
        CHOICE SECTION.
 
           INITIALIZE WS-CHOICE.
