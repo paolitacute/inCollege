@@ -1,12 +1,12 @@
        >>SOURCE FREE
        IDENTIFICATION DIVISION.
-       PROGRAM-ID. RECEIVE-MESSAGE.
-       AUTHOR. Gemini.
+       PROGRAM-ID. VIEW-MESSAGE.
+       AUTHOR. Vamsi.
        DATE-WRITTEN. 11/10/2025.
       *
-      * This subprogram reads the messages.txt file and displays
-      * all messages for the specified recipient (LS-CURRENT-USER).
-      * It logs all output to InCollege-Output.txt as required.
+      *This module reads the messages.txt file and displays
+      * all messages for the specified recipient.
+      * It logs all output to InCollege-Output.txt.
       *
        ENVIRONMENT DIVISION.
        INPUT-OUTPUT SECTION.
@@ -30,10 +30,10 @@
        01  WS-OUTPUT-STATUS   PIC X(2).
        01  WS-MESSAGES-STATUS PIC X(2).
        01  WS-EOF-FLAG        PIC X VALUE 'N'.
-      * This flag tracks if we find at least one message
+      * This tracks if we find at least one message
        01  WS-MSG-FOUND-FLAG  PIC X VALUE 'N'.
 
-      * Variables for parsing the message record
+      * Variables for parsing
        01  WS-STORED-LINE     PIC X(500).
        01  WS-SENDER          PIC X(20).
        01  WS-RECIPIENT       PIC X(20).
@@ -58,7 +58,7 @@
        MOVE FUNCTION TRIM(LS-CURRENT-USER) TO LS-CURRENT-USER.
 
       * Open the output file first to log all actions.
-      * The main program (incollege.cob) must CLOSE this file
+      * The main program must CLOSE this file
       * before CALLing and OPEN EXTEND it after.
        OPEN EXTEND OUTPUT-FILE
        IF WS-OUTPUT-STATUS NOT = "00"
@@ -70,7 +70,7 @@
        OPEN INPUT MESSAGES-FILE
        IF WS-MESSAGES-STATUS NOT = "00"
            IF WS-MESSAGES-STATUS = "35"
-      * File not found = No messages exist yet [cite: 90]
+      * File not found = No messages exist yet
                MOVE "You have no messages at this time." TO WS-DISPLAY-LINE
                PERFORM DISPLAY-AND-LOG
                MOVE 'F' TO LS-RETURN-CODE
@@ -86,7 +86,7 @@
            END-IF
        END-IF.
 
-      * File opened successfully, print header [cite: 150]
+      * File opened successfully, print header
        MOVE "Your Messages" TO WS-DISPLAY-LINE
        PERFORM DISPLAY-AND-LOG
        MOVE "---" TO WS-DISPLAY-LINE
@@ -108,7 +108,7 @@
        IF WS-MSG-FOUND-FLAG = 'Y'
            MOVE 'S' TO LS-RETURN-CODE
        ELSE
-      * File was read, but no messages matched the user [cite: 91]
+      * File was read, but no messages matched the user
            MOVE "You have no messages at this time." TO WS-DISPLAY-LINE
            PERFORM DISPLAY-AND-LOG
            MOVE 'F' TO LS-RETURN-CODE
@@ -122,7 +122,7 @@
            INITIALIZE WS-SENDER, WS-RECIPIENT, WS-MESSAGE-CONTENT,
                       WS-TIMESTAMP, WS-REST-OF-LINE.
 
-      * Parse the record based on the format from SEND-MESSAGE [cite: 72]
+      * Parse the record based on the format from SEND-MESSAGE
       * Format: Sender:Recipient>>Message>>Timestamp
            UNSTRING WS-STORED-LINE DELIMITED BY ":"
                INTO WS-SENDER, WS-REST-OF-LINE
@@ -134,10 +134,10 @@
 
       * Check if this message is for the current user
            IF FUNCTION TRIM(WS-RECIPIENT) = FUNCTION TRIM(LS-CURRENT-USER)
-      * This is a message for them, set flag [cite: 83]
+      * This is a message for them, set flag
                MOVE 'Y' TO WS-MSG-FOUND-FLAG
 
-      * Display formatted message as per requirements [cite: 85, 86, 87]
+      * Display formatted message as per requirements
                MOVE SPACES TO WS-DISPLAY-LINE
                STRING "From: " DELIMITED BY SIZE
                       FUNCTION TRIM(WS-SENDER) DELIMITED BY SIZE
@@ -150,7 +150,7 @@
                       INTO WS-DISPLAY-LINE
                PERFORM DISPLAY-AND-LOG
 
-      * Display timestamp if it exists [cite: 87]
+      * Display timestamp if it exists
                IF WS-TIMESTAMP > SPACES
                    MOVE SPACES TO WS-DISPLAY-LINE
                    STRING "(Sent: " DELIMITED BY SIZE
@@ -160,14 +160,14 @@
                    PERFORM DISPLAY-AND-LOG
                END-IF
 
-      * Add a blank line for readability between messages
+      * Blank linebetween messages
                MOVE " " TO WS-DISPLAY-LINE
                PERFORM DISPLAY-AND-LOG
            END-IF.
            EXIT.
 
-      * This subprogram needs its own log routine
-      * to write to both screen and file[cite: 97, 98].
+      * This needs its own log routine
+      * to write to both screen and file.
        DISPLAY-AND-LOG SECTION.
            DISPLAY WS-DISPLAY-LINE.
            MOVE WS-DISPLAY-LINE TO OUTPUT-RECORD.
