@@ -1,7 +1,7 @@
        >>SOURCE FREE
        IDENTIFICATION DIVISION.
        PROGRAM-ID. SEND-MESSAGE.
-       AUTHOR. Copilot.
+       AUTHOR. Jacob Cooksey
        DATE-WRITTEN. 11/03/2025.
 
        ENVIRONMENT DIVISION.
