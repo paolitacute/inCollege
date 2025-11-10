@@ -1,19 +1,2 @@
-<<<<<<< HEAD
-John:Alice>>Hello John!!>>01:37 pm-11/04
-John:Alice>>This is going to be a very long message because sometimes people do not know how to properly sum up what they want to say. Now I am going to add latin giberish because typing a very long sentence is n>>01:37 pm-11/04
-John:Alice>>Hello John!!>>01:43 pm-11/04
-John:Alice>>This is going to be a very long message because sometimes people do not know how to properly sum up what they want to say. Now I am going to add latin giberish because typing a very long sentence is n>>01:43 pm-11/04
-John:Alice>>Hello John!!>>01:44 pm-11/04
-John:Alice>>This is going to be a very long message because sometimes people do not know how to properly sum up what they want to say. Now I am going to add latin giberish because typing a very long sentence is n>>01:44 pm-11/04
-John:Alice>>Hello John!!>>01:48 pm-11/04
-John:Alice>>This is going to be a very long message because sometimes people do not know how to properly sum up what they want to say. Now I am going to add latin giberish because typing a very long sentence is n>>01:48 pm-11/04
-John:Alice>>Hello John!!>>01:55 pm-11/04
-John:Alice>>This is going to be a very long message because sometimes people do not know how to properly sum up what they want to say. Now I am going to add latin giberish because typing a very long sentence is n>>01:55 pm-11/04
-=======
-Alice:John>>Hello John!>>05:35 pm-11/03
->>>>>>> parent of 351ade3 (merge)
-Alice:John>>Passwor#2>>01:22 pm-11/05
-Alice:John>>Hello John>>01:25 pm-11/05
-Alice:John>>Hello John>>01:25 pm-11/05
-Alice:John>>Hello John>>01:35 pm-11/05
-Alice:John>>Hello John>>01:49 pm-11/05
+Alice:John>>Hello John>>08:42 am-11/10
+Alice:John>>How are you>>09:42 am-11/10

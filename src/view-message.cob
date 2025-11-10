@@ -1,175 +1,180 @@
-       >>SOURCE FREE
-       IDENTIFICATION DIVISION.
-       PROGRAM-ID. VIEW-MESSAGE.
-       AUTHOR. Vamsi.
-       DATE-WRITTEN. 11/10/2025.
-      *
-      *This module reads the messages.txt file and displays
-      * all messages for the specified recipient.
-      * It logs all output to InCollege-Output.txt.
-      *
-       ENVIRONMENT DIVISION.
-       INPUT-OUTPUT SECTION.
-       FILE-CONTROL.
-           SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-OUTPUT-STATUS.
-           SELECT MESSAGES-FILE ASSIGN TO "messages.txt"
-               ORGANIZATION IS LINE SEQUENTIAL
-               FILE STATUS IS WS-MESSAGES-STATUS.
+>>SOURCE FREE
+IDENTIFICATION DIVISION.
+PROGRAM-ID. VIEW-MESSAGE.
+AUTHOR. Vamsi.
+DATE-WRITTEN. 11/10/2025.
 
-       DATA DIVISION.
-       FILE SECTION.
-       FD  OUTPUT-FILE.
-       01  OUTPUT-RECORD      PIC X(350).
+*> This module reads messages.txt and displays all messages for a recipient.
+*> It logs all output to InCollege-Output.txt.
 
-       FD  MESSAGES-FILE.
-       01  MESSAGE-RECORD     PIC X(500).
+ENVIRONMENT DIVISION.
+INPUT-OUTPUT SECTION.
+FILE-CONTROL.
+    SELECT OUTPUT-FILE ASSIGN TO "InCollege-Output.txt"
+        ORGANIZATION IS LINE SEQUENTIAL
+        FILE STATUS IS WS-OUTPUT-STATUS.
+    SELECT MESSAGES-FILE ASSIGN TO "messages.txt"
+        ORGANIZATION IS LINE SEQUENTIAL
+        FILE STATUS IS WS-MESSAGES-STATUS.
 
-       WORKING-STORAGE SECTION.
-       01  WS-OUTPUT-STATUS   PIC X(2).
-       01  WS-MESSAGES-STATUS PIC X(2).
-       01  WS-EOF-FLAG        PIC X VALUE 'N'.
-      * This tracks if we find at least one message
-       01  WS-MSG-FOUND-FLAG  PIC X VALUE 'N'.
+DATA DIVISION.
+FILE SECTION.
+FD  OUTPUT-FILE.
+01  OUTPUT-RECORD      PIC X(350).
 
-      * Variables for parsing
-       01  WS-STORED-LINE     PIC X(500).
-       01  WS-SENDER          PIC X(20).
-       01  WS-RECIPIENT       PIC X(20).
-       01  WS-MESSAGE-CONTENT PIC X(200).
-       01  WS-TIMESTAMP       PIC X(30).
-       01  WS-REST-OF-LINE    PIC X(480).
+FD  MESSAGES-FILE.
+01  MESSAGE-RECORD     PIC X(500).
 
-      * Variable for logging output
-       01  WS-DISPLAY-LINE    PIC X(350).
+WORKING-STORAGE SECTION.
+01  WS-OUTPUT-STATUS   PIC X(2).
+01  WS-MESSAGES-STATUS PIC X(2).
+01  WS-EOF-FLAG        PIC X VALUE 'N'.
+*> Tracks if we find at least one message
+01  WS-MSG-FOUND-FLAG  PIC X VALUE 'N'.
+01  P                        PIC 9(9) COMP VALUE 1.  *> put this in WORKING-STORAGE (not inside section)
 
-       LINKAGE SECTION.
-      * The logged-in user, passed from the main program
-       01  LS-CURRENT-USER    PIC X(20).
-      * 'S' = Success (messages found), 'F' = No messages, 'X' = Error
-       01  LS-RETURN-CODE     PIC X.
+*> Variables for parsing
+01  WS-STORED-LINE     PIC X(500).
+01  WS-SENDER          PIC X(20).
+01  WS-RECIPIENT       PIC X(20).
+01  WS-MESSAGE-CONTENT PIC X(200).
+01  WS-TIMESTAMP       PIC X(30).
+01  WS-REST-OF-LINE    PIC X(480).
 
-       PROCEDURE DIVISION USING LS-CURRENT-USER, LS-RETURN-CODE.
-      * Default to error until a clear outcome
-       MOVE 'X' TO LS-RETURN-CODE
-       MOVE 'N' TO WS-MSG-FOUND-FLAG
-       MOVE 'N' TO WS-EOF-FLAG
-       MOVE FUNCTION TRIM(LS-CURRENT-USER) TO LS-CURRENT-USER.
+*> Variable for logging output
+01  WS-DISPLAY-LINE    PIC X(350).
 
-      * Open the output file first to log all actions.
-      * The main program must CLOSE this file
-      * before CALLing and OPEN EXTEND it after.
-       OPEN EXTEND OUTPUT-FILE
-       IF WS-OUTPUT-STATUS NOT = "00"
-           MOVE 'X' TO LS-RETURN-CODE
-           GOBACK
-       END-IF.
+LINKAGE SECTION.
+*> The logged-in user, passed from the main program
+01  LS-CURRENT-USER    PIC X(20).
+*> 'S' = Success (messages found), 'F' = No messages, 'X' = Error
+01  LS-RETURN-CODE     PIC X.
 
-      * Try to open the messages file
-       OPEN INPUT MESSAGES-FILE
-       IF WS-MESSAGES-STATUS NOT = "00"
-           IF WS-MESSAGES-STATUS = "35"
-      * File not found = No messages exist yet
-               MOVE "You have no messages at this time." TO WS-DISPLAY-LINE
-               PERFORM DISPLAY-AND-LOG
-               MOVE 'F' TO LS-RETURN-CODE
-               CLOSE OUTPUT-FILE
-               GOBACK
-           ELSE
-      * Other file error
-               MOVE "Error accessing messages file." TO WS-DISPLAY-LINE
-               PERFORM DISPLAY-AND-LOG
-               MOVE 'X' TO LS-RETURN-CODE
-               CLOSE OUTPUT-FILE
-               GOBACK
-           END-IF
-       END-IF.
+PROCEDURE DIVISION USING LS-CURRENT-USER, LS-RETURN-CODE.
+    MOVE 'X' TO LS-RETURN-CODE
+    MOVE 'N' TO WS-MSG-FOUND-FLAG
+    MOVE 'N' TO WS-EOF-FLAG
+    MOVE FUNCTION TRIM(LS-CURRENT-USER) TO LS-CURRENT-USER
 
-      * File opened successfully, print header
-       MOVE "Your Messages" TO WS-DISPLAY-LINE
-       PERFORM DISPLAY-AND-LOG
-       MOVE "---" TO WS-DISPLAY-LINE
-       PERFORM DISPLAY-AND-LOG.
+    *> Open the output file first to log all actions.
+    *> The main program must CLOSE this file before CALLing and
+    *> OPEN EXTEND it again after we return.
+    OPEN EXTEND OUTPUT-FILE
+    IF WS-OUTPUT-STATUS NOT = "00"
+        MOVE 'X' TO LS-RETURN-CODE
+        GOBACK
+    END-IF
 
-      * Read through the entire messages file
-       PERFORM UNTIL WS-EOF-FLAG = 'Y'
-           READ MESSAGES-FILE INTO WS-STORED-LINE
-               AT END
-                   MOVE 'Y' TO WS-EOF-FLAG
-               NOT AT END
-                   PERFORM PROCESS-MESSAGE-RECORD
-           END-READ
-       END-PERFORM.
+    *> Try to open the messages file
+    OPEN INPUT MESSAGES-FILE
+    IF WS-MESSAGES-STATUS NOT = "00"
+        IF WS-MESSAGES-STATUS = "35"
+            *> File not found = No messages exist yet
+            MOVE "You have no messages at this time." TO WS-DISPLAY-LINE
+            PERFORM DISPLAY-AND-LOG
+            MOVE 'F' TO LS-RETURN-CODE
+            CLOSE OUTPUT-FILE
+            GOBACK
+        ELSE
+            *> Other file error
+            MOVE "Error accessing messages file." TO WS-DISPLAY-LINE
+            PERFORM DISPLAY-AND-LOG
+            MOVE 'X' TO LS-RETURN-CODE
+            CLOSE OUTPUT-FILE
+            GOBACK
+        END-IF
+    END-IF
 
-       CLOSE MESSAGES-FILE.
+    *> File opened successfully, print header
+    MOVE "--- Your Messages ---" TO WS-DISPLAY-LINE
+    PERFORM DISPLAY-AND-LOG
 
-      * After loop, check if we ever found a message
-       IF WS-MSG-FOUND-FLAG = 'Y'
-           MOVE 'S' TO LS-RETURN-CODE
-       ELSE
-      * File was read, but no messages matched the user
-           MOVE "You have no messages at this time." TO WS-DISPLAY-LINE
-           PERFORM DISPLAY-AND-LOG
-           MOVE 'F' TO LS-RETURN-CODE
-       END-IF.
+    *> Read through messages.txt
+    PERFORM UNTIL WS-EOF-FLAG = 'Y'
+        READ MESSAGES-FILE INTO WS-STORED-LINE
+            AT END
+                MOVE 'Y' TO WS-EOF-FLAG
+            NOT AT END
+                PERFORM PROCESS-MESSAGE-RECORD
+        END-READ
+    END-PERFORM
 
-       CLOSE OUTPUT-FILE.
-       GOBACK.
+    CLOSE MESSAGES-FILE
 
-      * This paragraph parses one line from messages.txt
-       PROCESS-MESSAGE-RECORD SECTION.
-           INITIALIZE WS-SENDER, WS-RECIPIENT, WS-MESSAGE-CONTENT,
-                      WS-TIMESTAMP, WS-REST-OF-LINE.
+    *> After loop, check if we ever found a message
+    IF WS-MSG-FOUND-FLAG = 'Y'
+        MOVE 'S' TO LS-RETURN-CODE
+    ELSE
+        *> File was read, but no messages matched the user
+        MOVE "You have no messages at this time." TO WS-DISPLAY-LINE
+        PERFORM DISPLAY-AND-LOG
+        MOVE 'F' TO LS-RETURN-CODE
+    END-IF
 
-      * Parse the record based on the format from SEND-MESSAGE
-      * Format: Sender:Recipient>>Message>>Timestamp
-           UNSTRING WS-STORED-LINE DELIMITED BY ":"
-               INTO WS-SENDER, WS-REST-OF-LINE
-           END-UNSTRING.
+    CLOSE OUTPUT-FILE
+    GOBACK.
 
-           UNSTRING WS-REST-OF-LINE DELIMITED BY ">>"
-               INTO WS-RECIPIENT, WS-MESSAGE-CONTENT, WS-TIMESTAMP
-           END-UNSTRING.
+PROCESS-MESSAGE-RECORD SECTION.
+    MOVE 1 TO P
+    INITIALIZE WS-SENDER WS-RECIPIENT WS-MESSAGE-CONTENT WS-TIMESTAMP WS-REST-OF-LINE.
 
-      * Check if this message is for the current user
-           IF FUNCTION TRIM(WS-RECIPIENT) = FUNCTION TRIM(LS-CURRENT-USER)
-      * This is a message for them, set flag
-               MOVE 'Y' TO WS-MSG-FOUND-FLAG
+    UNSTRING WS-STORED-LINE
+        DELIMITED BY ":"
+        INTO WS-SENDER
+        WITH POINTER P
+    END-UNSTRING.
 
-      * Display formatted message as per requirements
-               MOVE SPACES TO WS-DISPLAY-LINE
-               STRING "From: " DELIMITED BY SIZE
-                      FUNCTION TRIM(WS-SENDER) DELIMITED BY SIZE
-                      INTO WS-DISPLAY-LINE
-               PERFORM DISPLAY-AND-LOG
+    UNSTRING WS-STORED-LINE
+        DELIMITED BY ">>"
+        INTO WS-RECIPIENT
+             WS-MESSAGE-CONTENT
+             WS-TIMESTAMP
+        WITH POINTER P
+    END-UNSTRING.
 
-               MOVE SPACES TO WS-DISPLAY-LINE
-               STRING "Message: " DELIMITED BY SIZE
-                      FUNCTION TRIM(WS-MESSAGE-CONTENT) DELIMITED BY SIZE
-                      INTO WS-DISPLAY-LINE
-               PERFORM DISPLAY-AND-LOG
+    *> --- NEW: remove any CR/LF that were carried from the file
+    INSPECT WS-SENDER          REPLACING ALL X"0D" BY SPACE ALL X"0A" BY SPACE
+    INSPECT WS-RECIPIENT       REPLACING ALL X"0D" BY SPACE ALL X"0A" BY SPACE
+    INSPECT WS-MESSAGE-CONTENT REPLACING ALL X"0D" BY SPACE ALL X"0A" BY SPACE
+    INSPECT WS-TIMESTAMP       REPLACING ALL X"0D" BY SPACE ALL X"0A" BY SPACE
+    *> --- end NEW
 
-      * Display timestamp if it exists
-               IF WS-TIMESTAMP > SPACES
-                   MOVE SPACES TO WS-DISPLAY-LINE
-                   STRING "(Sent: " DELIMITED BY SIZE
-                          FUNCTION TRIM(WS-TIMESTAMP) DELIMITED BY SIZE
-                          ")" DELIMITED BY SIZE
-                          INTO WS-DISPLAY-LINE
-                   PERFORM DISPLAY-AND-LOG
-               END-IF
+    IF FUNCTION TRIM(WS-RECIPIENT) = FUNCTION TRIM(LS-CURRENT-USER)
+        MOVE 'Y' TO WS-MSG-FOUND-FLAG
 
-      * Blank linebetween messages
-               MOVE " " TO WS-DISPLAY-LINE
-               PERFORM DISPLAY-AND-LOG
-           END-IF.
-           EXIT.
+        MOVE SPACES TO WS-DISPLAY-LINE
+        STRING "From: "               DELIMITED BY SIZE
+               FUNCTION TRIM(WS-SENDER) DELIMITED BY SIZE
+               INTO WS-DISPLAY-LINE
+        END-STRING
+        PERFORM DISPLAY-AND-LOG
 
-      * This needs its own log routine
-      * to write to both screen and file.
-       DISPLAY-AND-LOG SECTION.
-           DISPLAY WS-DISPLAY-LINE.
-           MOVE WS-DISPLAY-LINE TO OUTPUT-RECORD.
-           WRITE OUTPUT-RECORD.
-           EXIT.
+        MOVE SPACES TO WS-DISPLAY-LINE
+        STRING "Message: "            DELIMITED BY SIZE
+               FUNCTION TRIM(WS-MESSAGE-CONTENT) DELIMITED BY SIZE
+               INTO WS-DISPLAY-LINE
+        END-STRING
+        PERFORM DISPLAY-AND-LOG
+
+        IF FUNCTION TRIM(WS-TIMESTAMP) > SPACES
+            MOVE SPACES TO WS-DISPLAY-LINE
+            STRING "(Sent: "                 DELIMITED BY SIZE
+                   FUNCTION TRIM(WS-TIMESTAMP) DELIMITED BY SIZE
+                   ")"                        DELIMITED BY SIZE
+                   INTO WS-DISPLAY-LINE
+            END-STRING
+            PERFORM DISPLAY-AND-LOG
+        END-IF
+
+        MOVE "---" TO WS-DISPLAY-LINE
+        PERFORM DISPLAY-AND-LOG
+    END-IF.
+    EXIT.
+
+DISPLAY-AND-LOG SECTION.
+    *> --- NEW: scrub CR/LF that could sneak in and cause double-spacing
+    INSPECT WS-DISPLAY-LINE REPLACING ALL X"0D" BY SPACE ALL X"0A" BY SPACE
+    DISPLAY FUNCTION TRIM(WS-DISPLAY-LINE TRAILING)
+    MOVE FUNCTION TRIM(WS-DISPLAY-LINE TRAILING) TO OUTPUT-RECORD
+    WRITE OUTPUT-RECORD
+    EXIT.
