@@ -103,37 +103,41 @@
             GOBACK.
 
         WRITE-NEW-JOB SECTION.
-            *> Open the file in EXTEND mode to add to the end
-            OPEN EXTEND JOBS-FILE.
+            OPEN EXTEND JOBS-FILE
+            EVALUATE WS-JOBS-STATUS
+                WHEN "00"
+                    CONTINUE
+                WHEN "35"
+                    *> File doesn't exist; create it
+                    OPEN OUTPUT JOBS-FILE
+                    IF WS-JOBS-STATUS NOT = "00"
+                        MOVE 'F' TO LS-RETURN-CODE
+                        EXIT SECTION
+                    END-IF
+                WHEN OTHER
+                    MOVE 'F' TO LS-RETURN-CODE
+                    EXIT SECTION
+            END-EVALUATE
 
-            *> Handle case where file was deleted between read and write
-            IF WS-JOBS-STATUS = "35"
-                OPEN OUTPUT JOBS-FILE
-            END-IF.
+            *> Build the line to write
+            INITIALIZE WS-JOB-LINE
+            STRING
+                FUNCTION TRIM(LS-USERNAME)   DELIMITED BY SIZE "~"
+                FUNCTION TRIM(LS-JOB-TITLE)  DELIMITED BY SIZE "~"
+                FUNCTION TRIM(LS-JOB-DESC)   DELIMITED BY SIZE "~"
+                FUNCTION TRIM(LS-JOB-EMPLOYER) DELIMITED BY SIZE "~"
+                FUNCTION TRIM(LS-JOB-LOCATION) DELIMITED BY SIZE "~"
+                FUNCTION TRIM(LS-JOB-SALARY) DELIMITED BY SIZE
+                INTO WS-JOB-LINE
+            END-STRING
 
-            *> Check for open error
+            WRITE JOB-RECORD FROM WS-JOB-LINE
             IF WS-JOBS-STATUS NOT = "00"
                 MOVE 'F' TO LS-RETURN-CODE
-                GOBACK
-            END-IF.
+                CLOSE JOBS-FILE
+                EXIT SECTION
+            END-IF
 
-            *> Create a single line record, separated by ~
-            INITIALIZE WS-JOB-LINE
-            STRING FUNCTION TRIM(LS-USERNAME)     DELIMITED BY SIZE
-                "~"                           DELIMITED BY SIZE
-                FUNCTION TRIM(LS-JOB-TITLE)     DELIMITED BY SIZE
-                "~"                           DELIMITED BY SIZE
-                FUNCTION TRIM(LS-JOB-DESC)      DELIMITED BY SIZE
-                "~"                           DELIMITED BY SIZE
-                FUNCTION TRIM(LS-JOB-EMPLOYER)  DELIMITED BY SIZE
-                "~"                           DELIMITED BY SIZE
-                FUNCTION TRIM(LS-JOB-LOCATION)  DELIMITED BY SIZE
-                "~"                           DELIMITED BY SIZE
-                FUNCTION TRIM(LS-JOB-SALARY)    DELIMITED BY SIZE
-                INTO WS-JOB-LINE.
+            CLOSE JOBS-FILE
+            EXIT SECTION.
 
-            *> Write the new job posting to the file
-            WRITE JOB-RECORD FROM WS-JOB-LINE.
-
-            CLOSE JOBS-FILE.
-            EXIT.
