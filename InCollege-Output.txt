@@ -5,7 +5,49 @@ Enter your choice:
 Please enter your username:
 Please enter your password:
 You have successfully logged in.
-Welcome, John!
+Welcome, Alice!
+1. Create/Edit My Profile
+2. View My Profile
+3. Search for a job
+4. Find someone you know
+5. Learn a New Skill
+6. View My Pending Connection Requests
+7. View My Network
+8. Messages
+9. Exit
+Enter your choice:
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+Enter the job number to view full details or 0 to return:
+Job Title: Senior Developer
+Description: Lead Backend Development for new products
+Employer: InnovateTech
+Location: Remote
+Salary: 30/hr
+Would you like to apply for this job? (1 = Yes, 2 = No)
+Your application for Senior Developer at InnovateTech has been submitted.
+Application submitted.
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Total applications: 1
+--- Job Search/Internship Menu ---
+1. Post a Job/Internship
+2. Browse Jobs/Internships
+3. View My Applications
+4. Back to Main Menu
+Enter your choice:
 1. Create/Edit My Profile
 2. View My Profile
 3. Search for a job
@@ -21,16 +63,14 @@ Enter your choice:
 2. View My Messages
 3. Back to Main Menu
 Enter your choice:
-Not a valid choice. Try again.
-Not a valid choice. Try again.
 --- Your Messages ---
-From: Alice
+From: John
 Message: Hello John
-(Sent: 08:42 am-11/10)
+(Sent: 08:42 am-11/17)
 ---
-From: Alice
+From: Jake
 Message: How are you
-(Sent: 09:42 am-11/10)
+(Sent: 09:42 am-11/17)
 ---
 --- Messages Menu ---
 1. Send a New Message
