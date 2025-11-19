@@ -88,3 +88,41 @@ Enter your choice:
 9. Exit
 Enter your choice:
 You quit successfully.
+Name: John Doe
+University: Example University
+Major: Comp Sci
+Graduation Year: 2025
+About Me: Enthusiastic developer always learning new things.
+Experience:
+ Title: Software Intern
+ Company: Tech Corp
+ Dates: Summer 2024
+ Description: Developed tools for internal Testing
+Education:
+ Degree: BS of Science
+ University: Example University
+ Years: 2021-2025
+--------------------
+Name: John Doe
+University: Example University
+Major: Comp Sci
+Graduation Year: 2025
+About Me: Enthusiastic developer always learning new things.
+Experience:
+ Title: Software Intern
+ Company: Tech Corp
+ Dates: Summer 2024
+ Description: Developed tools for internal Testing
+Education:
+ Degree: BS of Science
+ University: Example University
+ Years: 2021-2025
+--------------------
+Name: abcd 20
+University: university 1
+Major: comp sci
+Graduation Year: 2025
+About Me: About me blah blah blah
+Experience: None
+Education: None
+--------------------

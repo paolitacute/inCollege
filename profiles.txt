@@ -12,3 +12,11 @@ UNIV:USF
 MAJR:TEST
 GRAD:2026
 ENDPROFILE
+USER:user12345
+FNAM:abcd
+LNAM:20
+UNIV:university 1
+MAJR:comp sci
+GRAD:2025
+ABOU:About me blah blah blah
+ENDPROFILE
