@@ -173,3 +173,30 @@ Education:
  University: Test University
  Years: 2023-2027
 --------------------
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Total applications: 1
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Total applications: 1
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Total applications: 1
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Total applications: 1
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+Job Title: Software Intern
+Description: Develop new COBOL features
+Employer: InCollege Corp
+Location: Remote
+Salary: $30/hour
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Total applications: 1
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Total applications: 1

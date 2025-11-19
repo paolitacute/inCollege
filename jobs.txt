@@ -1,2 +1,5 @@
 John~Senior Developer~Lead Backend Development for new products~InnovateTech~Remote~30/hr
-John~Junior Developer~Lead Backend Development for new products~InnovateTech~Remote~20/hr
+John~Junior Developer~Lead Backend Development for new products~InnovateTech~Remote~20/hrAlice~Software Intern~Develop new COBOL features~InCollege Corp~Remote~$30/hour
+Alice~Software Intern~Develop new COBOL features~InCollege Corp~Remote~$30/hour
+Alice~Data Analyst~Analyze platform metrics~BigData Inc~New York, NY~
+Alice~Mainframe Developer~Maintain COBOL applications~Finance Inc~Remote~$120,000/year
