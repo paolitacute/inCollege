@@ -126,3 +126,27 @@ About Me: About me blah blah blah
 Experience: None
 Education: None
 --------------------
+Name: abcd 20
+University: university 1
+Major: comp sci
+Graduation Year: 2025
+About Me: About me blah blah blah
+Experience: None
+Education: None
+--------------------
+Name: Alice Smith
+University: USF
+Major: TEST
+Graduation Year: 2026
+About Me:
+Experience: None
+Education: None
+--------------------
+Name: Alice Smith
+University: USF
+Major: TEST
+Graduation Year: 2026
+About Me:
+Experience: None
+Education: None
+--------------------
