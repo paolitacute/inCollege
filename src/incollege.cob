@@ -9,11 +9,11 @@
           FILE-CONTROL.
 
               *> Select INPUT-FILE tells COBOL what the input file is
-              SELECT INPUT-FILE ASSIGN TO "test-input/epic3-test4.txt"
+              SELECT INPUT-FILE ASSIGN TO "test-input/epic4-test3.txt"
               *> LINE SEQUENTIAL means each line in text is a record
                   ORGANIZATION IS LINE SEQUENTIAL.
               *> OUTPUT-FILE defines what file will have the output stored
-              SELECT OUTPUT-FILE ASSIGN TO "test-output/epic3-test4.txt"
+              SELECT OUTPUT-FILE ASSIGN TO "test-output/epic4-test3.txt"
                   ORGANIZATION IS LINE SEQUENTIAL
                   FILE STATUS IS WS-OUTPUT-STATUS.
 

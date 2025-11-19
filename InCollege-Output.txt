@@ -150,3 +150,26 @@ About Me:
 Experience: None
 Education: None
 --------------------
+Name: John Smith
+University: USF
+Major: TEST
+Graduation Year: 2026
+About Me: I am Alice and I test connections.
+Experience: None
+Education: None
+--------------------
+Name: Alice Anderson
+University: Test University
+Major: Computer Science
+Graduation Year: 2025
+About Me: I am Alice and I test connections.
+Experience:
+ Title: Software Engineer
+ Company: Acme Corp
+ Dates: Summer 2024
+ Description: Built systems
+Education:
+ Degree: B.S. in Testing
+ University: Test University
+ Years: 2023-2027
+--------------------

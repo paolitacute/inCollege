@@ -1,5 +1,5 @@
 Alice           Passwor#1
 John            Passwor#2
-Walter1             Pas$word2
 user12345           p@ssworD!1
 user123             p@ssworD!1
+bob                 BobPass1!
