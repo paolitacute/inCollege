@@ -200,3 +200,124 @@ Total applications: 1
 Your Job Applications
 Job 1: Senior at InnovateTech (Remote)
 Total applications: 1
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+Job Title: Junior Developer
+Description: Lead Backend Development for new products
+Employer: InnovateTech
+Location: Remote
+Salary: 20/hrAlice
+Your application for Junior Developer at InnovateTech has been submitted.
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Job 2: Junior at InnovateTech (Remote)
+Total applications: 2
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+Job Title: Senior Developer
+Description: Lead Backend Development for new products
+Employer: InnovateTech
+Location: Remote
+Salary: 30/hr
+You have already applied to this job.
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Job 2: Junior at InnovateTech (Remote)
+Total applications: 2
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+6. Software Engineer at Anderson Inc. (Tampa, Florida)
+Requested job not found.
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+6. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Senior Developer
+Description: Lead Backend Development for new products
+Employer: InnovateTech
+Location: Remote
+Salary: 30/hr
+You have already applied to this job.
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Job 2: Junior at InnovateTech (Remote)
+Total applications: 2
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+6. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Intern
+Description: Develop new COBOL features
+Employer: InCollege Corp
+Location: Remote
+Salary: $30/hour
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+6. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Senior Developer
+Description: Lead Backend Development for new products
+Employer: InnovateTech
+Location: Remote
+Salary: 30/hr
+You have already applied to this job.
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Job 2: Junior at InnovateTech (Remote)
+Total applications: 2
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+6. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Intern
+Description: Develop new COBOL features
+Employer: InCollege Corp
+Location: Remote
+Salary: $30/hour
+Your application for Software Intern at InCollege Corp has been submitted.
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+6. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Senior Developer
+Description: Lead Backend Development for new products
+Employer: InnovateTech
+Location: Remote
+Salary: 30/hr
+You have already applied to this job.
+Your Job Applications
+Job 1: Senior at InnovateTech (Remote)
+Job 2: Junior at InnovateTech (Remote)
+Job 3: Software at InCollege Corp (Remote)
+Total applications: 3
+1. Senior Developer at InnovateTech (Remote)
+2. Junior Developer at InnovateTech (Remote)
+3. Software Intern at InCollege Corp (Remote)
+4. Data Analyst at BigData Inc (New York, NY)
+5. Mainframe Developer at Finance Inc (Remote)
+6. Software Engineer at Anderson Inc. (Tampa, Florida)
+Job Title: Software Intern
+Description: Develop new COBOL features
+Employer: InCollege Corp
+Location: Remote
+Salary: $30/hour
+You have already applied to this job.
